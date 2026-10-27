@@ -12,7 +12,7 @@ Prywatne repozytorium GitHub: [memphistor/MediApp](https://github.com/memphistor
 
 Po wdrożeniu z gałęzi `main`: **https://memphistor.github.io/MediApp/**
 
-Repozytorium jest prywatne — jeśli strona nie ładuje się publicznie, w ustawieniach repozytorium włącz **Pages → visibility** (wymaga GitHub Pro dla prywatnych stron) albo tymczasowo ustaw widoczność repozytorium na publiczne.
+Wdrożenie: `npm run deploy:pages` (gałąź `gh-pages`). Pierwsze uruchomienie strony może potrwać 1–2 minuty.
 
 ## Uruchomienie lokalne
 
