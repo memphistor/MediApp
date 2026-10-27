@@ -14,7 +14,7 @@
 | Harmonogram | Użytkownik definiuje częstotliwość i godziny | Nie |
 | Przypomnienia (faza 2) | Treść z pól użytkownika | Nie |
 | Widok dnia / historia | Odtwarza zapisy | Nie |
-| Gamifikacja | Liczy odhaczenia planowych dawek | Nie |
+| Gamifikacja | Liczy odhaczenia planowych dawek (seria, odznaki, pierścień dnia) — bez oceny zdrowia | Nie |
 | Eksport PDF/CSV (faza 3) | Suchy raport zapisów | Nie |
 | Etykieta „na co przyjmujesz” | Tekst użytkownika, bez walidacji | Nie |
 

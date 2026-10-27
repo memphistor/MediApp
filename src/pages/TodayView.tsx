@@ -1,7 +1,9 @@
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useLiveQuery } from 'dexie-react-hooks'
+import { DayRing } from '@/components/gamification/DayRing'
 import { MedicationCard } from '@/components/medication/MedicationCard'
+import { dayRingProgress } from '@/lib/gamification/dayStats'
 import { ReminderMock } from '@/components/reminders/ReminderMock'
 import { db } from '@/db/database'
 import { endOfLocalDay, startOfLocalDay } from '@/lib/dates'
@@ -37,6 +39,7 @@ export function TodayView() {
 
   const handleTaken = async (id: string) => {
     await updateDoseStatus(id, 'taken', { takenAt: new Date().toISOString() })
+    navigator.vibrate?.(10)
   }
 
   const confirmSkip = async () => {
@@ -49,6 +52,7 @@ export function TodayView() {
   }
 
   const entries = (logs ?? []).filter((log) => medMap.has(log.medicationId))
+  const ring = dayRingProgress(entries)
 
   return (
     <div className="space-y-6">
@@ -57,6 +61,19 @@ export function TodayView() {
         <p className="mt-1 text-sm text-[var(--color-text-muted)]">
           {pl.today.noPushNote}
         </p>
+        {ring.total > 0 && (
+          <div className="mt-4 flex justify-center">
+            <DayRing
+              size="sm"
+              progress={ring.progress}
+              taken={ring.taken}
+              total={ring.total}
+              sublabel={pl.progress.todayCount
+                .replace('{taken}', String(ring.taken))
+                .replace('{total}', String(ring.total))}
+            />
+          </div>
+        )}
       </div>
 
       <ReminderMock />

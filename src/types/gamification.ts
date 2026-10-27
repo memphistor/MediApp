@@ -10,4 +10,8 @@ export interface GamificationState {
   shieldAvailable: boolean
   badges: Badge[]
   dayRingProgress: number
+  monthRate: number
+  takenTotal: number
+  todayTaken: number
+  todayTotal: number
 }

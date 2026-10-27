@@ -10,6 +10,7 @@ import {
 import {
   db,
   DEFAULT_SETTINGS,
+  DEFAULT_GAMIFICATION,
   clearAllUserData,
 } from '@/db/database'
 import { CURRENT_PRIVACY_POLICY_VERSION, requiresPrivacyConsent } from '@/legal/policyVersion'
@@ -103,6 +104,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
   const deleteAllData = useCallback(async () => {
     await clearAllUserData()
     await db.settings.put(DEFAULT_SETTINGS)
+    await db.gamification.put(DEFAULT_GAMIFICATION)
     setSettings(DEFAULT_SETTINGS)
     applyTheme(DEFAULT_SETTINGS.theme)
     applyFontScale(DEFAULT_SETTINGS.fontScale)

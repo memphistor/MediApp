@@ -57,4 +57,8 @@ export const DEFAULT_GAMIFICATION: GamificationState = {
   shieldAvailable: true,
   badges: [],
   dayRingProgress: 0,
+  monthRate: 0,
+  takenTotal: 0,
+  todayTaken: 0,
+  todayTotal: 0,
 }

@@ -1,68 +1,79 @@
+import { useLiveQuery } from 'dexie-react-hooks'
+import { DayRing } from '@/components/gamification/DayRing'
+import { BADGE_DEFINITIONS } from '@/lib/gamification/badges'
+import { plantEmojiForStreak } from '@/lib/gamification/plantStage'
+import { db, DEFAULT_GAMIFICATION } from '@/db/database'
 import { pl } from '@/i18n/pl'
 
 export function ProgressView() {
-  const ringProgress = 0.75
-  const circumference = 2 * Math.PI * 52
-  const offset = circumference * (1 - ringProgress)
+  const state = useLiveQuery(
+    () => db.gamification.get('default'),
+    [],
+    DEFAULT_GAMIFICATION,
+  )
+
+  const gam = state ?? DEFAULT_GAMIFICATION
+  const monthPercent = Math.round(gam.monthRate * 100)
+  const earnedIds = new Set(
+    gam.badges.filter((b) => b.earnedAt).map((b) => b.id),
+  )
 
   return (
     <div className="space-y-6">
       <h2 className="text-xl font-semibold">{pl.progress.title}</h2>
-      <p className="text-sm text-[var(--color-text-muted)]">{pl.progress.demo}</p>
 
-      <div className="flex flex-col items-center">
-        <p className="mb-2 text-sm font-medium">{pl.progress.dayRing}</p>
-        <svg width="120" height="120" viewBox="0 0 120 120" aria-hidden>
-          <circle
-            cx="60"
-            cy="60"
-            r="52"
-            fill="none"
-            stroke="var(--color-border)"
-            strokeWidth="10"
-          />
-          <circle
-            cx="60"
-            cy="60"
-            r="52"
-            fill="none"
-            stroke="#0f766e"
-            strokeWidth="10"
-            strokeLinecap="round"
-            strokeDasharray={circumference}
-            strokeDashoffset={offset}
-            transform="rotate(-90 60 60)"
-          />
-        </svg>
-        <p className="mt-2 text-2xl font-bold">3 / 4</p>
-        <p className="text-sm text-[var(--color-text-muted)]">
-          dziś zapisano 3 z 4 pozycji
-        </p>
-      </div>
+      <p className="text-center text-4xl" aria-hidden>
+        {plantEmojiForStreak(gam.currentStreak)}
+      </p>
+
+      <DayRing
+        progress={gam.dayRingProgress}
+        taken={gam.todayTaken}
+        total={gam.todayTotal}
+        label={pl.progress.dayRing}
+        sublabel={pl.progress.todayCount
+          .replace('{taken}', String(gam.todayTaken))
+          .replace('{total}', String(gam.todayTotal))}
+      />
 
       <div className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface-elevated)] p-4">
         <p className="font-semibold">{pl.progress.streak}</p>
-        <p className="mt-1 text-3xl font-bold text-brand">12 dni</p>
+        <p className="mt-1 text-3xl font-bold text-brand">
+          {pl.progress.streakDays.replace('{n}', String(gam.currentStreak))}
+        </p>
         <p className="mt-2 text-xs text-[var(--color-text-muted)]">
-          {pl.progress.shield} 🛡️
+          {gam.shieldAvailable
+            ? `${pl.progress.shieldActive} 🛡️`
+            : pl.progress.shieldRecharge}
         </p>
       </div>
 
       <div>
         <p className="font-semibold">{pl.progress.badges}</p>
         <div className="mt-2 flex flex-wrap gap-2">
-          {['Tydzień', 'Miesiąc', '100 dawek'].map((b) => (
-            <span
-              key={b}
-              className="rounded-full bg-brand/15 px-3 py-1 text-sm font-medium text-brand"
-            >
-              {b}
-            </span>
-          ))}
+          {BADGE_DEFINITIONS.map((def) => {
+            const earned = earnedIds.has(def.id)
+            const stored = gam.badges.find((b) => b.id === def.id)
+            return (
+              <span
+                key={def.id}
+                className={`rounded-full px-3 py-1 text-sm font-medium ${
+                  earned
+                    ? 'bg-brand/15 text-brand'
+                    : 'bg-[var(--color-border)] text-[var(--color-text-muted)]'
+                }`}
+                title={earned ? undefined : pl.progress.badgeLocked}
+              >
+                {stored?.label ?? def.label}
+              </span>
+            )
+          })}
         </div>
       </div>
 
-      <p className="text-sm text-[var(--color-text-muted)]">{pl.progress.stats}</p>
+      <p className="text-sm text-[var(--color-text-muted)]">
+        {pl.progress.monthStats.replace('{percent}', String(monthPercent))}
+      </p>
     </div>
   )
 }

@@ -38,9 +38,15 @@
 
 ## Faza 4 — Gamifikacja
 
-- Pierścień dnia, seria z tarczą, odznaki — liczone z logów
-- Komunikaty opisowe („3 z 4 pozycji”), bez ocen zdrowotnych
-- Seria tylko dla dawek planowych, nie „w razie potrzeby”
+**Zrobione:**
+
+- Pierścień dnia, seria z tarczą (7 pełnych dni = odnowienie), odznaki `streak_7`, `streak_30`, `taken_100`
+- Statystyka miesiąca i komunikaty opisowe (bez ocen zdrowotnych)
+- Haptyka po „Wzięte” na ekranie Dziś
+
+**Później (opcjonalnie):**
+
+- Animowana roślina, odznaki sezonowe
 
 ## Po konsultacji regulacyjnej
 

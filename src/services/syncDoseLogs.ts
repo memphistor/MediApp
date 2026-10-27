@@ -6,6 +6,7 @@ import {
 import { listMedications, getMedicationById } from '@/repositories/medicationRepository'
 import { upsertPlanned, updateDoseStatus } from '@/repositories/doseLogRepository'
 import { db } from '@/db/database'
+import { recalculateAndSave } from '@/repositories/gamificationRepository'
 import type { DoseLog } from '@/types/dose'
 
 const PAST_DAYS = 1
@@ -23,7 +24,9 @@ async function markMissedPlannedLogs(now = new Date()): Promise<void> {
     const scheduled = new Date(log.scheduledAt)
     const dayEnd = endOfLocalDay(scheduled)
     if (now > dayEnd) {
-      await updateDoseStatus(log.id, 'missed')
+      await updateDoseStatus(log.id, 'missed', undefined, {
+        skipGamification: true,
+      })
     }
   }
 }
@@ -47,6 +50,7 @@ export async function syncDoseLogsForMedication(
     await upsertPlanned(log)
   }
   await markMissedPlannedLogs(reference)
+  await recalculateAndSave(reference)
 }
 
 export async function syncAllDoseLogs(reference = new Date()): Promise<void> {
@@ -65,4 +69,5 @@ export async function syncAllDoseLogs(reference = new Date()): Promise<void> {
     }
   }
   await markMissedPlannedLogs(reference)
+  await recalculateAndSave(reference)
 }

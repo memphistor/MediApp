@@ -1,4 +1,5 @@
 import { db } from '@/db/database'
+import { recalculateAndSave } from '@/repositories/gamificationRepository'
 import { endOfLocalDay, startOfLocalDay, toDateKey } from '@/lib/dates'
 import type { DoseLog, DoseStatus } from '@/types/dose'
 
@@ -40,6 +41,7 @@ export async function updateDoseStatus(
   id: string,
   status: DoseStatus,
   extra?: { skipReason?: string; takenAt?: string },
+  options?: { skipGamification?: boolean },
 ): Promise<void> {
   const existing = await db.doseLogs.get(id)
   if (!existing) return
@@ -49,6 +51,9 @@ export async function updateDoseStatus(
     skipReason: extra?.skipReason,
     takenAt: extra?.takenAt,
   })
+  if (!options?.skipGamification) {
+    await recalculateAndSave()
+  }
 }
 
 export async function getDoseLogById(id: string): Promise<DoseLog | undefined> {
