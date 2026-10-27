@@ -6,8 +6,10 @@ import path from 'path'
 import { fileURLToPath } from 'url'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
+const base = process.env.VITE_BASE_PATH ?? '/'
 
 export default defineConfig({
+  base,
   plugins: [
     react(),
     tailwindcss(),
@@ -23,7 +25,7 @@ export default defineConfig({
         background_color: '#f8fafc',
         display: 'standalone',
         lang: 'pl',
-        start_url: '/',
+        start_url: base,
         icons: [
           {
             src: '/favicon.svg',

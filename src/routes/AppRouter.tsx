@@ -25,9 +25,11 @@ function OnboardingGate({ children }: { children: React.ReactNode }) {
   return children
 }
 
+const routerBasename = import.meta.env.BASE_URL.replace(/\/$/, '') || undefined
+
 export function AppRouter() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename={routerBasename}>
       <Routes>
         <Route path="/onboarding" element={<OnboardingView />} />
         <Route

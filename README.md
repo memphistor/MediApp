@@ -8,11 +8,23 @@ MediApp **nie weryfikuje** danych o lekach, **nie sprawdza** interakcji ani **ni
 
 Prywatne repozytorium GitHub: [memphistor/MediApp](https://github.com/memphistor/MediApp)
 
-## Uruchomienie
+## Podgląd w przeglądarce (GitHub Pages)
+
+Po wdrożeniu z gałęzi `main`: **https://memphistor.github.io/MediApp/**
+
+Repozytorium jest prywatne — jeśli strona nie ładuje się publicznie, w ustawieniach repozytorium włącz **Pages → visibility** (wymaga GitHub Pro dla prywatnych stron) albo tymczasowo ustaw widoczność repozytorium na publiczne.
+
+## Uruchomienie lokalne
 
 ```bash
 npm install
 npm run dev
+```
+
+Podgląd buildu z ścieżką jak na Pages:
+
+```bash
+VITE_BASE_PATH=/MediApp/ npm run build && npm run preview
 ```
 
 Produkcja:
