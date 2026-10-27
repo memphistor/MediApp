@@ -25,6 +25,7 @@ export const pl = {
     body3:
       'Dane są przechowywane lokalnie na tym urządzeniu. Możesz je wyeksportować lub usunąć w ustawieniach.',
     accept: 'Rozumiem, zaczynam',
+    privacyLink: 'Polityka prywatności',
   },
 
   today: {
@@ -127,8 +128,41 @@ export const pl = {
     title: 'Historia',
     exportPdf: 'Eksport PDF',
     exportCsv: 'Eksport CSV',
-    soon: 'Wkrótce',
     empty: 'Brak wpisów w dzienniku.',
+  },
+
+  export: {
+    rangeLabel: 'Zakres dziennika',
+    rangeAll: 'Cała historia',
+    range30: 'Ostatnie 30 dni',
+    range90: 'Ostatnie 90 dni',
+    empty: 'Brak danych do eksportu.',
+    working: 'Przygotowuję plik…',
+    largePdfConfirm:
+      'Dziennik ma ponad 500 wpisów. PDF może być duży. Kontynuować?',
+    pdfTitle: 'Eksport danych — MediApp',
+    generatedAt: 'Data eksportu',
+    policyVersion: 'Wersja polityki prywatności',
+    disclaimer:
+      'Dane wpisał użytkownik. Aplikacja ich nie weryfikuje. To nie jest ocena ani raport medyczny.',
+    medicationsSection: 'Pozycje',
+    logsSection: 'Dziennik dawek',
+    settingsTitle: 'Eksport danych',
+  },
+
+  privacy: {
+    consent: {
+      title: 'Zgoda i prywatność',
+      bullets: [
+        'Dane o lekach i notatkach przechowujemy tylko lokalnie na tym urządzeniu.',
+        'MediApp jest notatnikiem — nie podpowiada dawkowania ani interakcji.',
+        'Możesz wyeksportować lub usunąć dane w ustawieniach.',
+      ],
+      checkbox:
+        'Wyrażam zgodę na przetwarzanie danych o moim zdrowiu wpisywanych przeze mnie w aplikacji (szczegóły w polityce prywatności).',
+      readPolicy: 'Przeczytaj politykę prywatności',
+      accept: 'Akceptuję i kontynuuję',
+    },
   },
 
   progress: {
@@ -154,7 +188,9 @@ export const pl = {
     deleteAll: 'Usuń wszystkie dane',
     deleteConfirm: 'Na pewno usunąć wszystkie dane z tego urządzenia? Tej operacji nie można cofnąć.',
     deleted: 'Dane zostały usunięte.',
-    privacy: 'Polityka prywatności (w przygotowaniu)',
+    privacy: 'Polityka prywatności',
+    deletionHelp: 'Jak usunąć dane',
+    exportData: 'Eksport danych',
     onboarding: 'Pokaż onboarding ponownie',
   },
 

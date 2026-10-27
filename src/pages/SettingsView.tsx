@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import { ExportControls } from '@/components/export/ExportControls'
 import { useSettings } from '@/context/SettingsContext'
 import { pl } from '@/i18n/pl'
 import type { FontScale, ThemePreference } from '@/types/settings'
@@ -79,6 +80,15 @@ export function SettingsView() {
 
       <section>
         <h3 className="text-sm font-semibold text-[var(--color-text-muted)]">
+          {pl.settings.exportData}
+        </h3>
+        <div className="mt-2">
+          <ExportControls compact />
+        </div>
+      </section>
+
+      <section>
+        <h3 className="text-sm font-semibold text-[var(--color-text-muted)]">
           {pl.settings.data}
         </h3>
         <button
@@ -101,6 +111,18 @@ export function SettingsView() {
       </section>
 
       <section className="space-y-2">
+        <Link
+          to="/privacy"
+          className="flex min-h-11 w-full items-center justify-center rounded-xl border border-[var(--color-border)] text-sm"
+        >
+          {pl.settings.privacy}
+        </Link>
+        <Link
+          to="/privacy#usuniecie"
+          className="flex min-h-11 w-full items-center justify-center rounded-xl border border-[var(--color-border)] text-sm text-[var(--color-text-muted)]"
+        >
+          {pl.settings.deletionHelp}
+        </Link>
         <button
           type="button"
           className="min-h-11 w-full rounded-xl border border-[var(--color-border)] text-sm"
@@ -111,9 +133,6 @@ export function SettingsView() {
         >
           {pl.settings.onboarding}
         </button>
-        <p className="text-xs text-[var(--color-text-muted)]">
-          {pl.settings.privacy}
-        </p>
       </section>
     </div>
   )

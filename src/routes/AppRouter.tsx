@@ -9,6 +9,8 @@ import { CalendarView } from '@/pages/CalendarView'
 import { HistoryView } from '@/pages/HistoryView'
 import { ProgressView } from '@/pages/ProgressView'
 import { SettingsView } from '@/pages/SettingsView'
+import { PrivacyConsentView } from '@/pages/PrivacyConsentView'
+import { PrivacyPolicyView } from '@/pages/PrivacyPolicyView'
 
 function OnboardingGate({ children }: { children: React.ReactNode }) {
   const { settings, ready } = useSettings()
@@ -25,6 +27,21 @@ function OnboardingGate({ children }: { children: React.ReactNode }) {
   return children
 }
 
+function PrivacyGate({ children }: { children: React.ReactNode }) {
+  const { ready, needsPrivacyConsent } = useSettings()
+  if (!ready) {
+    return (
+      <div className="flex min-h-dvh items-center justify-center text-[var(--color-text-muted)]">
+        Ładowanie…
+      </div>
+    )
+  }
+  if (needsPrivacyConsent) {
+    return <Navigate to="/privacy-consent" replace />
+  }
+  return children
+}
+
 const routerBasename = import.meta.env.BASE_URL.replace(/\/$/, '') || undefined
 
 export function AppRouter() {
@@ -32,10 +49,14 @@ export function AppRouter() {
     <BrowserRouter basename={routerBasename}>
       <Routes>
         <Route path="/onboarding" element={<OnboardingView />} />
+        <Route path="/privacy-consent" element={<PrivacyConsentView />} />
+        <Route path="/privacy" element={<PrivacyPolicyView />} />
         <Route
           element={
             <OnboardingGate>
-              <AppShell />
+              <PrivacyGate>
+                <AppShell />
+              </PrivacyGate>
             </OnboardingGate>
           }
         >

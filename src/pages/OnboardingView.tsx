@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useSettings } from '@/context/SettingsContext'
 import { pl } from '@/i18n/pl'
 
@@ -43,6 +43,12 @@ export function OnboardingView() {
         <p className="mt-6 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-elevated)] p-4 text-sm leading-relaxed">
           {pl.disclaimer.short}
         </p>
+        <Link
+          to="/privacy"
+          className="mt-4 inline-block text-sm font-medium text-brand"
+        >
+          {pl.onboarding.privacyLink}
+        </Link>
       </div>
       <button
         type="button"

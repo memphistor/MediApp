@@ -44,6 +44,9 @@ export const DEFAULT_SETTINGS: UserSettings = {
   theme: 'system',
   fontScale: 'normal',
   onboardingCompleted: false,
+  privacyPolicyVersionAccepted: null,
+  privacyConsentAt: null,
+  specialCategoryConsentAt: null,
   snoozeMinutesDefault: 10,
   persistentAlarmEnabled: false,
 }

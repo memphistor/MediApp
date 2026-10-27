@@ -15,7 +15,7 @@
 | Przypomnienia (faza 2) | Treść z pól użytkownika | Nie |
 | Widok dnia / historia | Odtwarza zapisy | Nie |
 | Gamifikacja | Liczy odhaczenia planowych dawek | Nie |
-| Eksport PDF/CSV (faza 2) | Suchy raport zapisów | Nie |
+| Eksport PDF/CSV (faza 3) | Suchy raport zapisów | Nie |
 | Etykieta „na co przyjmujesz” | Tekst użytkownika, bez walidacji | Nie |
 
 ## Świadomie poza zakresem

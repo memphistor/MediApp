@@ -6,6 +6,9 @@ export interface UserSettings {
   theme: ThemePreference
   fontScale: FontScale
   onboardingCompleted: boolean
+  privacyPolicyVersionAccepted: string | null
+  privacyConsentAt: string | null
+  specialCategoryConsentAt: string | null
   snoozeMinutesDefault?: number
   persistentAlarmEnabled?: boolean
 }

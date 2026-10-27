@@ -25,9 +25,16 @@
 
 ## Faza 3 — Eksport i RODO
 
-- Eksport CSV i PDF (surowe zapisy, bez interpretacji)
-- Polityka prywatności i ekran zgód
-- Dokumentacja procedury usuwania danych
+**Zrobione:**
+
+- Eksport CSV (pozycje + dziennik) i PDF z Historii i Ustawień; zakres 30/90 dni lub całość
+- Polityka prywatności (`/privacy`), zgoda art. 9 (`/privacy-consent`), wersjonowanie polityki
+- [`docs/data-deletion.md`](data-deletion.md), [`docs/privacy-policy.md`](privacy-policy.md)
+
+**Później (opcjonalnie):**
+
+- Eksport JSON lub ZIP dwóch CSV w jednym pliku
+- Uzupełnienie kontaktu operatora w polityce przed sklepem app store
 
 ## Faza 4 — Gamifikacja
 

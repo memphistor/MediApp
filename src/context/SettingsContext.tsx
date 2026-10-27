@@ -12,6 +12,7 @@ import {
   DEFAULT_SETTINGS,
   clearAllUserData,
 } from '@/db/database'
+import { CURRENT_PRIVACY_POLICY_VERSION, requiresPrivacyConsent } from '@/legal/policyVersion'
 import type { FontScale, ThemePreference, UserSettings } from '@/types/settings'
 
 interface SettingsContextValue {
@@ -20,6 +21,8 @@ interface SettingsContextValue {
   setFontScale: (scale: FontScale) => void
   completeOnboarding: () => void
   resetOnboarding: () => void
+  acceptPrivacyConsent: () => void
+  needsPrivacyConsent: boolean
   deleteAllData: () => Promise<void>
   ready: boolean
 }
@@ -44,9 +47,12 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     void (async () => {
       const existing = await db.settings.get('default')
-      const merged = existing ?? DEFAULT_SETTINGS
+      const merged: UserSettings = {
+        ...DEFAULT_SETTINGS,
+        ...existing,
+      }
       if (!existing) {
-        await db.settings.put(DEFAULT_SETTINGS)
+        await db.settings.put(merged)
       }
       setSettings(merged)
       applyTheme(merged.theme)
@@ -84,6 +90,16 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     void persist({ ...settings, onboardingCompleted: false })
   }, [persist, settings])
 
+  const acceptPrivacyConsent = useCallback(() => {
+    const now = new Date().toISOString()
+    void persist({
+      ...settings,
+      privacyPolicyVersionAccepted: CURRENT_PRIVACY_POLICY_VERSION,
+      privacyConsentAt: now,
+      specialCategoryConsentAt: now,
+    })
+  }, [persist, settings])
+
   const deleteAllData = useCallback(async () => {
     await clearAllUserData()
     await db.settings.put(DEFAULT_SETTINGS)
@@ -92,6 +108,10 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     applyFontScale(DEFAULT_SETTINGS.fontScale)
   }, [])
 
+  const needsPrivacyConsent = requiresPrivacyConsent(
+    settings.privacyPolicyVersionAccepted,
+  )
+
   const value = useMemo(
     () => ({
       settings,
@@ -99,6 +119,8 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
       setFontScale,
       completeOnboarding,
       resetOnboarding,
+      acceptPrivacyConsent,
+      needsPrivacyConsent,
       deleteAllData,
       ready,
     }),
@@ -108,6 +130,8 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
       setFontScale,
       completeOnboarding,
       resetOnboarding,
+      acceptPrivacyConsent,
+      needsPrivacyConsent,
       deleteAllData,
       ready,
     ],
