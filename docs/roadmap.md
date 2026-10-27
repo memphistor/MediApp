@@ -2,10 +2,19 @@
 
 ## Faza 1 — Rdzeń (po szkielecie)
 
-- Zapis i edycja `MedicationEntry` w Dexie z kreatora
-- Generator wystąpień dawek na podstawie harmonogramu
-- Widok „Dziś” i historia z rzeczywistych `DoseLog`
-- Oznaczanie: wzięta / pominięta / przegapiona
+**Zrobione (partia 2):**
+
+- Zapis `MedicationEntry` z kreatora (Dexie)
+- Generator wystąpień dawek + synchronizacja `DoseLog`
+- Widok „Dziś”, historia, kalendarz miesiąca z prawdziwych logów
+- Oznaczanie: wzięta / pominięta; auto `missed` po końcu dnia
+- Usuwanie pozycji z kaskadą logów
+
+**Zostało w Fazie 1:**
+
+- Edycja istniejącej pozycji
+- Szybkie „zapisz przyjęcie” dla `asNeeded`
+- Pełniejszy kalendarz (definicja „pełnego dnia” vs plan)
 
 ## Faza 2 — Powiadomienia
 

@@ -1,16 +1,23 @@
-import { useParams, Link } from 'react-router-dom'
-import { DEMO_MEDICATION, DEMO_MEDICATION_2 } from '@/data/demo'
+import { useNavigate, useParams, Link } from 'react-router-dom'
+import { useLiveQuery } from 'dexie-react-hooks'
 import { ScheduleSummary } from '@/components/medication/ScheduleSummary'
 import { pl } from '@/i18n/pl'
-
-const byId: Record<string, typeof DEMO_MEDICATION> = {
-  'demo-1': DEMO_MEDICATION,
-  'demo-2': DEMO_MEDICATION_2,
-}
+import { getMedicationById, deleteMedication } from '@/repositories/medicationRepository'
+import { syncAllDoseLogs } from '@/services/syncDoseLogs'
 
 export function MedicationDetail() {
   const { id } = useParams()
-  const med = id ? byId[id] : undefined
+  const navigate = useNavigate()
+  const med = useLiveQuery(
+    () => (id ? getMedicationById(id) : undefined),
+    [id],
+  )
+
+  if (med === undefined) {
+    return (
+      <div className="text-[var(--color-text-muted)]">Ładowanie…</div>
+    )
+  }
 
   if (!med) {
     return (
@@ -27,6 +34,13 @@ export function MedicationDetail() {
       : med.onEmptyStomach === 'no'
         ? pl.wizard.emptyStomach.no
         : pl.wizard.emptyStomach.na
+
+  const handleDelete = async () => {
+    if (!window.confirm(pl.detail.deleteConfirm)) return
+    await deleteMedication(med.id)
+    await syncAllDoseLogs()
+    navigate('/', { replace: true })
+  }
 
   return (
     <div className="space-y-4">
@@ -80,7 +94,7 @@ export function MedicationDetail() {
           <li className="rounded-xl border border-[var(--color-border)] px-3 py-2">
             {pl.wizard.fields.emptyStomach}: <strong>{stomach}</strong>
           </li>
-          {med.mealTiming && med.mealTiming !== 'skipped' && (
+          {med.mealTiming && (
             <li className="rounded-xl border border-[var(--color-border)] px-3 py-2">
               {pl.wizard.fields.meal}:{' '}
               <strong>{pl.wizard.meal[med.mealTiming]}</strong>
@@ -93,6 +107,14 @@ export function MedicationDetail() {
           )}
         </ul>
       </section>
+
+      <button
+        type="button"
+        className="min-h-12 w-full rounded-xl border border-red-300 text-sm font-semibold text-red-700 dark:border-red-800 dark:text-red-300"
+        onClick={() => void handleDelete()}
+      >
+        {pl.detail.delete}
+      </button>
     </div>
   )
 }

@@ -1,9 +1,18 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { pl } from '@/i18n/pl'
 import type { MedicationKind, MedicationForm, Schedule } from '@/types/medication'
+import {
+  buildMedicationFromWizard,
+  validateWizard,
+  type WizardFormState,
+  type WizardErrors,
+} from '@/lib/wizard/buildMedication'
+import { createMedication } from '@/repositories/medicationRepository'
+import { syncDoseLogsForMedication } from '@/services/syncDoseLogs'
 
 const TOTAL_STEPS = 5
+const DAY_LABELS = ['Nd', 'Pn', 'Wt', 'Śr', 'Cz', 'Pt', 'So']
 
 const KIND_OPTIONS: MedicationKind[] = [
   'prescription',
@@ -32,22 +41,65 @@ const SCHEDULE_OPTIONS: Schedule['type'][] = [
   'asNeeded',
 ]
 
+const initialForm: WizardFormState = {
+  name: '',
+  kind: '',
+  form: '',
+  doseText: '',
+  emptyStomach: '',
+  meal: '',
+  timesRaw: '',
+  scheduleType: '',
+  weekdayDays: [1, 2, 3, 4, 5],
+  everyNInterval: 2,
+  weeklyDay: 1,
+  monthlyDay: 1,
+  cycleActive: 21,
+  cycleBreak: 7,
+  dateStart: '',
+  dateEnd: '',
+  purpose: '',
+  note: '',
+  color: '#0f766e',
+  icon: '💊',
+}
+
 export function AddMedicationWizard() {
+  const navigate = useNavigate()
   const [step, setStep] = useState(1)
-  const [name, setName] = useState('')
-  const [kind, setKind] = useState<MedicationKind | ''>('')
-  const [form, setForm] = useState<MedicationForm | ''>('')
-  const [doseText, setDoseText] = useState('')
-  const [emptyStomach, setEmptyStomach] = useState<'yes' | 'no' | 'na' | ''>('')
-  const [meal, setMeal] = useState<'before' | 'during' | 'after' | 'skipped' | ''>(
-    '',
-  )
-  const [times, setTimes] = useState('')
-  const [scheduleType, setScheduleType] = useState<Schedule['type'] | ''>('')
-  const [purpose, setPurpose] = useState('')
-  const [note, setNote] = useState('')
-  const [color, setColor] = useState('#0f766e')
-  const [icon, setIcon] = useState('💊')
+  const [form, setForm] = useState<WizardFormState>(initialForm)
+  const [errors, setErrors] = useState<WizardErrors>({})
+  const [saving, setSaving] = useState(false)
+
+  const patch = (partial: Partial<WizardFormState>) => {
+    setForm((f) => ({ ...f, ...partial }))
+  }
+
+  const toggleWeekday = (day: number) => {
+    setForm((f) => {
+      const has = f.weekdayDays.includes(day)
+      const weekdayDays = has
+        ? f.weekdayDays.filter((d) => d !== day)
+        : [...f.weekdayDays, day]
+      return { ...f, weekdayDays }
+    })
+  }
+
+  const handleSave = async () => {
+    const validation = validateWizard(form)
+    setErrors(validation)
+    if (Object.keys(validation).length > 0) return
+
+    setSaving(true)
+    try {
+      const entry = buildMedicationFromWizard(form)
+      await createMedication(entry)
+      await syncDoseLogsForMedication(entry.id)
+      navigate('/', { replace: true })
+    } finally {
+      setSaving(false)
+    }
+  }
 
   return (
     <div className="pb-8">
@@ -72,11 +124,13 @@ export function AddMedicationWizard() {
               <span className="text-sm font-medium">{pl.wizard.fields.name}</span>
               <input
                 className="mt-1 w-full min-h-12 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-elevated)] px-3"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder={pl.wizard.notSelected}
+                value={form.name}
+                onChange={(e) => patch({ name: e.target.value })}
                 autoComplete="off"
               />
+              {errors.name && (
+                <p className="mt-1 text-xs text-red-600">{errors.name}</p>
+              )}
             </label>
             <fieldset>
               <legend className="text-sm font-medium">{pl.wizard.fields.kind}</legend>
@@ -86,16 +140,19 @@ export function AddMedicationWizard() {
                     key={k}
                     type="button"
                     className={`min-h-11 rounded-xl border px-3 text-sm ${
-                      kind === k
+                      form.kind === k
                         ? 'border-brand bg-brand/10 text-brand'
                         : 'border-[var(--color-border)]'
                     }`}
-                    onClick={() => setKind(k)}
+                    onClick={() => patch({ kind: k })}
                   >
                     {pl.wizard.kinds[k]}
                   </button>
                 ))}
               </div>
+              {errors.kind && (
+                <p className="mt-1 text-xs text-red-600">{errors.kind}</p>
+              )}
             </fieldset>
             <fieldset>
               <legend className="text-sm font-medium">{pl.wizard.fields.form}</legend>
@@ -105,16 +162,19 @@ export function AddMedicationWizard() {
                     key={f}
                     type="button"
                     className={`min-h-11 rounded-xl border px-3 text-sm ${
-                      form === f
+                      form.form === f
                         ? 'border-brand bg-brand/10 text-brand'
                         : 'border-[var(--color-border)]'
                     }`}
-                    onClick={() => setForm(f)}
+                    onClick={() => patch({ form: f })}
                   >
                     {pl.wizard.forms[f]}
                   </button>
                 ))}
               </div>
+              {errors.form && (
+                <p className="mt-1 text-xs text-red-600">{errors.form}</p>
+              )}
             </fieldset>
           </>
         )}
@@ -125,9 +185,12 @@ export function AddMedicationWizard() {
               <span className="text-sm font-medium">{pl.wizard.fields.dose}</span>
               <input
                 className="mt-1 w-full min-h-12 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-elevated)] px-3"
-                value={doseText}
-                onChange={(e) => setDoseText(e.target.value)}
+                value={form.doseText}
+                onChange={(e) => patch({ doseText: e.target.value })}
               />
+              {errors.doseText && (
+                <p className="mt-1 text-xs text-red-600">{errors.doseText}</p>
+              )}
             </label>
             <fieldset>
               <legend className="text-sm font-medium">
@@ -139,16 +202,19 @@ export function AddMedicationWizard() {
                     key={v}
                     type="button"
                     className={`min-h-11 rounded-xl border px-3 text-sm ${
-                      emptyStomach === v
+                      form.emptyStomach === v
                         ? 'border-brand bg-brand/10'
                         : 'border-[var(--color-border)]'
                     }`}
-                    onClick={() => setEmptyStomach(v)}
+                    onClick={() => patch({ emptyStomach: v })}
                   >
                     {pl.wizard.emptyStomach[v]}
                   </button>
                 ))}
               </div>
+              {errors.emptyStomach && (
+                <p className="mt-1 text-xs text-red-600">{errors.emptyStomach}</p>
+              )}
             </fieldset>
             <fieldset>
               <legend className="text-sm font-medium">{pl.wizard.fields.meal}</legend>
@@ -158,11 +224,11 @@ export function AddMedicationWizard() {
                     key={v}
                     type="button"
                     className={`min-h-11 rounded-xl border px-3 text-sm ${
-                      meal === v
+                      form.meal === v
                         ? 'border-brand bg-brand/10'
                         : 'border-[var(--color-border)]'
                     }`}
-                    onClick={() => setMeal(v)}
+                    onClick={() => patch({ meal: v })}
                   >
                     {pl.wizard.meal[v]}
                   </button>
@@ -174,15 +240,20 @@ export function AddMedicationWizard() {
 
         {step === 3 && (
           <>
-            <label className="block">
-              <span className="text-sm font-medium">{pl.wizard.fields.times}</span>
-              <input
-                className="mt-1 w-full min-h-12 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-elevated)] px-3"
-                value={times}
-                onChange={(e) => setTimes(e.target.value)}
-                placeholder="07:30, 20:00"
-              />
-            </label>
+            {form.scheduleType !== 'asNeeded' && (
+              <label className="block">
+                <span className="text-sm font-medium">{pl.wizard.fields.times}</span>
+                <input
+                  className="mt-1 w-full min-h-12 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-elevated)] px-3"
+                  value={form.timesRaw}
+                  onChange={(e) => patch({ timesRaw: e.target.value })}
+                  placeholder="07:30, 20:00"
+                />
+                {errors.times && (
+                  <p className="mt-1 text-xs text-red-600">{errors.times}</p>
+                )}
+              </label>
+            )}
             <fieldset>
               <legend className="text-sm font-medium">{pl.wizard.fields.schedule}</legend>
               <div className="mt-2 flex flex-col gap-2">
@@ -191,17 +262,143 @@ export function AddMedicationWizard() {
                     key={t}
                     type="button"
                     className={`min-h-11 rounded-xl border px-3 text-left text-sm ${
-                      scheduleType === t
+                      form.scheduleType === t
                         ? 'border-brand bg-brand/10'
                         : 'border-[var(--color-border)]'
                     }`}
-                    onClick={() => setScheduleType(t)}
+                    onClick={() => patch({ scheduleType: t })}
                   >
                     {pl.wizard.schedules[t]}
                   </button>
                 ))}
               </div>
+              {errors.scheduleType && (
+                <p className="mt-1 text-xs text-red-600">{errors.scheduleType}</p>
+              )}
             </fieldset>
+
+            {form.scheduleType === 'weekdays' && (
+              <div className="flex flex-wrap gap-2">
+                {DAY_LABELS.map((label, day) => (
+                  <button
+                    key={day}
+                    type="button"
+                    className={`min-h-10 min-w-10 rounded-xl border text-sm ${
+                      form.weekdayDays.includes(day)
+                        ? 'border-brand bg-brand/10'
+                        : 'border-[var(--color-border)]'
+                    }`}
+                    onClick={() => toggleWeekday(day)}
+                  >
+                    {label}
+                  </button>
+                ))}
+                {errors.weekdays && (
+                  <p className="w-full text-xs text-red-600">{errors.weekdays}</p>
+                )}
+              </div>
+            )}
+
+            {form.scheduleType === 'everyNDays' && (
+              <label className="block text-sm">
+                Co ile dni?
+                <input
+                  type="number"
+                  min={2}
+                  className="mt-1 w-full min-h-11 rounded-xl border border-[var(--color-border)] px-3"
+                  value={form.everyNInterval}
+                  onChange={(e) =>
+                    patch({ everyNInterval: Number(e.target.value) })
+                  }
+                />
+                {errors.everyN && (
+                  <p className="mt-1 text-xs text-red-600">{errors.everyN}</p>
+                )}
+              </label>
+            )}
+
+            {form.scheduleType === 'weekly' && (
+              <div className="flex flex-wrap gap-2">
+                {DAY_LABELS.map((label, day) => (
+                  <button
+                    key={day}
+                    type="button"
+                    className={`min-h-10 rounded-xl border px-3 text-sm ${
+                      form.weeklyDay === day
+                        ? 'border-brand bg-brand/10'
+                        : 'border-[var(--color-border)]'
+                    }`}
+                    onClick={() => patch({ weeklyDay: day })}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {form.scheduleType === 'monthly' && (
+              <label className="block text-sm">
+                Dzień miesiąca
+                <input
+                  type="number"
+                  min={1}
+                  max={28}
+                  className="mt-1 w-full min-h-11 rounded-xl border border-[var(--color-border)] px-3"
+                  value={form.monthlyDay}
+                  onChange={(e) => patch({ monthlyDay: Number(e.target.value) })}
+                />
+              </label>
+            )}
+
+            {form.scheduleType === 'cycle' && (
+              <div className="grid grid-cols-2 gap-3">
+                <label className="text-sm">
+                  Dni brania
+                  <input
+                    type="number"
+                    min={1}
+                    className="mt-1 w-full min-h-11 rounded-xl border border-[var(--color-border)] px-3"
+                    value={form.cycleActive}
+                    onChange={(e) =>
+                      patch({ cycleActive: Number(e.target.value) })
+                    }
+                  />
+                </label>
+                <label className="text-sm">
+                  Dni przerwy
+                  <input
+                    type="number"
+                    min={1}
+                    className="mt-1 w-full min-h-11 rounded-xl border border-[var(--color-border)] px-3"
+                    value={form.cycleBreak}
+                    onChange={(e) =>
+                      patch({ cycleBreak: Number(e.target.value) })
+                    }
+                  />
+                </label>
+              </div>
+            )}
+
+            <div className="grid grid-cols-2 gap-3">
+              <label className="text-sm">
+                {pl.wizard.fields.dateFrom}
+                <input
+                  type="date"
+                  className="mt-1 w-full min-h-11 rounded-xl border border-[var(--color-border)] px-3"
+                  value={form.dateStart}
+                  onChange={(e) => patch({ dateStart: e.target.value })}
+                />
+              </label>
+              <label className="text-sm">
+                {pl.wizard.fields.dateTo}
+                <input
+                  type="date"
+                  className="mt-1 w-full min-h-11 rounded-xl border border-[var(--color-border)] px-3"
+                  value={form.dateEnd}
+                  onChange={(e) => patch({ dateEnd: e.target.value })}
+                />
+              </label>
+            </div>
           </>
         )}
 
@@ -211,8 +408,8 @@ export function AddMedicationWizard() {
               <span className="text-sm font-medium">{pl.wizard.fields.purpose}</span>
               <input
                 className="mt-1 w-full min-h-12 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-elevated)] px-3"
-                value={purpose}
-                onChange={(e) => setPurpose(e.target.value)}
+                value={form.purpose}
+                onChange={(e) => patch({ purpose: e.target.value })}
                 placeholder="np. tarczyca, odporność"
               />
             </label>
@@ -220,8 +417,8 @@ export function AddMedicationWizard() {
               <span className="text-sm font-medium">{pl.wizard.fields.note}</span>
               <textarea
                 className="mt-1 w-full min-h-24 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-elevated)] px-3 py-2"
-                value={note}
-                onChange={(e) => setNote(e.target.value)}
+                value={form.note}
+                onChange={(e) => patch({ note: e.target.value })}
               />
             </label>
           </>
@@ -236,23 +433,20 @@ export function AddMedicationWizard() {
                 <input
                   type="color"
                   className="mt-1 h-12 w-full cursor-pointer rounded-xl border border-[var(--color-border)]"
-                  value={color}
-                  onChange={(e) => setColor(e.target.value)}
+                  value={form.color}
+                  onChange={(e) => patch({ color: e.target.value })}
                 />
               </label>
               <label className="flex flex-1 flex-col text-sm">
                 Ikona (emoji)
                 <input
                   className="mt-1 min-h-12 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-elevated)] px-3 text-2xl"
-                  value={icon}
-                  onChange={(e) => setIcon(e.target.value)}
+                  value={form.icon}
+                  onChange={(e) => patch({ icon: e.target.value })}
                   maxLength={4}
                 />
               </label>
             </div>
-            <p className="rounded-xl bg-[var(--color-surface-elevated)] border border-[var(--color-border)] p-3 text-sm text-[var(--color-text-muted)]">
-              {pl.wizard.saveHint}
-            </p>
           </>
         )}
       </div>
@@ -278,11 +472,11 @@ export function AddMedicationWizard() {
         ) : (
           <button
             type="button"
-            disabled
-            className="min-h-12 flex-1 rounded-xl bg-brand/50 font-semibold text-white"
-            title={pl.wizard.saveHint}
+            disabled={saving}
+            className="min-h-12 flex-1 rounded-xl bg-brand font-semibold text-white disabled:opacity-60"
+            onClick={() => void handleSave()}
           >
-            {pl.wizard.save}
+            {saving ? pl.wizard.saving : pl.wizard.save}
           </button>
         )}
       </div>

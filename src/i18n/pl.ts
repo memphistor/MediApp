@@ -31,7 +31,10 @@ export const pl = {
     title: 'Dziś',
     empty: 'Brak zaplanowanych pozycji na dziś.',
     addFirst: 'Dodaj pierwszą pozycję',
-    demoNote: 'Poniżej przykładowy widok (szkielet).',
+    noPushNote:
+      'Przypomnienia push pojawią się w kolejnej fazie — na razie sprawdzaj listę na dziś.',
+    skipTitle: 'Pomiń dawkę',
+    skipReasonLabel: 'Powód (opcjonalnie)',
   },
 
   doseStatus: {
@@ -47,8 +50,8 @@ export const pl = {
     of: 'z',
     next: 'Dalej',
     back: 'Wstecz',
-    save: 'Zapisz (wkrótce)',
-    saveHint: 'Zapis do bazy w kolejnej iteracji — pola są tylko do podglądu.',
+    save: 'Zapisz',
+    saving: 'Zapisywanie…',
     fields: {
       name: 'Nazwa (wpisz ręcznie)',
       kind: 'Rodzaj',
@@ -59,6 +62,8 @@ export const pl = {
       times: 'Godziny przyjęcia (HH:mm)',
       schedule: 'Jak często?',
       dateRange: 'Od kiedy do kiedy?',
+      dateFrom: 'Od (opcjonalnie)',
+      dateTo: 'Do (opcjonalnie)',
       purpose: 'Na co to przyjmujesz? (opcjonalnie)',
       colorIcon: 'Kolor i ikona',
       note: 'Własna notatka',
@@ -106,6 +111,9 @@ export const pl = {
     yourNotes: 'Twoje notatki',
     schedule: 'Harmonogram',
     notFound: 'Nie znaleziono pozycji.',
+    delete: 'Usuń pozycję',
+    deleteConfirm:
+      'Usunąć tę pozycję i wszystkie powiązane wpisy w dzienniku na tym urządzeniu?',
   },
 
   calendar: {

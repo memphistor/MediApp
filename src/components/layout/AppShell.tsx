@@ -1,6 +1,7 @@
 import { NavLink, Outlet, useLocation } from 'react-router-dom'
 import { pl } from '@/i18n/pl'
 import { DisclaimerBanner } from '@/components/legal/DisclaimerBanner'
+import { useDoseLogSync } from '@/hooks/useDoseLogSync'
 
 const mainNav = [
   { to: '/', label: pl.nav.today, end: true },
@@ -11,8 +12,17 @@ const mainNav = [
 ] as const
 
 export function AppShell() {
+  const { ready } = useDoseLogSync()
   const location = useLocation()
   const hideNav = location.pathname === '/add'
+
+  if (!ready) {
+    return (
+      <div className="flex min-h-dvh items-center justify-center text-[var(--color-text-muted)]">
+        Ładowanie…
+      </div>
+    )
+  }
 
   return (
     <div className="mx-auto flex min-h-dvh max-w-lg flex-col bg-[var(--color-surface)]">
