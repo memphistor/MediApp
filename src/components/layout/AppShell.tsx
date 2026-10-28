@@ -2,6 +2,7 @@ import { NavLink, Outlet, useLocation } from 'react-router-dom'
 import { pl } from '@/i18n/pl'
 import { DisclaimerBanner } from '@/components/legal/DisclaimerBanner'
 import { useDoseLogSync } from '@/hooks/useDoseLogSync'
+import { useReminderWatcher } from '@/hooks/useReminderWatcher'
 
 const mainNav = [
   { to: '/', label: pl.nav.today, end: true },
@@ -13,6 +14,7 @@ const mainNav = [
 
 export function AppShell() {
   const { ready } = useDoseLogSync()
+  useReminderWatcher()
   const location = useLocation()
   const hideNav = location.pathname === '/add'
 

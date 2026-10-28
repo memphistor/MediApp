@@ -34,6 +34,10 @@ export const pl = {
     addFirst: 'Dodaj pierwszą pozycję',
     noPushNote:
       'Przypomnienia push pojawią się w kolejnej fazie — na razie sprawdzaj listę na dziś.',
+    notificationsOn:
+      'Powiadomienia włączone — sprawdzamy plan co 30 s, gdy aplikacja jest aktywna.',
+    notificationsOff:
+      'Włącz powiadomienia w Ustawieniach lub odhaczaj pozycje na liście.',
     skipTitle: 'Pomiń dawkę',
     skipReasonLabel: 'Powód (opcjonalnie)',
   },
@@ -183,6 +187,13 @@ export const pl = {
 
   settings: {
     title: 'Ustawienia',
+    notifications: 'Przypomnienia',
+    notificationsEnable: 'Powiadomienia o zaplanowanych godzinach',
+    notificationsHint:
+      'Działają najlepiej, gdy aplikacja jest zainstalowana (PWA). Na iOS mogą być mniej niezawodne.',
+    permissionDenied: 'Brak zgody przeglądarki — użyj panelu na ekranie Dziś.',
+    snoozeMinutes: 'Odłożenie (minuty)',
+    persistentAlarm: 'Alarm uporczywy do odhaczenia',
     theme: 'Wygląd',
     themeLight: 'Jasny',
     themeDark: 'Ciemny',
@@ -202,11 +213,13 @@ export const pl = {
 
   reminder: {
     mockTitle: 'Podgląd przypomnienia',
+    activeTitle: 'Teraz — według twojego planu',
+    grouped: 'Rano: 3 pozycje',
+    groupedCount: '{count} pozycje o tej samej porze',
     taken: 'Wzięte',
     snooze: 'Odłóż',
     skip: 'Pomiń',
     takeAll: 'Wzięte wszystko',
-    grouped: 'Rano: 3 pozycje',
   },
 
   common: {

@@ -7,4 +7,5 @@ export interface DoseLog {
   status: DoseStatus
   skipReason?: string
   takenAt?: string
+  lastNotifiedAt?: string
 }

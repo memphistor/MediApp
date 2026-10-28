@@ -9,6 +9,8 @@ export interface UserSettings {
   privacyPolicyVersionAccepted: string | null
   privacyConsentAt: string | null
   specialCategoryConsentAt: string | null
-  snoozeMinutesDefault?: number
-  persistentAlarmEnabled?: boolean
+  notificationsEnabled: boolean
+  snoozeMinutesDefault: number
+  persistentAlarmEnabled: boolean
+  snoozeUntilByLogId: Record<string, string>
 }

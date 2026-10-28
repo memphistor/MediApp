@@ -18,10 +18,17 @@
 
 ## Faza 2 — Powiadomienia
 
-- Web Notifications + Service Worker
-- Akcje: Wzięte / Odłóż / Pomiń; opcjonalny alarm uporczywy
-- Grupowanie pozycji o tej samej porze
-- Testy: Android, iOS Safari, oszczędzanie baterii, zmiana strefy czasowej
+**Zrobione:**
+
+- Web Notifications przez Service Worker (`injectManifest`)
+- Akcje: Wzięte / Odłóż / Pomiń oraz „Wzięte wszystko” (grupowanie po `scheduledAt`)
+- Ustawienia: włączenie, odłożenie (minuty), alarm uporczywy (powtórka co 5 min)
+- Panel na ekranie **Dziś**, gdy brak zgody lub wyłączone powiadomienia
+- Tick co 30 s przy aktywnej aplikacji (bez serwera push)
+
+**Ograniczenia (bez backendu):**
+
+- Przy zamkniętej aplikacji przypomnienia mogą się opóźnić (szczególnie iOS) — patrz [`docs/notifications-limits.md`](notifications-limits.md)
 
 ## Faza 3 — Eksport i RODO
 

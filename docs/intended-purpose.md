@@ -12,7 +12,7 @@
 |---------|------------|------------------|
 | Kreator pozycji | Puste/neutralne pola, użytkownik wypełnia | Nie |
 | Harmonogram | Użytkownik definiuje częstotliwość i godziny | Nie |
-| Przypomnienia (faza 2) | Treść z pól użytkownika | Nie |
+| Przypomnienia (faza 2) | Treść z pól użytkownika; lokalne powiadomienia | Nie |
 | Widok dnia / historia | Odtwarza zapisy | Nie |
 | Gamifikacja | Liczy odhaczenia planowych dawek (seria, odznaki, pierścień dnia) — bez oceny zdrowia | Nie |
 | Eksport PDF/CSV (faza 3) | Suchy raport zapisów | Nie |

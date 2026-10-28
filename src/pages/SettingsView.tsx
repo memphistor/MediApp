@@ -10,6 +10,9 @@ export function SettingsView() {
     settings,
     setTheme,
     setFontScale,
+    setNotificationsEnabled,
+    setSnoozeMinutesDefault,
+    setPersistentAlarmEnabled,
     resetOnboarding,
     deleteAllData,
   } = useSettings()
@@ -76,6 +79,55 @@ export function SettingsView() {
             </button>
           ))}
         </div>
+      </section>
+
+      <section>
+        <h3 className="text-sm font-semibold text-[var(--color-text-muted)]">
+          {pl.settings.notifications}
+        </h3>
+        <label className="mt-2 flex items-center gap-3 text-sm">
+          <input
+            type="checkbox"
+            className="h-5 w-5"
+            checked={settings.notificationsEnabled}
+            onChange={(e) => {
+              void setNotificationsEnabled(e.target.checked)
+            }}
+          />
+          {pl.settings.notificationsEnable}
+        </label>
+        <p className="mt-2 text-xs text-[var(--color-text-muted)]">
+          {pl.settings.notificationsHint}
+        </p>
+        {'Notification' in window &&
+          Notification.permission === 'denied' &&
+          settings.notificationsEnabled && (
+            <p className="mt-2 text-xs text-amber-700 dark:text-amber-300">
+              {pl.settings.permissionDenied}
+            </p>
+          )}
+        <label className="mt-4 block text-sm">
+          {pl.settings.snoozeMinutes}
+          <input
+            type="number"
+            min={1}
+            max={120}
+            className="mt-1 w-full min-h-11 rounded-xl border border-[var(--color-border)] px-3"
+            value={settings.snoozeMinutesDefault}
+            onChange={(e) =>
+              setSnoozeMinutesDefault(Number(e.target.value))
+            }
+          />
+        </label>
+        <label className="mt-3 flex items-center gap-3 text-sm">
+          <input
+            type="checkbox"
+            className="h-5 w-5"
+            checked={settings.persistentAlarmEnabled}
+            onChange={(e) => setPersistentAlarmEnabled(e.target.checked)}
+          />
+          {pl.settings.persistentAlarm}
+        </label>
       </section>
 
       <section>

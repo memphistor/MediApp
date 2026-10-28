@@ -47,8 +47,10 @@ export const DEFAULT_SETTINGS: UserSettings = {
   privacyPolicyVersionAccepted: null,
   privacyConsentAt: null,
   specialCategoryConsentAt: null,
+  notificationsEnabled: false,
   snoozeMinutesDefault: 10,
   persistentAlarmEnabled: false,
+  snoozeUntilByLogId: {},
 }
 
 export const DEFAULT_GAMIFICATION: GamificationState = {

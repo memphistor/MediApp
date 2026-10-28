@@ -55,7 +55,7 @@ export const privacyPl = {
       id: 'powiadomienia',
       title: 'Powiadomienia',
       paragraphs: [
-        'W bieżącej wersji MediApp nie wysyła powiadomień push — przypomnienia w kolejnej fazie będą opisane w aktualizacji polityki.',
+        'W bieżącej wersji przypomnienia działają lokalnie w przeglądarce (bez serwera). Szczegóły w dokumentacji aplikacji.',
       ],
     },
   ],

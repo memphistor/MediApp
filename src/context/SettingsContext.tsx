@@ -24,6 +24,10 @@ interface SettingsContextValue {
   resetOnboarding: () => void
   acceptPrivacyConsent: () => void
   needsPrivacyConsent: boolean
+  setNotificationsEnabled: (enabled: boolean) => Promise<boolean>
+  setSnoozeMinutesDefault: (minutes: number) => void
+  setPersistentAlarmEnabled: (enabled: boolean) => void
+  replaceSettings: (next: UserSettings) => void
   deleteAllData: () => Promise<void>
   ready: boolean
 }
@@ -101,6 +105,45 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     })
   }, [persist, settings])
 
+  const replaceSettings = useCallback(
+    (next: UserSettings) => {
+      void persist(next)
+    },
+    [persist],
+  )
+
+  const setNotificationsEnabled = useCallback(
+    async (enabled: boolean): Promise<boolean> => {
+      if (enabled && 'Notification' in window) {
+        const perm = await Notification.requestPermission()
+        if (perm !== 'granted') {
+          void persist({ ...settings, notificationsEnabled: false })
+          return false
+        }
+      }
+      void persist({ ...settings, notificationsEnabled: enabled })
+      return enabled
+    },
+    [persist, settings],
+  )
+
+  const setSnoozeMinutesDefault = useCallback(
+    (minutes: number) => {
+      void persist({
+        ...settings,
+        snoozeMinutesDefault: Math.max(1, Math.min(120, minutes)),
+      })
+    },
+    [persist, settings],
+  )
+
+  const setPersistentAlarmEnabled = useCallback(
+    (enabled: boolean) => {
+      void persist({ ...settings, persistentAlarmEnabled: enabled })
+    },
+    [persist, settings],
+  )
+
   const deleteAllData = useCallback(async () => {
     await clearAllUserData()
     await db.settings.put(DEFAULT_SETTINGS)
@@ -123,6 +166,10 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
       resetOnboarding,
       acceptPrivacyConsent,
       needsPrivacyConsent,
+      setNotificationsEnabled,
+      setSnoozeMinutesDefault,
+      setPersistentAlarmEnabled,
+      replaceSettings,
       deleteAllData,
       ready,
     }),
@@ -134,6 +181,10 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
       resetOnboarding,
       acceptPrivacyConsent,
       needsPrivacyConsent,
+      setNotificationsEnabled,
+      setSnoozeMinutesDefault,
+      setPersistentAlarmEnabled,
+      replaceSettings,
       deleteAllData,
       ready,
     ],

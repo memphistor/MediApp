@@ -4,14 +4,16 @@ import { useLiveQuery } from 'dexie-react-hooks'
 import { DayRing } from '@/components/gamification/DayRing'
 import { MedicationCard } from '@/components/medication/MedicationCard'
 import { dayRingProgress } from '@/lib/gamification/dayStats'
-import { ReminderMock } from '@/components/reminders/ReminderMock'
+import { DueReminderPanel } from '@/components/reminders/DueReminderPanel'
 import { db } from '@/db/database'
 import { endOfLocalDay, startOfLocalDay } from '@/lib/dates'
 import { updateDoseStatus } from '@/repositories/doseLogRepository'
+import { useSettings } from '@/context/SettingsContext'
 import { pl } from '@/i18n/pl'
 import type { MedicationEntry } from '@/types/medication'
 
 export function TodayView() {
+  const { settings } = useSettings()
   const today = useMemo(() => new Date(), [])
   const [skipTarget, setSkipTarget] = useState<string | null>(null)
   const [skipReason, setSkipReason] = useState('')
@@ -59,7 +61,10 @@ export function TodayView() {
       <div>
         <h2 className="text-xl font-semibold">{pl.today.title}</h2>
         <p className="mt-1 text-sm text-[var(--color-text-muted)]">
-          {pl.today.noPushNote}
+          {settings.notificationsEnabled &&
+          Notification.permission === 'granted'
+            ? pl.today.notificationsOn
+            : pl.today.notificationsOff}
         </p>
         {ring.total > 0 && (
           <div className="mt-4 flex justify-center">
@@ -76,7 +81,7 @@ export function TodayView() {
         )}
       </div>
 
-      <ReminderMock />
+      <DueReminderPanel />
 
       {entries.length === 0 ? (
         <p className="rounded-xl border border-dashed border-[var(--color-border)] px-4 py-8 text-center text-sm text-[var(--color-text-muted)]">
