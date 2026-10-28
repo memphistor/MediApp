@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useSettings } from '@/context/SettingsContext'
 import {
   handleReminderActionMessage,
@@ -13,7 +14,17 @@ function parseReminderFromUrl(): { action: string; logIds: string[] } | null {
   return { action, logIds: ids.split(',').filter(Boolean) }
 }
 
+function focusDose(
+  navigate: ReturnType<typeof useNavigate>,
+  logIds: string[],
+): void {
+  const id = logIds[0]
+  if (!id) return
+  navigate(`/?focusLog=${encodeURIComponent(id)}`)
+}
+
 export function useReminderWatcher(): void {
+  const navigate = useNavigate()
   const { settings, ready, replaceSettings } = useSettings()
   const settingsRef = useRef(settings)
   settingsRef.current = settings
@@ -23,16 +34,23 @@ export function useReminderWatcher(): void {
 
     const fromUrl = parseReminderFromUrl()
     if (fromUrl) {
+      if (fromUrl.action === 'open') {
+        focusDose(navigate, fromUrl.logIds)
+        return
+      }
       void handleReminderActionMessage(
         fromUrl.action,
         fromUrl.logIds,
         settings,
         replaceSettings,
       ).then(() => {
-        window.history.replaceState({}, '', window.location.pathname)
+        const url = new URL(window.location.href)
+        url.searchParams.delete('reminderAction')
+        url.searchParams.delete('logIds')
+        window.history.replaceState({}, '', `${url.pathname}${url.search}${url.hash}`)
       })
     }
-  }, [ready, replaceSettings, settings])
+  }, [ready, replaceSettings, settings, navigate])
 
   useEffect(() => {
     if (!ready || !settings.notificationsEnabled) return
@@ -68,6 +86,10 @@ export function useReminderWatcher(): void {
         logIds?: string[]
       }
       if (data.type !== 'REMINDER_ACTION' || !data.logIds?.length) return
+      if ((data.action ?? 'open') === 'open') {
+        focusDose(navigate, data.logIds)
+        return
+      }
       void handleReminderActionMessage(
         data.action ?? 'open',
         data.logIds,
@@ -80,5 +102,5 @@ export function useReminderWatcher(): void {
     return () => {
       navigator.serviceWorker?.removeEventListener('message', onMessage)
     }
-  }, [ready, settings, replaceSettings])
+  }, [ready, settings, replaceSettings, navigate])
 }

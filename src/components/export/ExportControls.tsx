@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { buildDoseLogsCsv, buildMedicationsCsv } from '@/services/export/buildCsv'
-import { buildPdfReport } from '@/services/export/buildPdf'
 import { downloadBlob, downloadTextFile } from '@/services/export/download'
 import {
   bundleIsEmpty,
@@ -44,7 +43,8 @@ export function ExportControls({ compact = false }: { compact?: boolean }) {
           const ok = window.confirm(pl.export.largePdfConfirm)
           if (!ok) return
         }
-        const blob = buildPdfReport(bundle)
+        const { buildPdfReport } = await import('@/services/export/buildPdf')
+        const blob = await buildPdfReport(bundle)
         downloadBlob(`mediapp-eksport-${stamp}.pdf`, blob)
       }
     } finally {

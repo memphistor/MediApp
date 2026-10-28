@@ -1,10 +1,10 @@
-import { jsPDF } from 'jspdf'
-import autoTable from 'jspdf-autotable'
 import { CURRENT_PRIVACY_POLICY_VERSION } from '@/legal/policyVersion'
 import { pl } from '@/i18n/pl'
 import type { ExportBundle } from '@/services/export/exportUserData'
 
-export function buildPdfReport(bundle: ExportBundle): Blob {
+export async function buildPdfReport(bundle: ExportBundle): Promise<Blob> {
+  const { jsPDF } = await import('jspdf')
+  const { default: autoTable } = await import('jspdf-autotable')
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' })
 
   doc.setFontSize(16)
@@ -45,8 +45,8 @@ export function buildPdfReport(bundle: ExportBundle): Blob {
   })
 
   const afterMeds =
-    (doc as jsPDF & { lastAutoTable?: { finalY: number } }).lastAutoTable
-      ?.finalY ?? startY + 20
+    (doc as { lastAutoTable?: { finalY: number } }).lastAutoTable?.finalY ??
+    startY + 20
 
   doc.setFontSize(12)
   doc.text(pl.export.logsSection, 14, afterMeds + 10)

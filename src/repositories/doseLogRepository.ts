@@ -56,6 +56,21 @@ export async function updateDoseStatus(
   }
 }
 
+export async function logAsNeededIntake(medicationId: string): Promise<DoseLog> {
+  const now = new Date().toISOString()
+  const log: DoseLog = {
+    id: crypto.randomUUID(),
+    medicationId,
+    scheduledAt: now,
+    status: 'taken',
+    takenAt: now,
+    source: 'prn',
+  }
+  await db.doseLogs.put(log)
+  await recalculateAndSave()
+  return log
+}
+
 export async function getDoseLogById(id: string): Promise<DoseLog | undefined> {
   return db.doseLogs.get(id)
 }

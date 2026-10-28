@@ -1,5 +1,5 @@
-import { useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { useEffect, useMemo, useState } from 'react'
+import { Link, useSearchParams } from 'react-router-dom'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { DayRing } from '@/components/gamification/DayRing'
 import { MedicationCard } from '@/components/medication/MedicationCard'
@@ -7,7 +7,9 @@ import { dayRingProgress } from '@/lib/gamification/dayStats'
 import { DueReminderPanel } from '@/components/reminders/DueReminderPanel'
 import { db } from '@/db/database'
 import { endOfLocalDay, startOfLocalDay } from '@/lib/dates'
-import { updateDoseStatus } from '@/repositories/doseLogRepository'
+import { logAsNeededIntake, updateDoseStatus } from '@/repositories/doseLogRepository'
+import { isEntryInDateRange } from '@/lib/schedule/isActiveOnDate'
+import { scheduledDoses } from '@/lib/gamification/dayStats'
 import { useSettings } from '@/context/SettingsContext'
 import { pl } from '@/i18n/pl'
 import type { MedicationEntry } from '@/types/medication'
@@ -17,6 +19,8 @@ export function TodayView() {
   const today = useMemo(() => new Date(), [])
   const [skipTarget, setSkipTarget] = useState<string | null>(null)
   const [skipReason, setSkipReason] = useState('')
+  const [searchParams] = useSearchParams()
+  const focusLog = searchParams.get('focusLog')
 
   const logs = useLiveQuery(async () => {
     const start = startOfLocalDay(today).toISOString()
@@ -54,7 +58,17 @@ export function TodayView() {
   }
 
   const entries = (logs ?? []).filter((log) => medMap.has(log.medicationId))
-  const ring = dayRingProgress(entries)
+  const ring = dayRingProgress(scheduledDoses(entries))
+  const asNeeded = (medications ?? []).filter(
+    (med) => med.schedule.type === 'asNeeded' && isEntryInDateRange(today, med),
+  )
+
+  useEffect(() => {
+    if (!focusLog) return
+    document.getElementById(`dose-${focusLog}`)?.scrollIntoView({
+      block: 'center',
+    })
+  }, [focusLog, entries.length])
 
   return (
     <div className="space-y-6">
@@ -96,7 +110,15 @@ export function TodayView() {
               minute: '2-digit',
             })
             return (
-              <li key={log.id}>
+              <li
+                key={log.id}
+                id={`dose-${log.id}`}
+                className={
+                  focusLog === log.id
+                    ? 'rounded-2xl ring-2 ring-brand ring-offset-2'
+                    : undefined
+                }
+              >
                 <MedicationCard
                   medication={med}
                   time={time}
@@ -109,6 +131,40 @@ export function TodayView() {
             )
           })}
         </ul>
+      )}
+
+      {asNeeded.length > 0 && (
+        <section className="space-y-2">
+          <h3 className="text-sm font-semibold text-[var(--color-text-muted)]">
+            {pl.today.asNeededTitle}
+          </h3>
+          <ul className="space-y-2">
+            {asNeeded.map((med) => (
+              <li
+                key={med.id}
+                className="flex items-center justify-between gap-3 rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface-elevated)] px-4 py-3"
+              >
+                <Link to={`/medication/${med.id}`} className="min-w-0">
+                  <p className="truncate font-medium">{med.name}</p>
+                  <p className="text-xs text-[var(--color-text-muted)]">
+                    {med.doseText}
+                  </p>
+                </Link>
+                <button
+                  type="button"
+                  className="min-h-11 shrink-0 rounded-xl bg-brand px-3 text-sm font-semibold text-white"
+                  onClick={() => {
+                    void logAsNeededIntake(med.id).then(() => {
+                      navigator.vibrate?.(10)
+                    })
+                  }}
+                >
+                  {pl.today.logIntake}
+                </button>
+              </li>
+            ))}
+          </ul>
+        </section>
       )}
 
       <Link

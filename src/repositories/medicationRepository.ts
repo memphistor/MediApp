@@ -7,6 +7,12 @@ export async function createMedication(
   await db.medications.put(entry)
 }
 
+export async function updateMedication(
+  entry: MedicationEntry,
+): Promise<void> {
+  await db.medications.put(entry)
+}
+
 export async function getMedicationById(
   id: string,
 ): Promise<MedicationEntry | undefined> {

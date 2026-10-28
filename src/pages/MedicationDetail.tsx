@@ -3,6 +3,8 @@ import { useLiveQuery } from 'dexie-react-hooks'
 import { ScheduleSummary } from '@/components/medication/ScheduleSummary'
 import { pl } from '@/i18n/pl'
 import { getMedicationById, deleteMedication } from '@/repositories/medicationRepository'
+import { logAsNeededIntake } from '@/repositories/doseLogRepository'
+import { isEntryInDateRange } from '@/lib/schedule/isActiveOnDate'
 import { syncAllDoseLogs } from '@/services/syncDoseLogs'
 
 export function MedicationDetail() {
@@ -34,6 +36,14 @@ export function MedicationDetail() {
       : med.onEmptyStomach === 'no'
         ? pl.wizard.emptyStomach.no
         : pl.wizard.emptyStomach.na
+
+  const canLogPrn =
+    med.schedule.type === 'asNeeded' && isEntryInDateRange(new Date(), med)
+
+  const handleLogIntake = async () => {
+    await logAsNeededIntake(med.id)
+    navigator.vibrate?.(10)
+  }
 
   const handleDelete = async () => {
     if (!window.confirm(pl.detail.deleteConfirm)) return
@@ -108,13 +118,30 @@ export function MedicationDetail() {
         </ul>
       </section>
 
-      <button
-        type="button"
-        className="min-h-12 w-full rounded-xl border border-red-300 text-sm font-semibold text-red-700 dark:border-red-800 dark:text-red-300"
-        onClick={() => void handleDelete()}
-      >
-        {pl.detail.delete}
-      </button>
+      <div className="flex flex-col gap-2">
+        <Link
+          to={`/medication/${med.id}/edit`}
+          className="flex min-h-12 items-center justify-center rounded-xl bg-brand text-sm font-semibold text-white"
+        >
+          {pl.detail.edit}
+        </Link>
+        {canLogPrn && (
+          <button
+            type="button"
+            className="min-h-12 w-full rounded-xl border border-brand text-sm font-semibold text-brand"
+            onClick={() => void handleLogIntake()}
+          >
+            {pl.detail.logIntake}
+          </button>
+        )}
+        <button
+          type="button"
+          className="min-h-12 w-full rounded-xl border border-red-300 text-sm font-semibold text-red-700 dark:border-red-800 dark:text-red-300"
+          onClick={() => void handleDelete()}
+        >
+          {pl.detail.delete}
+        </button>
+      </div>
     </div>
   )
 }

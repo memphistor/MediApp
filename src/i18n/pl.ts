@@ -40,6 +40,9 @@ export const pl = {
       'Włącz powiadomienia w Ustawieniach lub odhaczaj pozycje na liście.',
     skipTitle: 'Pomiń dawkę',
     skipReasonLabel: 'Powód (opcjonalnie)',
+    asNeededTitle: 'W razie potrzeby',
+    logIntake: 'Zapisz przyjęcie',
+    logged: 'Zapisano przyjęcie.',
   },
 
   doseStatus: {
@@ -51,6 +54,7 @@ export const pl = {
 
   wizard: {
     title: 'Nowa pozycja',
+    editTitle: 'Edytuj pozycję',
     step: 'Krok',
     of: 'z',
     next: 'Dalej',
@@ -119,13 +123,22 @@ export const pl = {
     delete: 'Usuń pozycję',
     deleteConfirm:
       'Usunąć tę pozycję i wszystkie powiązane wpisy w dzienniku na tym urządzeniu?',
+    edit: 'Edytuj',
+    logIntake: 'Zapisz przyjęcie',
   },
 
   calendar: {
     title: 'Kalendarz',
-    legendFull: 'Dzień z pełnym planem (zaplanowane odhaczenia)',
-    legendPartial: 'Częściowy',
-    placeholder: 'Miesięczny widok — logika w kolejnej fazie.',
+    prevMonth: 'Poprzedni miesiąc',
+    nextMonth: 'Następny miesiąc',
+    legendFull: 'Wszystkie zaplanowane dawki wzięte',
+    legendPartial: 'Część dawek wzięta, reszta jeszcze w planie',
+    legendMissed: 'Są pominięte lub opuszczone',
+    legendPlanned: 'Tylko zaplanowane, nic jeszcze nie odhaczone',
+    legendPrn: 'Przyjęcie doraźne (poza planem dnia)',
+    dayEmpty: 'Brak dawek w tym dniu.',
+    prnSection: 'Doraźne',
+    planSection: 'Plan',
   },
 
   history: {
@@ -209,6 +222,20 @@ export const pl = {
     deletionHelp: 'Jak usunąć dane',
     exportData: 'Eksport danych',
     onboarding: 'Pokaż onboarding ponownie',
+    notificationLimits: 'Limity powiadomień',
+  },
+
+  notificationHelp: {
+    title: 'Limity powiadomień',
+    lead: 'MediApp nie ma serwera push. Przypomnienie pojawia się, gdy aplikacja jest otwarta albo działa w tle z aktywnym Service Workerem i gdy przeglądarka ma zgodę.',
+    tick: 'Plan jest sprawdzany co około 30 sekund przy włączonych powiadomieniach.',
+    ios: 'Na iPhonie (Safari) powiadomienia PWA są mniej niezawodne niż na Androidzie. Dodaj aplikację do ekranu początkowego i otwieraj ją od czasu do czasu.',
+    noPermission:
+      'Bez zgody przeglądarki na ekranie Dziś zostaje panel z akcjami Wzięte, Odłóż i Pomiń.',
+    persistent:
+      'Alarm uporczywy powtarza to samo powiadomienie co 5 minut, dopóki dawka ma status zaplanowana.',
+    closed:
+      'Gdy aplikacja jest długo zamknięta — szczególnie na iOS — przypomnienie może nie przyjść, dopóki jej nie otworzysz.',
   },
 
   reminder: {

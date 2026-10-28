@@ -61,6 +61,10 @@ export function isActiveOnDate(
   return isScheduleActiveOnDay(localDay, ctx.schedule, anchor)
 }
 
+export function isEntryInDateRange(day: Date, entry: MedicationEntry): boolean {
+  return isWithinDateRange(startOfLocalDay(day), entry.dateRange)
+}
+
 export function isMedicationActiveOnDate(
   day: Date,
   entry: MedicationEntry,

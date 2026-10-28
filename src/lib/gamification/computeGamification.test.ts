@@ -64,4 +64,20 @@ describe('computeGamification', () => {
     expect(state.takenTotal).toBe(100)
     expect(state.badges.find((b) => b.id === 'taken_100')?.earnedAt).toBeDefined()
   })
+
+  it('ignores as-needed logs in the day ring and taken total', () => {
+    const planned = log('2026-03-10', 8, 'taken')
+    const prn: DoseLog = {
+      ...log('2026-03-10', 12, 'taken'),
+      id: 'prn',
+      source: 'prn',
+    }
+    const state = computeGamification(
+      [planned, prn],
+      undefined,
+      new Date(2026, 2, 10),
+    )
+    expect(state.todayTotal).toBe(1)
+    expect(state.takenTotal).toBe(1)
+  })
 })

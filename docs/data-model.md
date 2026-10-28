@@ -71,6 +71,7 @@ Wpis dziennika dla widoku „Dziś” i historii.
 | `status` | `planned`, `taken`, `skipped`, `missed` |
 | `skipReason` | Opcjonalny powód od użytkownika |
 | `takenAt` | Czas odhaczenia |
+| `source` | Puste lub `schedule` = dawka z planu. `prn` = przyjęcie doraźne, poza serią i pełnym dniem |
 
 ## UserSettings
 

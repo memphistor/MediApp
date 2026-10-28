@@ -1,6 +1,14 @@
 import { toDateKey } from '@/lib/dates'
 import type { DoseLog } from '@/types/dose'
 
+export function isScheduledDose(log: DoseLog): boolean {
+  return log.source !== 'prn'
+}
+
+export function scheduledDoses(logs: DoseLog[]): DoseLog[] {
+  return logs.filter(isScheduledDose)
+}
+
 export function groupLogsByDateKey(logs: DoseLog[]): Map<string, DoseLog[]> {
   const map = new Map<string, DoseLog[]>()
   for (const log of logs) {

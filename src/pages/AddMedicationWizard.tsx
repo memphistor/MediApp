@@ -1,14 +1,20 @@
-import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { Link, useNavigate, useParams } from 'react-router-dom'
+import { useLiveQuery } from 'dexie-react-hooks'
 import { pl } from '@/i18n/pl'
 import type { MedicationKind, MedicationForm, Schedule } from '@/types/medication'
 import {
   buildMedicationFromWizard,
+  medicationToWizardState,
   validateWizard,
   type WizardFormState,
   type WizardErrors,
 } from '@/lib/wizard/buildMedication'
-import { createMedication } from '@/repositories/medicationRepository'
+import {
+  createMedication,
+  getMedicationById,
+  updateMedication,
+} from '@/repositories/medicationRepository'
 import { syncDoseLogsForMedication } from '@/services/syncDoseLogs'
 
 const TOTAL_STEPS = 5
@@ -66,10 +72,22 @@ const initialForm: WizardFormState = {
 
 export function AddMedicationWizard() {
   const navigate = useNavigate()
+  const { id: editId } = useParams()
+  const existing = useLiveQuery(async () => {
+    if (!editId) return null
+    return (await getMedicationById(editId)) ?? null
+  }, [editId])
   const [step, setStep] = useState(1)
   const [form, setForm] = useState<WizardFormState>(initialForm)
   const [errors, setErrors] = useState<WizardErrors>({})
   const [saving, setSaving] = useState(false)
+  const [hydrated, setHydrated] = useState(!editId)
+
+  useEffect(() => {
+    if (!editId || !existing || hydrated) return
+    setForm(medicationToWizardState(existing))
+    setHydrated(true)
+  }, [editId, existing, hydrated])
 
   const patch = (partial: Partial<WizardFormState>) => {
     setForm((f) => ({ ...f, ...partial }))
@@ -92,20 +110,41 @@ export function AddMedicationWizard() {
 
     setSaving(true)
     try {
-      const entry = buildMedicationFromWizard(form)
-      await createMedication(entry)
+      const entry = buildMedicationFromWizard(
+        form,
+        existing ? { id: existing.id, createdAt: existing.createdAt } : undefined,
+      )
+      if (existing) await updateMedication(entry)
+      else await createMedication(entry)
       await syncDoseLogsForMedication(entry.id)
-      navigate('/', { replace: true })
+      navigate(existing ? `/medication/${entry.id}` : '/', { replace: true })
     } finally {
       setSaving(false)
     }
+  }
+
+  if (editId && existing === undefined) {
+    return <div className="text-[var(--color-text-muted)]">Ładowanie…</div>
+  }
+
+  if (editId && existing === null) {
+    return (
+      <div>
+        <p>{pl.detail.notFound}</p>
+        <Link to="/" className="text-brand">{pl.wizard.back}</Link>
+      </div>
+    )
+  }
+
+  if (!hydrated) {
+    return <div className="text-[var(--color-text-muted)]">Ładowanie…</div>
   }
 
   return (
     <div className="pb-8">
       <div className="mb-4 flex items-center justify-between">
         <Link
-          to="/"
+          to={editId ? `/medication/${editId}` : '/'}
           className="min-h-11 min-w-11 text-sm font-medium text-brand"
         >
           ← {pl.wizard.back}
@@ -115,7 +154,9 @@ export function AddMedicationWizard() {
         </span>
       </div>
 
-      <h2 className="text-xl font-semibold">{pl.wizard.title}</h2>
+      <h2 className="text-xl font-semibold">
+        {editId ? pl.wizard.editTitle : pl.wizard.title}
+      </h2>
 
       <div className="mt-6 space-y-4">
         {step === 1 && (

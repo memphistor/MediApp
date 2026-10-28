@@ -119,6 +119,12 @@ export function SettingsView() {
             }
           />
         </label>
+        <Link
+          to="/help/notifications"
+          className="mt-3 inline-flex min-h-11 items-center text-sm font-medium text-brand"
+        >
+          {pl.settings.notificationLimits}
+        </Link>
         <label className="mt-3 flex items-center gap-3 text-sm">
           <input
             type="checkbox"

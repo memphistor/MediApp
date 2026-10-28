@@ -1,10 +1,15 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { db } from '@/db/database'
 import { toDateKey } from '@/lib/dates'
+import { scheduledDoses } from '@/lib/gamification/dayStats'
 import { pl } from '@/i18n/pl'
+import type { DoseLog } from '@/types/dose'
+import type { MedicationEntry } from '@/types/medication'
 
 const WEEKDAYS = ['Pn', 'Wt', 'Śr', 'Cz', 'Pt', 'So', 'Nd']
+
+type DayTone = 'empty' | 'full' | 'partial' | 'missed' | 'planned'
 
 function buildMonthGrid(year: number, month: number) {
   const first = new Date(year, month, 1)
@@ -19,10 +24,39 @@ function buildMonthGrid(year: number, month: number) {
   return cells
 }
 
+function toneFor(logs: DoseLog[]): DayTone {
+  if (logs.length === 0) return 'empty'
+  if (logs.every((l) => l.status === 'taken')) return 'full'
+  if (logs.some((l) => l.status === 'missed' || l.status === 'skipped')) {
+    return 'missed'
+  }
+  if (logs.some((l) => l.status === 'taken')) return 'partial'
+  return 'planned'
+}
+
+const toneClass: Record<DayTone, string> = {
+  empty: 'border border-[var(--color-border)] bg-[var(--color-surface-elevated)]',
+  full: 'bg-brand/20 font-semibold text-brand',
+  partial: 'bg-brand/10 font-medium text-brand',
+  missed: 'bg-amber-100 font-medium text-amber-900 dark:bg-amber-950 dark:text-amber-200',
+  planned: 'border border-brand/40 bg-[var(--color-surface-elevated)]',
+}
+
+function formatTime(iso: string): string {
+  return new Date(iso).toLocaleTimeString('pl-PL', {
+    hour: '2-digit',
+    minute: '2-digit',
+  })
+}
+
 export function CalendarView() {
   const now = new Date()
-  const year = now.getFullYear()
-  const month = now.getMonth()
+  const [cursor, setCursor] = useState({
+    year: now.getFullYear(),
+    month: now.getMonth(),
+  })
+  const [selectedKey, setSelectedKey] = useState<string | null>(null)
+  const { year, month } = cursor
 
   const logs = useLiveQuery(
     () => {
@@ -36,27 +70,86 @@ export function CalendarView() {
     [year, month],
   )
 
-  const dayStats = useMemo(() => {
-    const stats = new Map<string, { taken: number; total: number }>()
+  const medications = useLiveQuery(() => db.medications.toArray(), [])
+  const medMap = useMemo(() => {
+    const map = new Map<string, MedicationEntry>()
+    for (const med of medications ?? []) map.set(med.id, med)
+    return map
+  }, [medications])
+
+  const byDay = useMemo(() => {
+    const map = new Map<string, DoseLog[]>()
     for (const log of logs ?? []) {
       const key = toDateKey(new Date(log.scheduledAt))
-      const cur = stats.get(key) ?? { taken: 0, total: 0 }
-      cur.total += 1
-      if (log.status === 'taken') cur.taken += 1
-      stats.set(key, cur)
+      const list = map.get(key) ?? []
+      list.push(log)
+      map.set(key, list)
     }
-    return stats
+    return map
   }, [logs])
 
   const cells = buildMonthGrid(year, month)
-  const monthLabel = now.toLocaleDateString('pl-PL', {
+  const monthLabel = new Date(year, month, 1).toLocaleDateString('pl-PL', {
     month: 'long',
     year: 'numeric',
   })
 
+  const selectedLogs = selectedKey ? (byDay.get(selectedKey) ?? []) : []
+  const selectedPlan = scheduledDoses(selectedLogs)
+  const selectedPrn = selectedLogs.filter((l) => l.source === 'prn')
+
+  const shiftMonth = (delta: number) => {
+    setCursor((c) => {
+      const next = new Date(c.year, c.month + delta, 1)
+      return { year: next.getFullYear(), month: next.getMonth() }
+    })
+    setSelectedKey(null)
+  }
+
+  const renderLog = (log: DoseLog) => {
+    const med = medMap.get(log.medicationId)
+    return (
+      <li
+        key={log.id}
+        className="flex items-center justify-between gap-2 rounded-xl border border-[var(--color-border)] px-3 py-2 text-sm"
+      >
+        <span className="min-w-0">
+          <span className="font-medium">{med?.name ?? '—'}</span>
+          <span className="text-[var(--color-text-muted)]">
+            {' '}
+            · {formatTime(log.scheduledAt)}
+          </span>
+        </span>
+        <span className="shrink-0 text-xs text-[var(--color-text-muted)]">
+          {pl.doseStatus[log.status]}
+        </span>
+      </li>
+    )
+  }
+
   return (
     <div className="space-y-4">
-      <h2 className="text-xl font-semibold">{pl.calendar.title}</h2>
+      <div className="flex items-center justify-between gap-2">
+        <h2 className="text-xl font-semibold">{pl.calendar.title}</h2>
+        <div className="flex gap-2">
+          <button
+            type="button"
+            className="min-h-11 min-w-11 rounded-xl border border-[var(--color-border)]"
+            aria-label={pl.calendar.prevMonth}
+            onClick={() => shiftMonth(-1)}
+          >
+            ‹
+          </button>
+          <button
+            type="button"
+            className="min-h-11 min-w-11 rounded-xl border border-[var(--color-border)]"
+            aria-label={pl.calendar.nextMonth}
+            onClick={() => shiftMonth(1)}
+          >
+            ›
+          </button>
+        </div>
+      </div>
       <p className="text-sm capitalize text-[var(--color-text-muted)]">
         {monthLabel}
       </p>
@@ -71,29 +164,64 @@ export function CalendarView() {
             return <div key={i} className="aspect-square" />
           }
           const key = toDateKey(cell.date)
-          const st = dayStats.get(key)
-          const full = st && st.total > 0 && st.taken === st.total
-          const partial = st && st.total > 0 && st.taken > 0 && st.taken < st.total
+          const dayLogs = byDay.get(key) ?? []
+          const tone = toneFor(scheduledDoses(dayLogs))
+          const hasPrn = dayLogs.some((l) => l.source === 'prn')
+          const selected = selectedKey === key
           return (
-            <div
-              key={i}
-              className={`flex aspect-square items-center justify-center rounded-lg text-sm ${
-                full
-                  ? 'bg-brand/20 font-semibold text-brand'
-                  : partial
-                    ? 'bg-brand/10'
-                    : 'border border-[var(--color-border)] bg-[var(--color-surface-elevated)]'
+            <button
+              key={key}
+              type="button"
+              className={`relative flex aspect-square items-center justify-center rounded-lg text-sm ${toneClass[tone]} ${
+                selected ? 'ring-2 ring-brand' : ''
               }`}
+              onClick={() => setSelectedKey(key)}
             >
               {cell.day}
-            </div>
+              {hasPrn && (
+                <span className="absolute bottom-1 h-1.5 w-1.5 rounded-full bg-brand" />
+              )}
+            </button>
           )
         })}
       </div>
       <ul className="space-y-1 text-xs text-[var(--color-text-muted)]">
-        <li>■ {pl.calendar.legendFull}</li>
-        <li>□ {pl.calendar.legendPartial}</li>
+        <li>{pl.calendar.legendFull}</li>
+        <li>{pl.calendar.legendPartial}</li>
+        <li>{pl.calendar.legendMissed}</li>
+        <li>{pl.calendar.legendPlanned}</li>
+        <li>{pl.calendar.legendPrn}</li>
       </ul>
+
+      {selectedKey && (
+        <section className="space-y-3">
+          <h3 className="font-semibold">{selectedKey}</h3>
+          {selectedPlan.length === 0 && selectedPrn.length === 0 ? (
+            <p className="text-sm text-[var(--color-text-muted)]">
+              {pl.calendar.dayEmpty}
+            </p>
+          ) : (
+            <>
+              {selectedPlan.length > 0 && (
+                <div>
+                  <p className="mb-1 text-xs font-medium text-[var(--color-text-muted)]">
+                    {pl.calendar.planSection}
+                  </p>
+                  <ul className="space-y-2">{selectedPlan.map(renderLog)}</ul>
+                </div>
+              )}
+              {selectedPrn.length > 0 && (
+                <div>
+                  <p className="mb-1 text-xs font-medium text-[var(--color-text-muted)]">
+                    {pl.calendar.prnSection}
+                  </p>
+                  <ul className="space-y-2">{selectedPrn.map(renderLog)}</ul>
+                </div>
+              )}
+            </>
+          )}
+        </section>
+      )}
     </div>
   )
 }

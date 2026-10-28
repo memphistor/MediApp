@@ -39,8 +39,10 @@ export async function syncDoseLogsForMedication(
   if (!entry) return
   const { start, end } = getSyncWindow(reference)
   const occurrences = buildOccurrencesForMedication(entry, start, end)
+  const keep = new Set<string>()
   for (const occ of occurrences) {
     const id = doseLogId(occ.medicationId, occ.scheduledAt)
+    keep.add(id)
     const log: DoseLog = {
       id,
       medicationId: occ.medicationId,
@@ -48,6 +50,14 @@ export async function syncDoseLogsForMedication(
       status: 'planned',
     }
     await upsertPlanned(log)
+  }
+  const startIso = start.toISOString()
+  const endIso = end.toISOString()
+  const existing = await db.doseLogs.where('medicationId').equals(medicationId).toArray()
+  for (const log of existing) {
+    if (log.source === 'prn' || log.status !== 'planned') continue
+    if (log.scheduledAt < startIso || log.scheduledAt > endIso) continue
+    if (!keep.has(log.id)) await db.doseLogs.delete(log.id)
   }
   await markMissedPlannedLogs(reference)
   await recalculateAndSave(reference)

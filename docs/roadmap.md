@@ -2,19 +2,14 @@
 
 ## Faza 1 — Rdzeń (po szkielecie)
 
-**Zrobione (partia 2):**
+**Zrobione:**
 
-- Zapis `MedicationEntry` z kreatora (Dexie)
+- Zapis `MedicationEntry` z kreatora (Dexie) i edycja istniejącej pozycji
 - Generator wystąpień dawek + synchronizacja `DoseLog`
-- Widok „Dziś”, historia, kalendarz miesiąca z prawdziwych logów
+- Widok „Dziś”, historia, kalendarz miesiąca (plan vs wykonanie, nawigacja miesięcy)
 - Oznaczanie: wzięta / pominięta; auto `missed` po końcu dnia
 - Usuwanie pozycji z kaskadą logów
-
-**Zostało w Fazie 1:**
-
-- Edycja istniejącej pozycji
-- Szybkie „zapisz przyjęcie” dla `asNeeded`
-- Pełniejszy kalendarz (definicja „pełnego dnia” vs plan)
+- Szybkie „zapisz przyjęcie” dla `asNeeded` (log `source: prn`, poza serią i pełnym dniem)
 
 ## Faza 2 — Powiadomienia
 
@@ -25,6 +20,8 @@
 - Ustawienia: włączenie, odłożenie (minuty), alarm uporczywy (powtórka co 5 min)
 - Panel na ekranie **Dziś**, gdy brak zgody lub wyłączone powiadomienia
 - Tick co 30 s przy aktywnej aplikacji (bez serwera push)
+- Klik powiadomienia bez akcji otwiera Dziś i podświetla dawkę
+- Ekran limitów powiadomień z Ustawień
 
 **Ograniczenia (bez backendu):**
 

@@ -53,10 +53,10 @@ export async function handleReminderActionMessage(
   settings: UserSettings,
   onSettingsChange: (s: UserSettings) => void,
 ): Promise<void> {
+  if (!logIds.length || action === 'open') return
   const mapped = (action === 'taken-all'
     ? 'taken-all'
     : action) as ReminderAction
-  if (!logIds.length) return
   const next = await applyReminderAction(mapped, logIds, settings)
   onSettingsChange(next)
 }

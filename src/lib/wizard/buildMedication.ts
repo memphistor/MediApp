@@ -85,7 +85,36 @@ function buildSchedule(state: WizardFormState): Schedule {
   }
 }
 
-export function buildMedicationFromWizard(state: WizardFormState): MedicationEntry {
+export function medicationToWizardState(entry: MedicationEntry): WizardFormState {
+  const schedule = entry.schedule
+  return {
+    name: entry.name,
+    kind: entry.kind,
+    form: entry.form,
+    doseText: entry.doseText,
+    emptyStomach: entry.onEmptyStomach,
+    meal: entry.mealTiming ?? 'skipped',
+    timesRaw: entry.times.join(', '),
+    scheduleType: schedule.type,
+    weekdayDays: schedule.type === 'weekdays' ? [...schedule.days] : [1, 2, 3, 4, 5],
+    everyNInterval: schedule.type === 'everyNDays' ? schedule.interval : 2,
+    weeklyDay: schedule.type === 'weekly' ? schedule.weekday : 1,
+    monthlyDay: schedule.type === 'monthly' ? schedule.dayOfMonth : 1,
+    cycleActive: schedule.type === 'cycle' ? schedule.activeDays : 21,
+    cycleBreak: schedule.type === 'cycle' ? schedule.breakDays : 7,
+    dateStart: entry.dateRange?.start ?? '',
+    dateEnd: entry.dateRange?.end ?? '',
+    purpose: entry.purposeLabel ?? '',
+    note: entry.userNote ?? '',
+    color: entry.color,
+    icon: entry.icon,
+  }
+}
+
+export function buildMedicationFromWizard(
+  state: WizardFormState,
+  existing?: Pick<MedicationEntry, 'id' | 'createdAt'>,
+): MedicationEntry {
   const now = new Date().toISOString()
   const times =
     state.scheduleType === 'asNeeded' ? [] : parseTimesInput(state.timesRaw)
@@ -99,7 +128,7 @@ export function buildMedicationFromWizard(state: WizardFormState): MedicationEnt
       : undefined
 
   return {
-    id: crypto.randomUUID(),
+    id: existing?.id ?? crypto.randomUUID(),
     name: state.name.trim(),
     kind: state.kind as MedicationKind,
     form: state.form as MedicationForm,
@@ -113,7 +142,7 @@ export function buildMedicationFromWizard(state: WizardFormState): MedicationEnt
     color: state.color,
     icon: state.icon || '💊',
     userNote: state.note.trim() || undefined,
-    createdAt: now,
+    createdAt: existing?.createdAt ?? now,
     updatedAt: now,
   }
 }
