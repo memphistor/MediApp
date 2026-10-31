@@ -1,4 +1,5 @@
 import { db } from '@/db/database'
+import { deleteNotesForMedication } from '@/repositories/medicationNoteRepository'
 import type { MedicationEntry } from '@/types/medication'
 
 export async function createMedication(
@@ -24,8 +25,9 @@ export async function listMedications(): Promise<MedicationEntry[]> {
 }
 
 export async function deleteMedication(id: string): Promise<void> {
-  await db.transaction('rw', db.medications, db.doseLogs, async () => {
+  await db.transaction('rw', db.medications, db.doseLogs, db.medicationNotes, async () => {
     await db.doseLogs.where('medicationId').equals(id).delete()
+    await deleteNotesForMedication(id)
     await db.medications.delete(id)
   })
 }

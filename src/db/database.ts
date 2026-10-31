@@ -3,10 +3,12 @@ import type { MedicationEntry } from '@/types/medication'
 import type { DoseLog } from '@/types/dose'
 import type { UserSettings } from '@/types/settings'
 import type { GamificationState } from '@/types/gamification'
+import type { MedicationNote } from '@/types/medicationNote'
 
 export class MediAppDatabase extends Dexie {
   medications!: EntityTable<MedicationEntry, 'id'>
   doseLogs!: EntityTable<DoseLog, 'id'>
+  medicationNotes!: EntityTable<MedicationNote, 'id'>
   settings!: EntityTable<UserSettings, 'id'>
   gamification!: EntityTable<GamificationState, 'id'>
 
@@ -15,6 +17,13 @@ export class MediAppDatabase extends Dexie {
     this.version(1).stores({
       medications: 'id, name, updatedAt',
       doseLogs: 'id, medicationId, scheduledAt, status',
+      settings: 'id',
+      gamification: 'id',
+    })
+    this.version(2).stores({
+      medications: 'id, name, updatedAt',
+      doseLogs: 'id, medicationId, scheduledAt, status',
+      medicationNotes: 'id, medicationId, recordedAt',
       settings: 'id',
       gamification: 'id',
     })
@@ -28,11 +37,13 @@ export async function clearAllUserData(): Promise<void> {
     'rw',
     db.medications,
     db.doseLogs,
+    db.medicationNotes,
     db.settings,
     db.gamification,
     async () => {
       await db.medications.clear()
       await db.doseLogs.clear()
+      await db.medicationNotes.clear()
       await db.settings.clear()
       await db.gamification.clear()
     },

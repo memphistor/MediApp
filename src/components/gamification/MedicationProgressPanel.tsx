@@ -11,6 +11,7 @@ import {
 } from '@/lib/gamification/progressPeriods'
 import type { DoseLog } from '@/types/dose'
 import { pl } from '@/i18n/pl'
+import { MedicationNotesBlock } from '@/components/gamification/MedicationNotesBlock'
 
 type MedOption = { id: string; name: string; icon: string }
 
@@ -152,6 +153,14 @@ export function MedicationProgressPanel({
           </ul>
         )}
       </div>
+
+      {medId ? (
+        <MedicationNotesBlock
+          medicationId={medId}
+          period={period}
+          referenceDate={referenceDate}
+        />
+      ) : null}
     </section>
   )
 }
