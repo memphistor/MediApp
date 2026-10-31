@@ -62,6 +62,7 @@ export function TodayView() {
   const asNeeded = (medications ?? []).filter(
     (med) => med.schedule.type === 'asNeeded' && isEntryInDateRange(today, med),
   )
+  const hasMedications = (medications?.length ?? 0) > 0
 
   useEffect(() => {
     if (!focusLog) return
@@ -97,11 +98,11 @@ export function TodayView() {
 
       <DueReminderPanel />
 
-      {entries.length === 0 ? (
+      {entries.length === 0 && !asNeeded.length ? (
         <p className="rounded-xl border border-dashed border-[var(--color-border)] px-4 py-8 text-center text-sm text-[var(--color-text-muted)]">
-          {pl.today.empty}
+          {hasMedications ? pl.today.empty : pl.today.emptyNoMeds}
         </p>
-      ) : (
+      ) : entries.length === 0 ? null : (
         <ul className="space-y-3">
           {entries.map((log) => {
             const med = medMap.get(log.medicationId)!
@@ -171,7 +172,7 @@ export function TodayView() {
         to="/add"
         className="flex min-h-12 items-center justify-center rounded-2xl border border-dashed border-brand text-sm font-semibold text-brand"
       >
-        {pl.today.addFirst}
+        {hasMedications ? pl.today.addMore : pl.today.addFirst}
       </Link>
 
       {skipTarget && (

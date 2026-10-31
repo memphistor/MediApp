@@ -30,7 +30,9 @@ export const pl = {
   today: {
     title: 'Dziś',
     empty: 'Brak zaplanowanych pozycji na dziś.',
+    emptyNoMeds: 'Nie masz jeszcze żadnych pozycji — dodaj pierwszą poniżej.',
     addFirst: 'Dodaj pierwszą pozycję',
+    addMore: 'Dodaj pozycję',
     notificationsOn:
       'Powiadomienia włączone — sprawdzamy plan co 30 s, gdy aplikacja jest aktywna.',
     notificationsOff:
