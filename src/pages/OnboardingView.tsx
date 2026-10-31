@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { AppLogo } from '@/components/brand/AppLogo'
 import { useSettings } from '@/context/SettingsContext'
 import { pl } from '@/i18n/pl'
 
@@ -29,6 +30,7 @@ export function OnboardingView() {
   return (
     <div className="mx-auto flex min-h-dvh max-w-lg flex-col justify-between px-6 py-10 safe-top safe-bottom">
       <div>
+        <AppLogo size="lg" className="mb-5" />
         <h1 className="text-2xl font-bold text-[var(--color-text)]">
           {pl.onboarding.title}
         </h1>

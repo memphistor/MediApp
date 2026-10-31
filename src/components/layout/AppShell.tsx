@@ -1,4 +1,5 @@
 import { NavLink, Outlet, useLocation } from 'react-router-dom'
+import { AppLogo } from '@/components/brand/AppLogo'
 import { pl } from '@/i18n/pl'
 import { useDoseLogSync } from '@/hooks/useDoseLogSync'
 import { useReminderWatcher } from '@/hooks/useReminderWatcher'
@@ -29,13 +30,16 @@ export function AppShell() {
     <div className="mx-auto flex min-h-dvh max-w-lg flex-col bg-[var(--color-surface)]">
       <header className="safe-top sticky top-0 z-10 border-b border-[var(--color-border)] bg-[var(--color-surface-elevated)]/95 px-4 py-3 backdrop-blur">
         <div className="flex items-center justify-between gap-2">
-          <div>
-            <h1 className="text-lg font-semibold text-[var(--color-text)]">
-              {pl.appName}
-            </h1>
-            <p className="text-xs text-[var(--color-text-muted)]">
-              {pl.appTagline}
-            </p>
+          <div className="flex min-w-0 flex-1 items-center gap-3">
+            <AppLogo size="md" decorative />
+            <div className="min-w-0">
+              <h1 className="text-lg font-semibold text-[var(--color-text)]">
+                {pl.appName}
+              </h1>
+              <p className="text-xs text-[var(--color-text-muted)]">
+                {pl.appTagline}
+              </p>
+            </div>
           </div>
           <NavLink
             to="/history"
