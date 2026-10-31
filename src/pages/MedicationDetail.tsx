@@ -1,7 +1,10 @@
 import { useNavigate, useParams, Link } from 'react-router-dom'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { ScheduleSummary } from '@/components/medication/ScheduleSummary'
-import { MedicationStockLine } from '@/components/medication/MedicationStockLine'
+import {
+  MedicationStockLine,
+  medicationStockBorderClass,
+} from '@/components/medication/MedicationStockLine'
 import { MedicationStockPanel } from '@/components/medication/MedicationStockPanel'
 import { pl } from '@/i18n/pl'
 import { getMedicationById, deleteMedication } from '@/repositories/medicationRepository'
@@ -60,7 +63,7 @@ export function MedicationDetail() {
         ← {pl.wizard.back}
       </Link>
       <div
-        className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface-elevated)] p-5"
+        className={`rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface-elevated)] p-5 ${medicationStockBorderClass(med) ?? ''}`}
         style={{ borderTopWidth: 4, borderTopColor: med.color }}
       >
         <div className="flex items-center gap-3">

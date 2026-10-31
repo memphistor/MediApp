@@ -153,6 +153,8 @@ export const pl = {
   stock: {
     remaining: 'Zapas: {n} szt.',
     low: 'mało zostało',
+    warnDays: 'zostało ok. {n} dni zapasu',
+    criticalDays: 'tylko ok. {n} dni zapasu!',
     replenishTitle: 'Uzupełnij opakowanie',
     replenishHint: 'Dodaj sztuki po zakupie nowego opakowania.',
     replenishAmount: 'Ile sztuk dodajesz?',

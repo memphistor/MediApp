@@ -1,6 +1,9 @@
 import { Link } from 'react-router-dom'
 import { TakenAtEditor } from '@/components/dose/TakenAtEditor'
-import { MedicationStockLine } from '@/components/medication/MedicationStockLine'
+import {
+  MedicationStockLine,
+  medicationStockBorderClass,
+} from '@/components/medication/MedicationStockLine'
 import type { MedicationEntry } from '@/types/medication'
 import type { DoseStatus } from '@/types/dose'
 import { pl } from '@/i18n/pl'
@@ -47,7 +50,7 @@ export function MedicationCard({
 
   return (
     <article
-      className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface-elevated)] p-4 shadow-sm"
+      className={`rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface-elevated)] p-4 shadow-sm ${medicationStockBorderClass(medication) ?? ''}`}
       style={{ borderLeftWidth: 4, borderLeftColor: medication.color }}
     >
       <Link

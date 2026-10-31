@@ -3,7 +3,10 @@ import { Link, useSearchParams } from 'react-router-dom'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { DayRing } from '@/components/gamification/DayRing'
 import { MedicationCard } from '@/components/medication/MedicationCard'
-import { MedicationStockLine } from '@/components/medication/MedicationStockLine'
+import {
+  MedicationStockLine,
+  medicationStockBorderClass,
+} from '@/components/medication/MedicationStockLine'
 import { dayRingProgress } from '@/lib/gamification/dayStats'
 import { DueReminderPanel } from '@/components/reminders/DueReminderPanel'
 import { db } from '@/db/database'
@@ -145,7 +148,7 @@ export function TodayView() {
             {asNeeded.map((med) => (
               <li
                 key={med.id}
-                className="flex items-center justify-between gap-3 rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface-elevated)] px-4 py-3"
+                className={`flex items-center justify-between gap-3 rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface-elevated)] px-4 py-3 ${medicationStockBorderClass(med) ?? ''}`}
               >
                 <Link to={`/medication/${med.id}`} className="min-w-0">
                   <p className="truncate font-medium">{med.name}</p>
