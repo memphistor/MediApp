@@ -1,12 +1,13 @@
 import { useMemo, useState } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { db } from '@/db/database'
-import { toDateKey, formatLocaleTime } from '@/lib/dates'
+import { toDateKey } from '@/lib/dates'
 import {
   dayComplianceTone,
   scheduledDoses,
 } from '@/lib/gamification/dayStats'
 import { dayComplianceToneClass } from '@/lib/calendar/dayComplianceStyles'
+import { TakenAtEditor } from '@/components/dose/TakenAtEditor'
 import { CalendarWeekStrip } from '@/components/calendar/CalendarWeekStrip'
 import {
   formatTimingDeltaMinutes,
@@ -118,9 +119,9 @@ export function CalendarView() {
     return (
       <li
         key={log.id}
-        className="flex items-center justify-between gap-2 rounded-xl border border-[var(--color-border)] px-3 py-2 text-sm"
+        className="flex flex-col gap-2 rounded-xl border border-[var(--color-border)] px-3 py-2 text-sm sm:flex-row sm:items-start sm:justify-between"
       >
-        <span className="min-w-0">
+        <span className="min-w-0 flex-1">
           <span className="font-medium">{med?.name ?? '—'}</span>
           <span className="text-[var(--color-text-muted)]">
             {' '}
@@ -133,9 +134,7 @@ export function CalendarView() {
             </span>
           )}
           {log.status === 'taken' && log.takenAt && (
-            <span className="block text-xs text-[var(--color-text)]">
-              {pl.history.takenAt}: {formatLocaleTime(log.takenAt)}
-            </span>
+            <TakenAtEditor logId={log.id} takenAt={log.takenAt} />
           )}
         </span>
         <span className="shrink-0 text-xs text-[var(--color-text-muted)]">

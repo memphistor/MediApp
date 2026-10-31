@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { formatLocaleDateTime } from '@/lib/dates'
+import { TakenAtEditor } from '@/components/dose/TakenAtEditor'
 import { db } from '@/db/database'
 import { pl } from '@/i18n/pl'
 
@@ -40,9 +41,11 @@ export function HistoryView() {
                 {formatLocaleDateTime(log.scheduledAt)}
               </time>
               {log.status === 'taken' && log.takenAt && (
-                <time className="mt-0.5 block text-xs text-[var(--color-text)]">
-                  {pl.history.takenAt}: {formatLocaleDateTime(log.takenAt)}
-                </time>
+                <TakenAtEditor
+                  logId={log.id}
+                  takenAt={log.takenAt}
+                  showDate
+                />
               )}
               {log.skipReason && (
                 <p className="mt-1 text-xs text-[var(--color-text-muted)]">

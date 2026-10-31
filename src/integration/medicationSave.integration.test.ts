@@ -79,4 +79,19 @@ describe('medication save flow (IndexedDB)', () => {
     const updated = await db.doseLogs.get(log!.id)
     expect(updated?.takenAt).toMatch(/^\d{4}-\d{2}-\d{2}T/)
   })
+
+  it('allows correcting takenAt after the fact', async () => {
+    const entry = buildMedicationFromWizard(validWizard)
+    await createMedication(entry)
+    await syncDoseLogsForMedication(entry.id)
+    const log = await db.doseLogs.where('medicationId').equals(entry.id).first()
+    await updateDoseStatus(log!.id, 'taken', {
+      takenAt: '2026-03-10T18:00:00.000Z',
+    })
+    const { updateDoseTakenAt } = await import('@/repositories/doseLogRepository')
+    const corrected = '2026-03-10T08:15:00.000Z'
+    expect(await updateDoseTakenAt(log!.id, corrected)).toBe(true)
+    const updated = await db.doseLogs.get(log!.id)
+    expect(updated?.takenAt).toBe(corrected)
+  })
 })

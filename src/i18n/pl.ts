@@ -157,6 +157,12 @@ export const pl = {
     empty: 'Brak wpisów w dzienniku.',
     plannedAt: 'Plan',
     takenAt: 'Wzięto',
+    editTakenAt: 'Popraw godzinę',
+    takenAtLabel: 'Kiedy wzięto?',
+    saveTakenAt: 'Zapisz',
+    cancelEdit: 'Anuluj',
+    takenAtInvalid: 'Podaj poprawną datę i godzinę.',
+    takenAtSaveFailed: 'Nie udało się zapisać — wpis musi być oznaczony jako wzięty.',
   },
 
   progress: {

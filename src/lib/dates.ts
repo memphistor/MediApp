@@ -71,3 +71,19 @@ export function formatLocaleTime(iso: string): string {
     minute: '2-digit',
   })
 }
+
+/** Value for `<input type="datetime-local" />` in local timezone. */
+export function toDatetimeLocalValue(date: Date): string {
+  const y = date.getFullYear()
+  const m = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  const h = String(date.getHours()).padStart(2, '0')
+  const min = String(date.getMinutes()).padStart(2, '0')
+  return `${y}-${m}-${day}T${h}:${min}`
+}
+
+export function fromDatetimeLocalValue(value: string): Date | null {
+  if (!value.trim()) return null
+  const parsed = new Date(value)
+  return Number.isNaN(parsed.getTime()) ? null : parsed
+}

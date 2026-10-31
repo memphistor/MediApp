@@ -60,6 +60,17 @@ export async function updateDoseStatus(
   }
 }
 
+export async function updateDoseTakenAt(
+  id: string,
+  takenAt: string,
+): Promise<boolean> {
+  const existing = await db.doseLogs.get(id)
+  if (!existing || existing.status !== 'taken') return false
+  await db.doseLogs.put({ ...existing, takenAt })
+  await recalculateAndSave()
+  return true
+}
+
 export async function logAsNeededIntake(medicationId: string): Promise<DoseLog> {
   const now = new Date().toISOString()
   const log: DoseLog = {

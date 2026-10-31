@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { formatLocaleTime } from '@/lib/dates'
+import { TakenAtEditor } from '@/components/dose/TakenAtEditor'
 import type { MedicationEntry } from '@/types/medication'
 import type { DoseStatus } from '@/types/dose'
 import { pl } from '@/i18n/pl'
@@ -9,8 +9,8 @@ interface MedicationCardProps {
   medication: MedicationEntry
   time?: string
   takenAt?: string
-  status?: DoseStatus
   doseLogId?: string
+  status?: DoseStatus
   onMarkTaken?: (doseLogId: string) => void
   onSkip?: (doseLogId: string) => void
 }
@@ -75,10 +75,8 @@ export function MedicationCard({
             <p className="mt-0.5 text-sm text-[var(--color-text-muted)]">
               {subtitle}
             </p>
-            {status === 'taken' && takenAt && (
-              <p className="mt-1 text-xs text-[var(--color-text)]">
-                {pl.history.takenAt}: {formatLocaleTime(takenAt)}
-              </p>
+            {status === 'taken' && takenAt && doseLogId && (
+              <TakenAtEditor logId={doseLogId} takenAt={takenAt} />
             )}
             <div className="mt-2 flex flex-wrap items-center gap-2">
               <span
