@@ -52,10 +52,10 @@ const SCHEDULE_OPTIONS: Schedule['type'][] = [
 
 const initialForm: WizardFormState = {
   name: '',
-  kind: '',
-  form: '',
+  kind: 'otc',
+  form: 'tablet',
   doseText: '',
-  emptyStomach: '',
+  emptyStomach: 'na',
   meal: '',
   timesRaw: '08:00',
   scheduleType: 'daily',
@@ -88,6 +88,16 @@ export function AddMedicationWizard() {
   const [saveError, setSaveError] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
   const [hydrated, setHydrated] = useState(!editId)
+
+  useEffect(() => {
+    if (editId) return
+    formRef.current = { ...initialForm }
+    setForm({ ...initialForm })
+    setStep(1)
+    setErrors({})
+    setSaveError(null)
+    setHydrated(true)
+  }, [editId])
 
   useEffect(() => {
     if (!editId || !existing || hydrated) return
@@ -136,14 +146,15 @@ export function AddMedicationWizard() {
   const persistMedication = async (current: WizardFormState) => {
     setSaving(true)
     try {
+      const prior = editId ? await getMedicationById(editId) : undefined
       const entry = buildMedicationFromWizard(
         current,
-        existing ? { id: existing.id, createdAt: existing.createdAt } : undefined,
+        prior ? { id: prior.id, createdAt: prior.createdAt } : undefined,
       )
-      if (existing) await updateMedication(entry)
+      if (prior) await updateMedication(entry)
       else await createMedication(entry)
       await syncDoseLogsForMedication(entry.id)
-      navigate(existing ? `/medication/${entry.id}` : '/', { replace: true })
+      navigate(prior ? `/medication/${entry.id}` : '/', { replace: true })
     } catch (err) {
       console.error(err)
       setSaveError(pl.wizard.saveFailed)
