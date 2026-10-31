@@ -60,7 +60,7 @@ export const pl = {
     back: 'Wstecz',
     save: 'Zapisz',
     saving: 'Zapisywanie…',
-    fixErrors: 'Uzupełnij pola oznaczone na czerwono, żeby przejść dalej lub zapisać.',
+    fixErrors: 'Uzupełnij pola oznaczone poniżej, żeby zapisać.',
     saveFailed:
       'Nie udało się zapisać w przeglądarce. Sprawdź, czy strona może zapisywać dane lokalnie (IndexedDB), i spróbuj ponownie.',
     fields: {
@@ -80,6 +80,19 @@ export const pl = {
       color: 'Kolor',
       icon: 'Ikona',
       note: 'Własna notatka',
+      weekdays: 'Dni tygodnia',
+      everyNDays: 'Co ile dni?',
+      weeklyDay: 'Dzień tygodnia',
+      monthlyDay: 'Dzień miesiąca (1–28)',
+      cycleActive: 'Dni brania',
+      cycleBreak: 'Dni przerwy',
+    },
+    sections: {
+      basic: 'Podstawowe',
+      intake: 'Sposób przyjmowania',
+      schedule: 'Harmonogram',
+      notes: 'Notatki',
+      appearance: 'Wygląd',
     },
     notSelected: 'Nie wybrano',
     kinds: {

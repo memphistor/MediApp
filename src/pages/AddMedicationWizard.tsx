@@ -1,15 +1,16 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useLiveQuery } from 'dexie-react-hooks'
+import { FormSelect, selectClassName } from '@/components/medication/FormSelect'
+import { MedicationIconPicker } from '@/components/medication/MedicationIconPicker'
+import { MedicationColorPicker } from '@/components/medication/MedicationColorPicker'
 import { pl } from '@/i18n/pl'
 import type { MedicationKind, MedicationForm, Schedule } from '@/types/medication'
 import {
   buildMedicationFromWizard,
-  firstWizardStepWithErrors,
   medicationToWizardState,
   mergeWizardFormFromDom,
   validateWizard,
-  validateWizardStep,
   type WizardFormState,
   type WizardErrors,
 } from '@/lib/wizard/buildMedication'
@@ -19,11 +20,8 @@ import {
   updateMedication,
 } from '@/repositories/medicationRepository'
 import { syncDoseLogsForMedication } from '@/services/syncDoseLogs'
-import { MedicationIconPicker } from '@/components/medication/MedicationIconPicker'
-import { MedicationColorPicker } from '@/components/medication/MedicationColorPicker'
 import { DEFAULT_MEDICATION_COLOR } from '@/lib/wizard/medicationColors'
 
-const TOTAL_STEPS = 5
 const DAY_LABELS = ['Nd', 'Pn', 'Wt', 'Śr', 'Cz', 'Pt', 'So']
 
 const KIND_OPTIONS: MedicationKind[] = [
@@ -76,6 +74,14 @@ const initialForm: WizardFormState = {
   icon: '💊',
 }
 
+function SectionTitle({ children }: { children: React.ReactNode }) {
+  return (
+    <h3 className="border-b border-[var(--color-border)] pb-1 text-sm font-semibold text-[var(--color-text-muted)]">
+      {children}
+    </h3>
+  )
+}
+
 export function AddMedicationWizard() {
   const navigate = useNavigate()
   const { id: editId } = useParams()
@@ -83,7 +89,6 @@ export function AddMedicationWizard() {
     if (!editId) return null
     return (await getMedicationById(editId)) ?? null
   }, [editId])
-  const [step, setStep] = useState(1)
   const formRef = useRef<WizardFormState>(initialForm)
   const formElRef = useRef<HTMLFormElement>(null)
   const [form, setForm] = useState<WizardFormState>(initialForm)
@@ -96,7 +101,6 @@ export function AddMedicationWizard() {
     if (editId) return
     formRef.current = { ...initialForm }
     setForm({ ...initialForm })
-    setStep(1)
     setErrors({})
     setSaveError(null)
     setHydrated(true)
@@ -138,14 +142,6 @@ export function AddMedicationWizard() {
     return merged
   }
 
-  const showValidationErrors = (validation: WizardErrors) => {
-    setErrors(validation)
-    if (Object.keys(validation).length === 0) return
-    const first = firstWizardStepWithErrors(validation)
-    if (first) setStep(first)
-    window.scrollTo({ top: 0, behavior: 'smooth' })
-  }
-
   const persistMedication = async (current: WizardFormState) => {
     setSaving(true)
     try {
@@ -171,24 +167,13 @@ export function AddMedicationWizard() {
     event.preventDefault()
     setSaveError(null)
     const current = commitFormFromDom()
-
-    if (step < TOTAL_STEPS) {
-      const stepErrors = validateWizardStep(step, current)
-      if (Object.keys(stepErrors).length > 0) {
-        showValidationErrors(stepErrors)
-        return
-      }
-      setErrors({})
-      setStep((s) => s + 1)
+    const validation = validateWizard(current)
+    if (Object.keys(validation).length > 0) {
+      setErrors(validation)
       window.scrollTo({ top: 0, behavior: 'smooth' })
       return
     }
-
-    const validation = validateWizard(current)
-    if (Object.keys(validation).length > 0) {
-      showValidationErrors(validation)
-      return
-    }
+    setErrors({})
     void persistMedication(current)
   }
 
@@ -220,16 +205,13 @@ export function AddMedicationWizard() {
 
   return (
     <div className="pb-8">
-      <div className="mb-4 flex items-center justify-between">
+      <div className="mb-4">
         <Link
           to={editId ? `/medication/${editId}` : '/'}
-          className="min-h-11 min-w-11 text-sm font-medium text-brand"
+          className="inline-flex min-h-11 items-center text-sm font-medium text-brand"
         >
           ← {pl.wizard.back}
         </Link>
-        <span className="text-sm text-[var(--color-text-muted)]">
-          {pl.wizard.step} {step} {pl.wizard.of} {TOTAL_STEPS}
-        </span>
       </div>
 
       <h2 className="text-xl font-semibold">
@@ -263,185 +245,145 @@ export function AddMedicationWizard() {
 
       <form
         ref={formElRef}
-        className="mt-6"
+        className="mt-6 space-y-6"
         onSubmit={handleFormSubmit}
         noValidate
       >
-      <div className="space-y-4">
-        {step === 1 && (
-          <>
-            <label className="block">
-              <span className="text-sm font-medium">{pl.wizard.fields.name}</span>
-              <input
-                name="name"
-                className="mt-1 w-full min-h-12 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-elevated)] px-3"
-                value={form.name}
-                onChange={(e) => patch({ name: e.target.value })}
-                onBlur={(e) => patch({ name: e.target.value })}
-                autoComplete="off"
-              />
-              {errors.name && (
-                <p className="mt-1 text-xs text-red-600">{errors.name}</p>
-              )}
-            </label>
-            <fieldset>
-              <legend className="text-sm font-medium">{pl.wizard.fields.kind}</legend>
-              <div className="mt-2 flex flex-wrap gap-2">
-                {KIND_OPTIONS.map((k) => (
-                  <button
-                    key={k}
-                    type="button"
-                    className={`min-h-11 rounded-xl border px-3 text-sm ${
-                      form.kind === k
-                        ? 'border-brand bg-brand/10 text-brand'
-                        : 'border-[var(--color-border)]'
-                    }`}
-                    onClick={() => patch({ kind: k })}
-                  >
-                    {pl.wizard.kinds[k]}
-                  </button>
-                ))}
-              </div>
-              {errors.kind && (
-                <p className="mt-1 text-xs text-red-600">{errors.kind}</p>
-              )}
-            </fieldset>
-            <fieldset>
-              <legend className="text-sm font-medium">{pl.wizard.fields.form}</legend>
-              <div className="mt-2 flex flex-wrap gap-2">
-                {FORM_OPTIONS.map((f) => (
-                  <button
-                    key={f}
-                    type="button"
-                    className={`min-h-11 rounded-xl border px-3 text-sm ${
-                      form.form === f
-                        ? 'border-brand bg-brand/10 text-brand'
-                        : 'border-[var(--color-border)]'
-                    }`}
-                    onClick={() => patch({ form: f })}
-                  >
-                    {pl.wizard.forms[f]}
-                  </button>
-                ))}
-              </div>
-              {errors.form && (
-                <p className="mt-1 text-xs text-red-600">{errors.form}</p>
-              )}
-            </fieldset>
-          </>
-        )}
-
-        {step === 2 && (
-          <>
-            <label className="block">
-              <span className="text-sm font-medium">{pl.wizard.fields.dose}</span>
-              <input
-                name="doseText"
-                className="mt-1 w-full min-h-12 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-elevated)] px-3"
-                value={form.doseText}
-                onChange={(e) => patch({ doseText: e.target.value })}
-                onBlur={(e) => patch({ doseText: e.target.value })}
-              />
-              {errors.doseText && (
-                <p className="mt-1 text-xs text-red-600">{errors.doseText}</p>
-              )}
-            </label>
-            <fieldset>
-              <legend className="text-sm font-medium">
-                {pl.wizard.fields.emptyStomach}
-              </legend>
-              <div className="mt-2 flex flex-wrap gap-2">
-                {(['yes', 'no', 'na'] as const).map((v) => (
-                  <button
-                    key={v}
-                    type="button"
-                    className={`min-h-11 rounded-xl border px-3 text-sm ${
-                      form.emptyStomach === v
-                        ? 'border-brand bg-brand/10'
-                        : 'border-[var(--color-border)]'
-                    }`}
-                    onClick={() => patch({ emptyStomach: v })}
-                  >
-                    {pl.wizard.emptyStomach[v]}
-                  </button>
-                ))}
-              </div>
-              {errors.emptyStomach && (
-                <p className="mt-1 text-xs text-red-600">{errors.emptyStomach}</p>
-              )}
-            </fieldset>
-            <fieldset>
-              <legend className="text-sm font-medium">{pl.wizard.fields.meal}</legend>
-              <div className="mt-2 flex flex-wrap gap-2">
-                {(['before', 'during', 'after', 'skipped'] as const).map((v) => (
-                  <button
-                    key={v}
-                    type="button"
-                    className={`min-h-11 rounded-xl border px-3 text-sm ${
-                      form.meal === v
-                        ? 'border-brand bg-brand/10'
-                        : 'border-[var(--color-border)]'
-                    }`}
-                    onClick={() => patch({ meal: v })}
-                  >
-                    {pl.wizard.meal[v]}
-                  </button>
-                ))}
-              </div>
-            </fieldset>
-          </>
-        )}
-
-        {step === 3 && (
-          <>
-            {form.scheduleType !== 'asNeeded' && (
-              <label className="block">
-                <span className="text-sm font-medium">{pl.wizard.fields.times}</span>
-                <input
-                  name="timesRaw"
-                  className="mt-1 w-full min-h-12 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-elevated)] px-3"
-                  value={form.timesRaw}
-                  onChange={(e) => patch({ timesRaw: e.target.value })}
-                  onBlur={(e) => patch({ timesRaw: e.target.value })}
-                  placeholder="07:30, 20:00"
-                />
-                {errors.times && (
-                  <p className="mt-1 text-xs text-red-600">{errors.times}</p>
-                )}
-              </label>
+        <section className="space-y-3">
+          <SectionTitle>{pl.wizard.sections.basic}</SectionTitle>
+          <label className="block">
+            <span className="text-sm font-medium">{pl.wizard.fields.name}</span>
+            <input
+              name="name"
+              className={`${selectClassName} bg-[var(--color-surface-elevated)]`}
+              value={form.name}
+              onChange={(e) => patch({ name: e.target.value })}
+              onBlur={(e) => patch({ name: e.target.value })}
+              autoComplete="off"
+            />
+            {errors.name && (
+              <p className="mt-1 text-xs text-red-600">{errors.name}</p>
             )}
-            <fieldset>
-              <legend className="text-sm font-medium">{pl.wizard.fields.schedule}</legend>
-              <div className="mt-2 flex flex-col gap-2">
-                {SCHEDULE_OPTIONS.map((t) => (
-                  <button
-                    key={t}
-                    type="button"
-                    className={`min-h-11 rounded-xl border px-3 text-left text-sm ${
-                      form.scheduleType === t
-                        ? 'border-brand bg-brand/10'
-                        : 'border-[var(--color-border)]'
-                    }`}
-                    onClick={() => patch({ scheduleType: t })}
-                  >
-                    {pl.wizard.schedules[t]}
-                  </button>
-                ))}
-              </div>
-              {errors.scheduleType && (
-                <p className="mt-1 text-xs text-red-600">{errors.scheduleType}</p>
-              )}
-            </fieldset>
+          </label>
+          <div className="grid gap-3 sm:grid-cols-2">
+            <FormSelect
+              label={pl.wizard.fields.kind}
+              name="kind"
+              value={form.kind}
+              onChange={(kind) => patch({ kind: kind as MedicationKind })}
+              error={errors.kind}
+            >
+              {KIND_OPTIONS.map((k) => (
+                <option key={k} value={k}>
+                  {pl.wizard.kinds[k]}
+                </option>
+              ))}
+            </FormSelect>
+            <FormSelect
+              label={pl.wizard.fields.form}
+              name="form"
+              value={form.form}
+              onChange={(f) => patch({ form: f as MedicationForm })}
+              error={errors.form}
+            >
+              {FORM_OPTIONS.map((f) => (
+                <option key={f} value={f}>
+                  {pl.wizard.forms[f]}
+                </option>
+              ))}
+            </FormSelect>
+          </div>
+        </section>
 
-            {form.scheduleType === 'weekdays' && (
-              <div className="flex flex-wrap gap-2">
+        <section className="space-y-3">
+          <SectionTitle>{pl.wizard.sections.intake}</SectionTitle>
+          <label className="block">
+            <span className="text-sm font-medium">{pl.wizard.fields.dose}</span>
+            <input
+              name="doseText"
+              className={`${selectClassName} bg-[var(--color-surface-elevated)]`}
+              value={form.doseText}
+              onChange={(e) => patch({ doseText: e.target.value })}
+              onBlur={(e) => patch({ doseText: e.target.value })}
+            />
+            {errors.doseText && (
+              <p className="mt-1 text-xs text-red-600">{errors.doseText}</p>
+            )}
+          </label>
+          <div className="grid gap-3 sm:grid-cols-2">
+            <FormSelect
+              label={pl.wizard.fields.emptyStomach}
+              value={form.emptyStomach}
+              onChange={(v) =>
+                patch({ emptyStomach: v as WizardFormState['emptyStomach'] })
+              }
+              error={errors.emptyStomach}
+            >
+              {(['yes', 'no', 'na'] as const).map((v) => (
+                <option key={v} value={v}>
+                  {pl.wizard.emptyStomach[v]}
+                </option>
+              ))}
+            </FormSelect>
+            <FormSelect
+              label={pl.wizard.fields.meal}
+              value={form.meal || 'skipped'}
+              onChange={(v) => patch({ meal: v as WizardFormState['meal'] })}
+            >
+              {(['before', 'during', 'after', 'skipped'] as const).map((v) => (
+                <option key={v} value={v}>
+                  {pl.wizard.meal[v]}
+                </option>
+              ))}
+            </FormSelect>
+          </div>
+        </section>
+
+        <section className="space-y-3">
+          <SectionTitle>{pl.wizard.sections.schedule}</SectionTitle>
+          <FormSelect
+            label={pl.wizard.fields.schedule}
+            value={form.scheduleType}
+            onChange={(t) =>
+              patch({ scheduleType: t as Schedule['type'] })
+            }
+            error={errors.scheduleType}
+          >
+            {SCHEDULE_OPTIONS.map((t) => (
+              <option key={t} value={t}>
+                {pl.wizard.schedules[t]}
+              </option>
+            ))}
+          </FormSelect>
+
+          {form.scheduleType !== 'asNeeded' && (
+            <label className="block">
+              <span className="text-sm font-medium">{pl.wizard.fields.times}</span>
+              <input
+                name="timesRaw"
+                className={`${selectClassName} bg-[var(--color-surface-elevated)]`}
+                value={form.timesRaw}
+                onChange={(e) => patch({ timesRaw: e.target.value })}
+                onBlur={(e) => patch({ timesRaw: e.target.value })}
+                placeholder="07:30, 20:00"
+              />
+              {errors.times && (
+                <p className="mt-1 text-xs text-red-600">{errors.times}</p>
+              )}
+            </label>
+          )}
+
+          {form.scheduleType === 'weekdays' && (
+            <div>
+              <p className="text-sm font-medium">{pl.wizard.fields.weekdays}</p>
+              <div className="mt-2 flex flex-wrap gap-1.5">
                 {DAY_LABELS.map((label, day) => (
                   <button
                     key={day}
                     type="button"
-                    className={`min-h-10 min-w-10 rounded-xl border text-sm ${
+                    className={`min-h-9 min-w-9 rounded-lg border text-xs ${
                       form.weekdayDays.includes(day)
-                        ? 'border-brand bg-brand/10'
+                        ? 'border-brand bg-brand/10 text-brand'
                         : 'border-[var(--color-border)]'
                     }`}
                     onClick={() => toggleWeekday(day)}
@@ -449,180 +391,164 @@ export function AddMedicationWizard() {
                     {label}
                   </button>
                 ))}
-                {errors.weekdays && (
-                  <p className="w-full text-xs text-red-600">{errors.weekdays}</p>
-                )}
               </div>
-            )}
+              {errors.weekdays && (
+                <p className="mt-1 text-xs text-red-600">{errors.weekdays}</p>
+              )}
+            </div>
+          )}
 
-            {form.scheduleType === 'everyNDays' && (
-              <label className="block text-sm">
-                Co ile dni?
-                <input
-                  type="number"
-                  min={2}
-                  className="mt-1 w-full min-h-11 rounded-xl border border-[var(--color-border)] px-3"
-                  value={form.everyNInterval}
-                  onChange={(e) =>
-                    patch({ everyNInterval: Number(e.target.value) })
-                  }
-                />
-                {errors.everyN && (
-                  <p className="mt-1 text-xs text-red-600">{errors.everyN}</p>
-                )}
-              </label>
-            )}
+          {form.scheduleType === 'everyNDays' && (
+            <label className="block text-sm">
+              {pl.wizard.fields.everyNDays}
+              <input
+                type="number"
+                min={2}
+                name="everyNInterval"
+                className={selectClassName}
+                value={form.everyNInterval}
+                onChange={(e) =>
+                  patch({ everyNInterval: Number(e.target.value) })
+                }
+              />
+              {errors.everyN && (
+                <p className="mt-1 text-xs text-red-600">{errors.everyN}</p>
+              )}
+            </label>
+          )}
 
-            {form.scheduleType === 'weekly' && (
-              <div className="flex flex-wrap gap-2">
-                {DAY_LABELS.map((label, day) => (
-                  <button
-                    key={day}
-                    type="button"
-                    className={`min-h-10 rounded-xl border px-3 text-sm ${
-                      form.weeklyDay === day
-                        ? 'border-brand bg-brand/10'
-                        : 'border-[var(--color-border)]'
-                    }`}
-                    onClick={() => patch({ weeklyDay: day })}
-                  >
-                    {label}
-                  </button>
-                ))}
-              </div>
-            )}
+          {form.scheduleType === 'weekly' && (
+            <FormSelect
+              label={pl.wizard.fields.weeklyDay}
+              value={String(form.weeklyDay)}
+              onChange={(v) => patch({ weeklyDay: Number(v) })}
+            >
+              {DAY_LABELS.map((label, day) => (
+                <option key={day} value={day}>
+                  {label}
+                </option>
+              ))}
+            </FormSelect>
+          )}
 
-            {form.scheduleType === 'monthly' && (
-              <label className="block text-sm">
-                Dzień miesiąca
+          {form.scheduleType === 'monthly' && (
+            <label className="block text-sm">
+              {pl.wizard.fields.monthlyDay}
+              <input
+                type="number"
+                min={1}
+                max={28}
+                name="monthlyDay"
+                className={selectClassName}
+                value={form.monthlyDay}
+                onChange={(e) => patch({ monthlyDay: Number(e.target.value) })}
+              />
+            </label>
+          )}
+
+          {form.scheduleType === 'cycle' && (
+            <div className="grid grid-cols-2 gap-3">
+              <label className="text-sm">
+                {pl.wizard.fields.cycleActive}
                 <input
                   type="number"
                   min={1}
-                  max={28}
-                  className="mt-1 w-full min-h-11 rounded-xl border border-[var(--color-border)] px-3"
-                  value={form.monthlyDay}
-                  onChange={(e) => patch({ monthlyDay: Number(e.target.value) })}
-                />
-              </label>
-            )}
-
-            {form.scheduleType === 'cycle' && (
-              <div className="grid grid-cols-2 gap-3">
-                <label className="text-sm">
-                  Dni brania
-                  <input
-                    type="number"
-                    min={1}
-                    className="mt-1 w-full min-h-11 rounded-xl border border-[var(--color-border)] px-3"
-                    value={form.cycleActive}
-                    onChange={(e) =>
-                      patch({ cycleActive: Number(e.target.value) })
-                    }
-                  />
-                </label>
-                <label className="text-sm">
-                  Dni przerwy
-                  <input
-                    type="number"
-                    min={1}
-                    className="mt-1 w-full min-h-11 rounded-xl border border-[var(--color-border)] px-3"
-                    value={form.cycleBreak}
-                    onChange={(e) =>
-                      patch({ cycleBreak: Number(e.target.value) })
-                    }
-                  />
-                </label>
-              </div>
-            )}
-
-            <div className="grid grid-cols-2 gap-3">
-              <label className="text-sm">
-                {pl.wizard.fields.dateFrom}
-                <input
-                  type="date"
-                  className="mt-1 w-full min-h-11 rounded-xl border border-[var(--color-border)] px-3"
-                  value={form.dateStart}
-                  onChange={(e) => patch({ dateStart: e.target.value })}
+                  name="cycleActive"
+                  className={selectClassName}
+                  value={form.cycleActive}
+                  onChange={(e) =>
+                    patch({ cycleActive: Number(e.target.value) })
+                  }
                 />
               </label>
               <label className="text-sm">
-                {pl.wizard.fields.dateTo}
+                {pl.wizard.fields.cycleBreak}
                 <input
-                  type="date"
-                  className="mt-1 w-full min-h-11 rounded-xl border border-[var(--color-border)] px-3"
-                  value={form.dateEnd}
-                  onChange={(e) => patch({ dateEnd: e.target.value })}
+                  type="number"
+                  min={1}
+                  name="cycleBreak"
+                  className={selectClassName}
+                  value={form.cycleBreak}
+                  onChange={(e) =>
+                    patch({ cycleBreak: Number(e.target.value) })
+                  }
                 />
               </label>
             </div>
-          </>
-        )}
+          )}
 
-        {step === 4 && (
-          <>
-            <label className="block">
-              <span className="text-sm font-medium">{pl.wizard.fields.purpose}</span>
+          <div className="grid grid-cols-2 gap-3">
+            <label className="text-sm">
+              {pl.wizard.fields.dateFrom}
               <input
-                className="mt-1 w-full min-h-12 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-elevated)] px-3"
-                value={form.purpose}
-                onChange={(e) => patch({ purpose: e.target.value })}
-                placeholder="np. tarczyca, odporność"
+                type="date"
+                name="dateStart"
+                className={selectClassName}
+                value={form.dateStart}
+                onChange={(e) => patch({ dateStart: e.target.value })}
               />
             </label>
-            <label className="block">
-              <span className="text-sm font-medium">{pl.wizard.fields.note}</span>
-              <textarea
-                className="mt-1 w-full min-h-24 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-elevated)] px-3 py-2"
-                value={form.note}
-                onChange={(e) => patch({ note: e.target.value })}
+            <label className="text-sm">
+              {pl.wizard.fields.dateTo}
+              <input
+                type="date"
+                name="dateEnd"
+                className={selectClassName}
+                value={form.dateEnd}
+                onChange={(e) => patch({ dateEnd: e.target.value })}
               />
             </label>
-          </>
-        )}
+          </div>
+        </section>
 
-        {step === 5 && (
-          <>
-            <p className="text-sm font-medium">{pl.wizard.fields.colorIcon}</p>
-            <fieldset>
-              <legend className="text-sm font-medium">{pl.wizard.fields.color}</legend>
-              <MedicationColorPicker
-                value={form.color}
-                onChange={(color) => patch({ color })}
-              />
-            </fieldset>
-            <fieldset className="mt-4">
-              <legend className="text-sm font-medium">{pl.wizard.fields.icon}</legend>
-              <MedicationIconPicker
-                value={form.icon}
-                onChange={(icon) => patch({ icon })}
-              />
-            </fieldset>
-          </>
-        )}
-      </div>
+        <section className="space-y-3">
+          <SectionTitle>{pl.wizard.sections.notes}</SectionTitle>
+          <label className="block">
+            <span className="text-sm font-medium">{pl.wizard.fields.purpose}</span>
+            <input
+              name="purpose"
+              className={`${selectClassName} bg-[var(--color-surface-elevated)]`}
+              value={form.purpose}
+              onChange={(e) => patch({ purpose: e.target.value })}
+              placeholder="np. tarczyca, odporność"
+            />
+          </label>
+          <label className="block">
+            <span className="text-sm font-medium">{pl.wizard.fields.note}</span>
+            <textarea
+              name="note"
+              className="mt-1 w-full min-h-20 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-elevated)] px-3 py-2 text-sm"
+              value={form.note}
+              onChange={(e) => patch({ note: e.target.value })}
+            />
+          </label>
+        </section>
 
-      <div className="mt-8 flex gap-3">
-        {step > 1 && (
-          <button
-            type="button"
-            className="min-h-12 flex-1 rounded-xl border border-[var(--color-border)] font-medium"
-            onClick={() => setStep((s) => s - 1)}
-          >
-            {pl.wizard.back}
-          </button>
-        )}
+        <section className="space-y-3">
+          <SectionTitle>{pl.wizard.sections.appearance}</SectionTitle>
+          <fieldset>
+            <legend className="text-sm font-medium">{pl.wizard.fields.color}</legend>
+            <MedicationColorPicker
+              value={form.color}
+              onChange={(color) => patch({ color })}
+            />
+          </fieldset>
+          <fieldset>
+            <legend className="text-sm font-medium">{pl.wizard.fields.icon}</legend>
+            <MedicationIconPicker
+              value={form.icon}
+              onChange={(icon) => patch({ icon })}
+            />
+          </fieldset>
+        </section>
+
         <button
           type="submit"
           disabled={saving}
-          className="min-h-12 flex-1 rounded-xl bg-brand font-semibold text-white disabled:opacity-60"
+          className="min-h-12 w-full rounded-xl bg-brand font-semibold text-white disabled:opacity-60"
         >
-          {saving
-            ? pl.wizard.saving
-            : step < TOTAL_STEPS
-              ? pl.wizard.next
-              : pl.wizard.save}
+          {saving ? pl.wizard.saving : pl.wizard.save}
         </button>
-      </div>
       </form>
     </div>
   )
