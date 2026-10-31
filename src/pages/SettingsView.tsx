@@ -163,13 +163,7 @@ export function SettingsView() {
           to="/privacy"
           className="flex min-h-11 w-full items-center justify-center rounded-xl border border-[var(--color-border)] text-sm"
         >
-          {pl.settings.privacy}
-        </Link>
-        <Link
-          to="/privacy#usuniecie"
-          className="flex min-h-11 w-full items-center justify-center rounded-xl border border-[var(--color-border)] text-sm text-[var(--color-text-muted)]"
-        >
-          {pl.settings.deletionHelp}
+          {pl.settings.dataInfo}
         </Link>
         <button
           type="button"

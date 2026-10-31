@@ -29,11 +29,6 @@ const ProgressView = lazy(() =>
 const SettingsView = lazy(() =>
   import('@/pages/SettingsView').then((m) => ({ default: m.SettingsView })),
 )
-const PrivacyConsentView = lazy(() =>
-  import('@/pages/PrivacyConsentView').then((m) => ({
-    default: m.PrivacyConsentView,
-  })),
-)
 const PrivacyPolicyView = lazy(() =>
   import('@/pages/PrivacyPolicyView').then((m) => ({
     default: m.PrivacyPolicyView,
@@ -60,21 +55,6 @@ function OnboardingGate({ children }: { children: React.ReactNode }) {
   return children
 }
 
-function PrivacyGate({ children }: { children: React.ReactNode }) {
-  const { ready, needsPrivacyConsent } = useSettings()
-  if (!ready) {
-    return (
-      <div className="flex min-h-dvh items-center justify-center text-[var(--color-text-muted)]">
-        Ładowanie…
-      </div>
-    )
-  }
-  if (needsPrivacyConsent) {
-    return <Navigate to="/privacy-consent" replace />
-  }
-  return children
-}
-
 const routerBasename = import.meta.env.BASE_URL.replace(/\/$/, '') || undefined
 
 function PageFallback() {
@@ -91,14 +71,12 @@ export function AppRouter() {
       <Suspense fallback={<PageFallback />}>
       <Routes>
         <Route path="/onboarding" element={<OnboardingView />} />
-        <Route path="/privacy-consent" element={<PrivacyConsentView />} />
         <Route path="/privacy" element={<PrivacyPolicyView />} />
+        <Route path="/privacy-consent" element={<Navigate to="/" replace />} />
         <Route
           element={
             <OnboardingGate>
-              <PrivacyGate>
-                <AppShell />
-              </PrivacyGate>
+              <AppShell />
             </OnboardingGate>
           }
         >

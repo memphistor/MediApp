@@ -19,13 +19,10 @@ export const pl = {
   onboarding: {
     title: 'Witaj w MediApp',
     body1:
-      'To jest Twój osobisty notatnik: zapisujesz pozycje, harmonogram i notatki — aplikacja przypomina o godzinach, które sam wybierzesz.',
+      'Osobisty notatnik i przypominacz: wpisujesz pozycje i godziny, aplikacja przypomina. Nie ma logowania ani synchronizacji w chmurze.',
     body2:
-      'MediApp nie ocenia terapii, nie sprawdza interakcji ani nie podpowiada dawkowania z bazy leków.',
-    body3:
-      'Dane są przechowywane lokalnie na tym urządzeniu. Możesz je usunąć w ustawieniach.',
+      'Wpisy zapisują się tylko w tej przeglądarce na tym urządzeniu. Możesz je skasować w Ustawieniach → Usuń wszystkie dane.',
     accept: 'Rozumiem, zaczynam',
-    privacyLink: 'Polityka prywatności',
   },
 
   today: {
@@ -147,21 +144,6 @@ export const pl = {
     empty: 'Brak wpisów w dzienniku.',
   },
 
-  privacy: {
-    consent: {
-      title: 'Zgoda i prywatność',
-      bullets: [
-        'Dane o lekach i notatkach przechowujemy tylko lokalnie na tym urządzeniu.',
-        'MediApp jest notatnikiem — nie podpowiada dawkowania ani interakcji.',
-        'Możesz usunąć dane w ustawieniach.',
-      ],
-      checkbox:
-        'Wyrażam zgodę na przetwarzanie danych o moim zdrowiu wpisywanych przeze mnie w aplikacji (szczegóły w polityce prywatności).',
-      readPolicy: 'Przeczytaj politykę prywatności',
-      accept: 'Akceptuję i kontynuuję',
-    },
-  },
-
   progress: {
     title: 'Postęp',
     dayRing: 'Pierścień dnia',
@@ -198,9 +180,8 @@ export const pl = {
     deleteAll: 'Usuń wszystkie dane',
     deleteConfirm: 'Na pewno usunąć wszystkie dane z tego urządzenia? Tej operacji nie można cofnąć.',
     deleted: 'Dane zostały usunięte.',
-    privacy: 'Polityka prywatności',
-    deletionHelp: 'Jak usunąć dane',
-    onboarding: 'Pokaż onboarding ponownie',
+    dataInfo: 'Informacje o danych',
+    onboarding: 'Pokaż ekran powitalny ponownie',
     notificationLimits: 'Limity powiadomień',
   },
 

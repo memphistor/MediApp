@@ -13,7 +13,6 @@ import {
   DEFAULT_GAMIFICATION,
   clearAllUserData,
 } from '@/db/database'
-import { CURRENT_PRIVACY_POLICY_VERSION, requiresPrivacyConsent } from '@/legal/policyVersion'
 import type { FontScale, ThemePreference, UserSettings } from '@/types/settings'
 
 interface SettingsContextValue {
@@ -22,8 +21,6 @@ interface SettingsContextValue {
   setFontScale: (scale: FontScale) => void
   completeOnboarding: () => void
   resetOnboarding: () => void
-  acceptPrivacyConsent: () => void
-  needsPrivacyConsent: boolean
   setNotificationsEnabled: (enabled: boolean) => Promise<boolean>
   setSnoozeMinutesDefault: (minutes: number) => void
   setPersistentAlarmEnabled: (enabled: boolean) => void
@@ -95,16 +92,6 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     void persist({ ...settings, onboardingCompleted: false })
   }, [persist, settings])
 
-  const acceptPrivacyConsent = useCallback(() => {
-    const now = new Date().toISOString()
-    void persist({
-      ...settings,
-      privacyPolicyVersionAccepted: CURRENT_PRIVACY_POLICY_VERSION,
-      privacyConsentAt: now,
-      specialCategoryConsentAt: now,
-    })
-  }, [persist, settings])
-
   const replaceSettings = useCallback(
     (next: UserSettings) => {
       void persist(next)
@@ -153,10 +140,6 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     applyFontScale(DEFAULT_SETTINGS.fontScale)
   }, [])
 
-  const needsPrivacyConsent = requiresPrivacyConsent(
-    settings.privacyPolicyVersionAccepted,
-  )
-
   const value = useMemo(
     () => ({
       settings,
@@ -164,8 +147,6 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
       setFontScale,
       completeOnboarding,
       resetOnboarding,
-      acceptPrivacyConsent,
-      needsPrivacyConsent,
       setNotificationsEnabled,
       setSnoozeMinutesDefault,
       setPersistentAlarmEnabled,
@@ -179,8 +160,6 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
       setFontScale,
       completeOnboarding,
       resetOnboarding,
-      acceptPrivacyConsent,
-      needsPrivacyConsent,
       setNotificationsEnabled,
       setSnoozeMinutesDefault,
       setPersistentAlarmEnabled,
