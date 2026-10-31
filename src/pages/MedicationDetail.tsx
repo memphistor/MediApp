@@ -1,6 +1,8 @@
 import { useNavigate, useParams, Link } from 'react-router-dom'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { ScheduleSummary } from '@/components/medication/ScheduleSummary'
+import { MedicationStockLine } from '@/components/medication/MedicationStockLine'
+import { MedicationStockPanel } from '@/components/medication/MedicationStockPanel'
 import { pl } from '@/i18n/pl'
 import { getMedicationById, deleteMedication } from '@/repositories/medicationRepository'
 import { logAsNeededIntake } from '@/repositories/doseLogRepository'
@@ -75,6 +77,14 @@ export function MedicationDetail() {
             <dt className="text-[var(--color-text-muted)]">Dawka</dt>
             <dd className="font-medium">{med.doseText}</dd>
           </div>
+          {med.stockRemaining != null && (
+            <div>
+              <dt className="text-[var(--color-text-muted)]">{pl.stock.replenishTitle}</dt>
+              <dd>
+                <MedicationStockLine medication={med} />
+              </dd>
+            </div>
+          )}
           <div>
             <dt className="text-[var(--color-text-muted)]">{pl.detail.schedule}</dt>
             <dd>
@@ -117,6 +127,8 @@ export function MedicationDetail() {
           )}
         </ul>
       </section>
+
+      <MedicationStockPanel medicationId={med.id} />
 
       <div className="flex flex-col gap-2">
         <Link

@@ -27,6 +27,9 @@ const validBase: WizardFormState = {
   note: '',
   color: '#000',
   icon: '💊',
+  trackStock: false,
+  stockRemaining: 30,
+  stockUnitsPerIntake: 1,
 }
 
 describe('validateWizardStep', () => {

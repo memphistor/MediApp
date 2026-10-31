@@ -80,6 +80,11 @@ export const pl = {
       color: 'Kolor',
       icon: 'Ikona',
       note: 'Własna notatka',
+      trackStock: 'Śledź, ile sztuk zostało w opakowaniu',
+      stockRemaining: 'Aktualnie w opakowaniu (szt.)',
+      stockUnitsPerIntake: 'Szt. na jedno przyjęcie',
+      stockHint:
+        'Po odhaczeniu „Wzięta” aplikacja odejmie podaną liczbę sztuk. Możesz uzupełnić zapas na karcie pozycji.',
       weekdays: 'Dni tygodnia',
       everyNDays: 'Co ile dni?',
       weeklyDay: 'Dzień tygodnia',
@@ -93,6 +98,7 @@ export const pl = {
       schedule: 'Harmonogram',
       notes: 'Notatki',
       appearance: 'Wygląd',
+      stock: 'Zapas opakowania',
     },
     notSelected: 'Nie wybrano',
     kinds: {
@@ -142,6 +148,15 @@ export const pl = {
       'Usunąć tę pozycję i wszystkie powiązane wpisy w dzienniku na tym urządzeniu?',
     edit: 'Edytuj',
     logIntake: 'Zapisz przyjęcie',
+  },
+
+  stock: {
+    remaining: 'Zapas: {n} szt.',
+    low: 'mało zostało',
+    replenishTitle: 'Uzupełnij opakowanie',
+    replenishHint: 'Dodaj sztuki po zakupie nowego opakowania.',
+    replenishAmount: 'Ile sztuk dodajesz?',
+    replenishAction: 'Dodaj do zapasu',
   },
 
   calendar: {

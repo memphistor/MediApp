@@ -3,6 +3,7 @@ import { Link, useSearchParams } from 'react-router-dom'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { DayRing } from '@/components/gamification/DayRing'
 import { MedicationCard } from '@/components/medication/MedicationCard'
+import { MedicationStockLine } from '@/components/medication/MedicationStockLine'
 import { dayRingProgress } from '@/lib/gamification/dayStats'
 import { DueReminderPanel } from '@/components/reminders/DueReminderPanel'
 import { db } from '@/db/database'
@@ -151,6 +152,7 @@ export function TodayView() {
                   <p className="text-xs text-[var(--color-text-muted)]">
                     {med.doseText}
                   </p>
+                  <MedicationStockLine medication={med} compact />
                 </Link>
                 <button
                   type="button"

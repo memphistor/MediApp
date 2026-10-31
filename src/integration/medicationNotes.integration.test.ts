@@ -26,6 +26,9 @@ const validWizard: WizardFormState = {
   note: '',
   color: '#0f766e',
   icon: '💊',
+  trackStock: false,
+  stockRemaining: 30,
+  stockUnitsPerIntake: 1,
 }
 
 describe('medication notes', () => {

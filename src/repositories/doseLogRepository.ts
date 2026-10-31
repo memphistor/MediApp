@@ -1,5 +1,9 @@
 import { db } from '@/db/database'
 import { recalculateAndSave } from '@/repositories/gamificationRepository'
+import {
+  consumeStockForIntake,
+  restoreStockForIntake,
+} from '@/services/medicationStock'
 import { endOfLocalDay, startOfLocalDay, toDateKey } from '@/lib/dates'
 import type { DoseLog, DoseStatus } from '@/types/dose'
 
@@ -55,6 +59,11 @@ export async function updateDoseStatus(
     skipReason: extra?.skipReason,
     takenAt,
   })
+  if (existing.status !== 'taken' && status === 'taken') {
+    await consumeStockForIntake(existing.medicationId)
+  } else if (existing.status === 'taken' && status !== 'taken') {
+    await restoreStockForIntake(existing.medicationId)
+  }
   if (!options?.skipGamification) {
     await recalculateAndSave()
   }
@@ -82,6 +91,7 @@ export async function logAsNeededIntake(medicationId: string): Promise<DoseLog> 
     source: 'prn',
   }
   await db.doseLogs.put(log)
+  await consumeStockForIntake(medicationId)
   await recalculateAndSave()
   return log
 }

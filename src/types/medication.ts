@@ -43,6 +43,10 @@ export interface MedicationEntry {
   color: string
   icon: string
   userNote?: string
+  /** Remaining units in package when stock tracking is enabled. */
+  stockRemaining?: number
+  /** Units consumed per intake (default 1). */
+  stockUnitsPerIntake?: number
   createdAt: string
   updatedAt: string
 }

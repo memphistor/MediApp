@@ -72,6 +72,9 @@ const initialForm: WizardFormState = {
   note: '',
   color: DEFAULT_MEDICATION_COLOR,
   icon: '💊',
+  trackStock: false,
+  stockRemaining: 30,
+  stockUnitsPerIntake: 1,
 }
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
@@ -337,6 +340,62 @@ export function AddMedicationWizard() {
               ))}
             </FormSelect>
           </div>
+        </section>
+
+        <section className="space-y-3">
+          <SectionTitle>{pl.wizard.sections.stock}</SectionTitle>
+          <label className="flex cursor-pointer items-center gap-3 text-sm">
+            <input
+              type="checkbox"
+              className="h-5 w-5 accent-brand"
+              checked={form.trackStock}
+              onChange={(e) => patch({ trackStock: e.target.checked })}
+            />
+            <span>{pl.wizard.fields.trackStock}</span>
+          </label>
+          {form.trackStock && (
+            <div className="grid gap-3 sm:grid-cols-2">
+              <label className="block text-sm">
+                {pl.wizard.fields.stockRemaining}
+                <input
+                  type="number"
+                  min={0}
+                  name="stockRemaining"
+                  className={selectClassName}
+                  value={form.stockRemaining}
+                  onChange={(e) =>
+                    patch({ stockRemaining: Number(e.target.value) })
+                  }
+                />
+                {errors.stockRemaining && (
+                  <p className="mt-1 text-xs text-red-600">
+                    {errors.stockRemaining}
+                  </p>
+                )}
+              </label>
+              <label className="block text-sm">
+                {pl.wizard.fields.stockUnitsPerIntake}
+                <input
+                  type="number"
+                  min={1}
+                  name="stockUnitsPerIntake"
+                  className={selectClassName}
+                  value={form.stockUnitsPerIntake}
+                  onChange={(e) =>
+                    patch({ stockUnitsPerIntake: Number(e.target.value) })
+                  }
+                />
+                {errors.stockUnitsPerIntake && (
+                  <p className="mt-1 text-xs text-red-600">
+                    {errors.stockUnitsPerIntake}
+                  </p>
+                )}
+              </label>
+            </div>
+          )}
+          <p className="text-xs text-[var(--color-text-muted)]">
+            {pl.wizard.fields.stockHint}
+          </p>
         </section>
 
         <section className="space-y-3">

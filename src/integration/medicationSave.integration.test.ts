@@ -31,6 +31,9 @@ const validWizard: WizardFormState = {
   note: '',
   color: '#0f766e',
   icon: '💊',
+  trackStock: true,
+  stockRemaining: 30,
+  stockUnitsPerIntake: 1,
 }
 
 describe('medication save flow (IndexedDB)', () => {
@@ -57,7 +60,12 @@ describe('medication save flow (IndexedDB)', () => {
   })
 
   it('mark dose taken updates log', async () => {
-    const entry = buildMedicationFromWizard(validWizard)
+    const entry = buildMedicationFromWizard({
+      ...validWizard,
+      trackStock: true,
+      stockRemaining: 30,
+      stockUnitsPerIntake: 1,
+    })
     await createMedication(entry)
     await syncDoseLogsForMedication(entry.id)
     const log = await db.doseLogs.where('medicationId').equals(entry.id).first()
@@ -68,6 +76,8 @@ describe('medication save flow (IndexedDB)', () => {
     const updated = await db.doseLogs.get(log!.id)
     expect(updated?.status).toBe('taken')
     expect(updated?.takenAt).toBeDefined()
+    const med = await getMedicationById(entry.id)
+    expect(med?.stockRemaining).toBe(29)
   })
 
   it('sets takenAt automatically when marking taken without explicit time', async () => {

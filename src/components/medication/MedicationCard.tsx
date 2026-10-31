@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { TakenAtEditor } from '@/components/dose/TakenAtEditor'
+import { MedicationStockLine } from '@/components/medication/MedicationStockLine'
 import type { MedicationEntry } from '@/types/medication'
 import type { DoseStatus } from '@/types/dose'
 import { pl } from '@/i18n/pl'
@@ -75,6 +76,7 @@ export function MedicationCard({
             <p className="mt-0.5 text-sm text-[var(--color-text-muted)]">
               {subtitle}
             </p>
+            <MedicationStockLine medication={medication} compact />
             {status === 'taken' && takenAt && doseLogId && (
               <TakenAtEditor logId={doseLogId} takenAt={takenAt} />
             )}

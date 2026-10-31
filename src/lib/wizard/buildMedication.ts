@@ -31,6 +31,9 @@ export interface WizardFormState {
   note: string
   color: string
   icon: string
+  trackStock: boolean
+  stockRemaining: number
+  stockUnitsPerIntake: number
 }
 
 export type WizardErrors = Partial<Record<string, string>>
@@ -57,6 +60,17 @@ export function validateWizard(state: WizardFormState): WizardErrors {
   }
   if (state.scheduleType === 'everyNDays' && state.everyNInterval < 2) {
     errors.everyN = 'Interwał musi być co najmniej 2 dni.'
+  }
+  if (state.trackStock) {
+    if (!Number.isFinite(state.stockRemaining) || state.stockRemaining < 0) {
+      errors.stockRemaining = 'Podaj liczbę sztuk w opakowaniu (0 lub więcej).'
+    }
+    if (
+      !Number.isFinite(state.stockUnitsPerIntake) ||
+      state.stockUnitsPerIntake < 1
+    ) {
+      errors.stockUnitsPerIntake = 'Podaj co najmniej 1 szt. na jedno przyjęcie.'
+    }
   }
 
   return errors
@@ -120,6 +134,8 @@ export function mergeWizardFormFromDom(
     monthlyDay: num('monthlyDay', current.monthlyDay),
     cycleActive: num('cycleActive', current.cycleActive),
     cycleBreak: num('cycleBreak', current.cycleBreak),
+    stockRemaining: num('stockRemaining', current.stockRemaining),
+    stockUnitsPerIntake: num('stockUnitsPerIntake', current.stockUnitsPerIntake),
   }
 }
 
@@ -171,6 +187,9 @@ export function medicationToWizardState(entry: MedicationEntry): WizardFormState
     note: entry.userNote ?? '',
     color: entry.color,
     icon: entry.icon,
+    trackStock: entry.stockRemaining != null,
+    stockRemaining: entry.stockRemaining ?? 30,
+    stockUnitsPerIntake: entry.stockUnitsPerIntake ?? 1,
   }
 }
 
@@ -205,6 +224,12 @@ export function buildMedicationFromWizard(
     color: normalizeMedicationColor(state.color),
     icon: state.icon || '💊',
     userNote: state.note.trim() || undefined,
+    stockRemaining: state.trackStock
+      ? Math.max(0, Math.floor(state.stockRemaining))
+      : undefined,
+    stockUnitsPerIntake: state.trackStock
+      ? Math.max(1, Math.floor(state.stockUnitsPerIntake))
+      : undefined,
     createdAt: existing?.createdAt ?? now,
     updatedAt: now,
   }
