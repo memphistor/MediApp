@@ -20,6 +20,8 @@ import {
 } from '@/repositories/medicationRepository'
 import { syncDoseLogsForMedication } from '@/services/syncDoseLogs'
 import { MedicationIconPicker } from '@/components/medication/MedicationIconPicker'
+import { MedicationColorPicker } from '@/components/medication/MedicationColorPicker'
+import { DEFAULT_MEDICATION_COLOR } from '@/lib/wizard/medicationColors'
 
 const TOTAL_STEPS = 5
 const DAY_LABELS = ['Nd', 'Pn', 'Wt', 'Śr', 'Cz', 'Pt', 'So']
@@ -70,7 +72,7 @@ const initialForm: WizardFormState = {
   dateEnd: '',
   purpose: '',
   note: '',
-  color: '#0f766e',
+  color: DEFAULT_MEDICATION_COLOR,
   icon: '💊',
 }
 
@@ -581,15 +583,13 @@ export function AddMedicationWizard() {
         {step === 5 && (
           <>
             <p className="text-sm font-medium">{pl.wizard.fields.colorIcon}</p>
-            <label className="block">
-              <span className="text-sm font-medium">{pl.wizard.fields.color}</span>
-              <input
-                type="color"
-                className="mt-1 h-12 w-full max-w-xs cursor-pointer rounded-xl border border-[var(--color-border)]"
+            <fieldset>
+              <legend className="text-sm font-medium">{pl.wizard.fields.color}</legend>
+              <MedicationColorPicker
                 value={form.color}
-                onChange={(e) => patch({ color: e.target.value })}
+                onChange={(color) => patch({ color })}
               />
-            </label>
+            </fieldset>
             <fieldset className="mt-4">
               <legend className="text-sm font-medium">{pl.wizard.fields.icon}</legend>
               <MedicationIconPicker

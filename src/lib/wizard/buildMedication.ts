@@ -1,5 +1,6 @@
 import { isValidTimeHHmm, parseTimesInput } from '@/lib/dates'
 import { createId } from '@/lib/id'
+import { normalizeMedicationColor } from '@/lib/wizard/medicationColors'
 import type {
   EmptyStomachNote,
   MealTiming,
@@ -201,7 +202,7 @@ export function buildMedicationFromWizard(
     schedule: buildSchedule(state),
     dateRange,
     purposeLabel: state.purpose.trim() || undefined,
-    color: state.color,
+    color: normalizeMedicationColor(state.color),
     icon: state.icon || '💊',
     userNote: state.note.trim() || undefined,
     createdAt: existing?.createdAt ?? now,
