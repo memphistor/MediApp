@@ -171,6 +171,29 @@ export const pl = {
     badgeStreak7: 'Tydzień pełnego planu',
     badgeStreak30: 'Miesiąc pełnego planu',
     badgeTaken100: '100 odhaczonych dawek',
+    timing: {
+      title: 'Terminowość przyjmowania',
+      hint:
+        '„W terminie” = odhaczenie od 30 min przed do 90 min po zaplanowanej godzinie (wg zapisu w aplikacji).',
+      today: 'Dziś',
+      last7Days: 'Ostatnie 7 dni',
+      thisMonth: 'Ten miesiąc',
+      noData: 'Brak zaplanowanych dawek w tym okresie.',
+      summaryLine:
+        '{onTime} z {taken} wziętych w terminie ({onTimePct}%). Przyjęcia z planu: {adherencePct}%.',
+      todayBreakdown: 'Dziś — rozbicie',
+      onTime: 'W terminie',
+      early: 'Za wcześnie',
+      late: 'Po terminie',
+      unknown: 'Wzięte bez dokładnej godziny',
+      missed: 'Pominięte / opuszczone',
+      dailyTitle: 'Dzień po dniu (7 dni)',
+      dayNoPlan: 'Brak planu',
+      dayPending: 'Jeszcze w planie',
+      dayMissed: 'Nie wszystko wzięte',
+      dayAllOnTime: 'Wszystko w terminie',
+      dayOffTime: '{onTime}/{taken} w terminie',
+    },
   },
 
   settings: {

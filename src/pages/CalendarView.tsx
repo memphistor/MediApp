@@ -8,6 +8,10 @@ import {
 } from '@/lib/gamification/dayStats'
 import { dayComplianceToneClass } from '@/lib/calendar/dayComplianceStyles'
 import { CalendarWeekStrip } from '@/components/calendar/CalendarWeekStrip'
+import {
+  formatTimingDeltaMinutes,
+  timingLabelForLog,
+} from '@/lib/gamification/doseTiming'
 import { pl } from '@/i18n/pl'
 import type { DoseLog } from '@/types/dose'
 import type { MedicationEntry } from '@/types/medication'
@@ -98,6 +102,19 @@ export function CalendarView() {
 
   const renderLog = (log: DoseLog) => {
     const med = medMap.get(log.medicationId)
+    const timingLabels = pl.progress.timing
+    const timingText =
+      log.source === 'prn'
+        ? null
+        : timingLabelForLog(log, {
+            onTime: timingLabels.onTime,
+            early: timingLabels.early,
+            late: timingLabels.late,
+            unknown: timingLabels.unknown,
+            missed: timingLabels.missed,
+            planned: pl.doseStatus.planned,
+          })
+    const delta = formatTimingDeltaMinutes(log)
     return (
       <li
         key={log.id}
@@ -109,6 +126,12 @@ export function CalendarView() {
             {' '}
             · {formatTime(log.scheduledAt)}
           </span>
+          {timingText && (
+            <span className="block text-xs text-[var(--color-text-muted)]">
+              {timingText}
+              {delta && timingText !== timingLabels.missed ? ` (${delta})` : ''}
+            </span>
+          )}
         </span>
         <span className="shrink-0 text-xs text-[var(--color-text-muted)]">
           {pl.doseStatus[log.status]}

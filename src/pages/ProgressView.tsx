@@ -1,9 +1,11 @@
 import { useLiveQuery } from 'dexie-react-hooks'
 import { DayRing } from '@/components/gamification/DayRing'
+import { TimingStatsPanel } from '@/components/gamification/TimingStatsPanel'
 import { BADGE_DEFINITIONS } from '@/lib/gamification/badges'
 import { plantEmojiForStreak } from '@/lib/gamification/plantStage'
 import { db, DEFAULT_GAMIFICATION } from '@/db/database'
 import { pl } from '@/i18n/pl'
+import { addDays, startOfLocalDay } from '@/lib/dates'
 
 export function ProgressView() {
   const state = useLiveQuery(
@@ -17,6 +19,14 @@ export function ProgressView() {
   const earnedIds = new Set(
     gam.badges.filter((b) => b.earnedAt).map((b) => b.id),
   )
+
+  const timingLogs = useLiveQuery(async () => {
+    const from = startOfLocalDay(addDays(new Date(), -90))
+    return db.doseLogs
+      .where('scheduledAt')
+      .above(from.toISOString())
+      .toArray()
+  }, [])
 
   return (
     <div className="space-y-6">
@@ -47,6 +57,8 @@ export function ProgressView() {
             : pl.progress.shieldRecharge}
         </p>
       </div>
+
+      <TimingStatsPanel logs={timingLogs ?? []} />
 
       <div>
         <p className="font-semibold">{pl.progress.badges}</p>
