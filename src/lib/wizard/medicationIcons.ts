@@ -71,7 +71,3 @@ export const DEFAULT_MEDICATION_ICON: MedicationIconId = '💊'
 export function medicationIconLabel(icon: string): string {
   return resolveMedicationIconDisplay(icon)
 }
-
-export function isLegacyEmojiIcon(_icon: string): boolean {
-  return false
-}
