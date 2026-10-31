@@ -19,6 +19,7 @@ import {
   updateMedication,
 } from '@/repositories/medicationRepository'
 import { syncDoseLogsForMedication } from '@/services/syncDoseLogs'
+import { MedicationIconPicker } from '@/components/medication/MedicationIconPicker'
 
 const TOTAL_STEPS = 5
 const DAY_LABELS = ['Nd', 'Pn', 'Wt', 'Śr', 'Cz', 'Pt', 'So']
@@ -580,26 +581,22 @@ export function AddMedicationWizard() {
         {step === 5 && (
           <>
             <p className="text-sm font-medium">{pl.wizard.fields.colorIcon}</p>
-            <div className="flex gap-4">
-              <label className="flex flex-col text-sm">
-                Kolor
-                <input
-                  type="color"
-                  className="mt-1 h-12 w-full cursor-pointer rounded-xl border border-[var(--color-border)]"
-                  value={form.color}
-                  onChange={(e) => patch({ color: e.target.value })}
-                />
-              </label>
-              <label className="flex flex-1 flex-col text-sm">
-                Ikona (emoji)
-                <input
-                  className="mt-1 min-h-12 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-elevated)] px-3 text-2xl"
-                  value={form.icon}
-                  onChange={(e) => patch({ icon: e.target.value })}
-                  maxLength={4}
-                />
-              </label>
-            </div>
+            <label className="block">
+              <span className="text-sm font-medium">{pl.wizard.fields.color}</span>
+              <input
+                type="color"
+                className="mt-1 h-12 w-full max-w-xs cursor-pointer rounded-xl border border-[var(--color-border)]"
+                value={form.color}
+                onChange={(e) => patch({ color: e.target.value })}
+              />
+            </label>
+            <fieldset className="mt-4">
+              <legend className="text-sm font-medium">{pl.wizard.fields.icon}</legend>
+              <MedicationIconPicker
+                value={form.icon}
+                onChange={(icon) => patch({ icon })}
+              />
+            </fieldset>
           </>
         )}
       </div>

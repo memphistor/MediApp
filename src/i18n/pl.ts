@@ -77,6 +77,8 @@ export const pl = {
       dateTo: 'Do (opcjonalnie)',
       purpose: 'Na co to przyjmujesz? (opcjonalnie)',
       colorIcon: 'Kolor i ikona',
+      color: 'Kolor',
+      icon: 'Ikona',
       note: 'Własna notatka',
     },
     notSelected: 'Nie wybrano',
