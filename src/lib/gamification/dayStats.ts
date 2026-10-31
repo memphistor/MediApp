@@ -55,3 +55,22 @@ export function dayRingProgress(dayLogs: DoseLog[]): {
   const taken = dayLogs.filter((l) => l.status === 'taken').length
   return { progress: taken / total, taken, total }
 }
+
+export type DayComplianceTone =
+  | 'empty'
+  | 'full'
+  | 'partial'
+  | 'missed'
+  | 'planned'
+
+/** Compliance coloring for scheduled doses only (excludes PRN). */
+export function dayComplianceTone(logs: DoseLog[]): DayComplianceTone {
+  const dayLogs = scheduledDoses(logs)
+  if (dayLogs.length === 0) return 'empty'
+  if (dayLogs.every((l) => l.status === 'taken')) return 'full'
+  if (dayLogs.some((l) => l.status === 'missed' || l.status === 'skipped')) {
+    return 'missed'
+  }
+  if (dayLogs.some((l) => l.status === 'taken')) return 'partial'
+  return 'planned'
+}

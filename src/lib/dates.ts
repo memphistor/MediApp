@@ -25,6 +25,17 @@ export function addDays(d: Date, days: number): Date {
   return next
 }
 
+/** Monday 00:00 local time of the ISO week containing `d`. */
+export function startOfWeekMonday(d: Date): Date {
+  const day = startOfLocalDay(d)
+  const diff = (day.getDay() + 6) % 7
+  return addDays(day, -diff)
+}
+
+export function weekDayKeys(monday: Date): string[] {
+  return Array.from({ length: 7 }, (_, i) => toDateKey(addDays(monday, i)))
+}
+
 export function daysBetweenCalendar(start: Date, end: Date): number {
   const a = startOfLocalDay(start).getTime()
   const b = startOfLocalDay(end).getTime()

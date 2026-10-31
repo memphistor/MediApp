@@ -1,0 +1,11 @@
+import type { DayComplianceTone } from '@/lib/gamification/dayStats'
+
+export const dayComplianceToneClass: Record<DayComplianceTone, string> = {
+  empty:
+    'border border-[var(--color-border)] bg-[var(--color-surface-elevated)] text-[var(--color-text-muted)]',
+  full: 'bg-brand/20 font-semibold text-brand',
+  partial: 'bg-brand/10 font-medium text-brand',
+  missed:
+    'bg-amber-100 font-medium text-amber-900 dark:bg-amber-950 dark:text-amber-200',
+  planned: 'border border-brand/40 bg-[var(--color-surface-elevated)]',
+}

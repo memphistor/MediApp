@@ -143,6 +143,13 @@ export const pl = {
     dayEmpty: 'Brak dawek w tym dniu.',
     prnSection: 'Doraźne',
     planSection: 'Plan',
+    weekTitle: 'Ten tydzień (pon.–niedz.)',
+    weekSummary: 'Pełny plan: {full} z {withPlan} dni z zaplanowanymi dawkami',
+    weekDayFull: 'Wszystko wzięte',
+    weekDayMissed: 'Są pominięte lub opuszczone',
+    weekDayProgress: '{taken} z {total} wzięte',
+    weekDayEmpty: 'Brak zaplanowanych dawek',
+    weekDayFuture: 'Jeszcze przed nami',
   },
 
   history: {

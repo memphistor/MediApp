@@ -2,14 +2,17 @@ import { useMemo, useState } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { db } from '@/db/database'
 import { toDateKey } from '@/lib/dates'
-import { scheduledDoses } from '@/lib/gamification/dayStats'
+import {
+  dayComplianceTone,
+  scheduledDoses,
+} from '@/lib/gamification/dayStats'
+import { dayComplianceToneClass } from '@/lib/calendar/dayComplianceStyles'
+import { CalendarWeekStrip } from '@/components/calendar/CalendarWeekStrip'
 import { pl } from '@/i18n/pl'
 import type { DoseLog } from '@/types/dose'
 import type { MedicationEntry } from '@/types/medication'
 
 const WEEKDAYS = ['Pn', 'Wt', 'Śr', 'Cz', 'Pt', 'So', 'Nd']
-
-type DayTone = 'empty' | 'full' | 'partial' | 'missed' | 'planned'
 
 function buildMonthGrid(year: number, month: number) {
   const first = new Date(year, month, 1)
@@ -22,24 +25,6 @@ function buildMonthGrid(year: number, month: number) {
   }
   while (cells.length % 7 !== 0) cells.push({ date: null })
   return cells
-}
-
-function toneFor(logs: DoseLog[]): DayTone {
-  if (logs.length === 0) return 'empty'
-  if (logs.every((l) => l.status === 'taken')) return 'full'
-  if (logs.some((l) => l.status === 'missed' || l.status === 'skipped')) {
-    return 'missed'
-  }
-  if (logs.some((l) => l.status === 'taken')) return 'partial'
-  return 'planned'
-}
-
-const toneClass: Record<DayTone, string> = {
-  empty: 'border border-[var(--color-border)] bg-[var(--color-surface-elevated)]',
-  full: 'bg-brand/20 font-semibold text-brand',
-  partial: 'bg-brand/10 font-medium text-brand',
-  missed: 'bg-amber-100 font-medium text-amber-900 dark:bg-amber-950 dark:text-amber-200',
-  planned: 'border border-brand/40 bg-[var(--color-surface-elevated)]',
 }
 
 function formatTime(iso: string): string {
@@ -106,6 +91,11 @@ export function CalendarView() {
     setSelectedKey(null)
   }
 
+  const selectCalendarDay = (key: string, date: Date) => {
+    setCursor({ year: date.getFullYear(), month: date.getMonth() })
+    setSelectedKey(key)
+  }
+
   const renderLog = (log: DoseLog) => {
     const med = medMap.get(log.medicationId)
     return (
@@ -153,6 +143,12 @@ export function CalendarView() {
       <p className="text-sm capitalize text-[var(--color-text-muted)]">
         {monthLabel}
       </p>
+
+      <CalendarWeekStrip
+        selectedKey={selectedKey}
+        onSelectDay={selectCalendarDay}
+      />
+
       <div className="grid grid-cols-7 gap-1 text-center text-xs font-medium text-[var(--color-text-muted)]">
         {WEEKDAYS.map((w) => (
           <div key={w}>{w}</div>
@@ -165,14 +161,14 @@ export function CalendarView() {
           }
           const key = toDateKey(cell.date)
           const dayLogs = byDay.get(key) ?? []
-          const tone = toneFor(scheduledDoses(dayLogs))
+          const tone = dayComplianceTone(dayLogs)
           const hasPrn = dayLogs.some((l) => l.source === 'prn')
           const selected = selectedKey === key
           return (
             <button
               key={key}
               type="button"
-              className={`relative flex aspect-square items-center justify-center rounded-lg text-sm ${toneClass[tone]} ${
+              className={`relative flex aspect-square items-center justify-center rounded-lg text-sm ${dayComplianceToneClass[tone]} ${
                 selected ? 'ring-2 ring-brand' : ''
               }`}
               onClick={() => setSelectedKey(key)}
