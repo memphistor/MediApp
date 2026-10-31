@@ -67,5 +67,16 @@ describe('medication save flow (IndexedDB)', () => {
     })
     const updated = await db.doseLogs.get(log!.id)
     expect(updated?.status).toBe('taken')
+    expect(updated?.takenAt).toBeDefined()
+  })
+
+  it('sets takenAt automatically when marking taken without explicit time', async () => {
+    const entry = buildMedicationFromWizard(validWizard)
+    await createMedication(entry)
+    await syncDoseLogsForMedication(entry.id)
+    const log = await db.doseLogs.where('medicationId').equals(entry.id).first()
+    await updateDoseStatus(log!.id, 'taken')
+    const updated = await db.doseLogs.get(log!.id)
+    expect(updated?.takenAt).toMatch(/^\d{4}-\d{2}-\d{2}T/)
   })
 })

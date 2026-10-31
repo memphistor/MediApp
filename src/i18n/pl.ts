@@ -155,6 +155,8 @@ export const pl = {
   history: {
     title: 'Historia',
     empty: 'Brak wpisów w dzienniku.',
+    plannedAt: 'Plan',
+    takenAt: 'Wzięto',
   },
 
   progress: {

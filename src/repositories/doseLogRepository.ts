@@ -45,11 +45,15 @@ export async function updateDoseStatus(
 ): Promise<void> {
   const existing = await db.doseLogs.get(id)
   if (!existing) return
+  const takenAt =
+    status === 'taken'
+      ? extra?.takenAt ?? existing.takenAt ?? new Date().toISOString()
+      : undefined
   await db.doseLogs.put({
     ...existing,
     status,
     skipReason: extra?.skipReason,
-    takenAt: extra?.takenAt,
+    takenAt,
   })
   if (!options?.skipGamification) {
     await recalculateAndSave()

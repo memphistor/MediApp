@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { formatLocaleTime } from '@/lib/dates'
 import type { MedicationEntry } from '@/types/medication'
 import type { DoseStatus } from '@/types/dose'
 import { pl } from '@/i18n/pl'
@@ -7,6 +8,7 @@ import { ScheduleSummary } from '@/components/medication/ScheduleSummary'
 interface MedicationCardProps {
   medication: MedicationEntry
   time?: string
+  takenAt?: string
   status?: DoseStatus
   doseLogId?: string
   onMarkTaken?: (doseLogId: string) => void
@@ -22,6 +24,7 @@ function emptyStomachLabel(value: MedicationEntry['onEmptyStomach']) {
 export function MedicationCard({
   medication,
   time,
+  takenAt,
   status = 'planned',
   doseLogId,
   onMarkTaken,
@@ -72,6 +75,11 @@ export function MedicationCard({
             <p className="mt-0.5 text-sm text-[var(--color-text-muted)]">
               {subtitle}
             </p>
+            {status === 'taken' && takenAt && (
+              <p className="mt-1 text-xs text-[var(--color-text)]">
+                {pl.history.takenAt}: {formatLocaleTime(takenAt)}
+              </p>
+            )}
             <div className="mt-2 flex flex-wrap items-center gap-2">
               <span
                 className="rounded-full px-2 py-0.5 text-xs font-medium"

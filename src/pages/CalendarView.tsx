@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { db } from '@/db/database'
-import { toDateKey } from '@/lib/dates'
+import { toDateKey, formatLocaleTime } from '@/lib/dates'
 import {
   dayComplianceTone,
   scheduledDoses,
@@ -130,6 +130,11 @@ export function CalendarView() {
             <span className="block text-xs text-[var(--color-text-muted)]">
               {timingText}
               {delta && timingText !== timingLabels.missed ? ` (${delta})` : ''}
+            </span>
+          )}
+          {log.status === 'taken' && log.takenAt && (
+            <span className="block text-xs text-[var(--color-text)]">
+              {pl.history.takenAt}: {formatLocaleTime(log.takenAt)}
             </span>
           )}
         </span>

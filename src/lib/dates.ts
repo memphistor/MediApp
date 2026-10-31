@@ -57,3 +57,17 @@ export function parseTimesInput(raw: string): string[] {
 export function isValidTimeHHmm(t: string): boolean {
   return /^([01]\d|2[0-3]):[0-5]\d$/.test(t)
 }
+
+export function formatLocaleDateTime(iso: string): string {
+  return new Date(iso).toLocaleString('pl-PL', {
+    dateStyle: 'short',
+    timeStyle: 'short',
+  })
+}
+
+export function formatLocaleTime(iso: string): string {
+  return new Date(iso).toLocaleTimeString('pl-PL', {
+    hour: '2-digit',
+    minute: '2-digit',
+  })
+}

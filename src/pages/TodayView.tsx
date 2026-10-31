@@ -123,6 +123,7 @@ export function TodayView() {
                 <MedicationCard
                   medication={med}
                   time={time}
+                  takenAt={log.takenAt}
                   status={log.status}
                   doseLogId={log.id}
                   onMarkTaken={handleTaken}
