@@ -7,6 +7,7 @@ import {
   buildMedicationFromWizard,
   firstWizardStepWithErrors,
   medicationToWizardState,
+  mergeWizardFormFromDom,
   validateWizard,
   validateWizardStep,
   type WizardFormState,
@@ -81,6 +82,7 @@ export function AddMedicationWizard() {
   }, [editId])
   const [step, setStep] = useState(1)
   const formRef = useRef<WizardFormState>(initialForm)
+  const formElRef = useRef<HTMLFormElement>(null)
   const [form, setForm] = useState<WizardFormState>(initialForm)
   const [errors, setErrors] = useState<WizardErrors>({})
   const [saveError, setSaveError] = useState<string | null>(null)
@@ -116,34 +118,22 @@ export function AddMedicationWizard() {
     applyForm({ ...formRef.current, ...partial }, Object.keys(partial))
   }
 
-  const handleNext = () => {
-    setSaveError(null)
-    const stepErrors = validateWizardStep(step, formRef.current)
-    setErrors(stepErrors)
-    if (Object.keys(stepErrors).length > 0) return
-    setStep((s) => s + 1)
+  const commitFormFromDom = (): WizardFormState => {
+    const merged = mergeWizardFormFromDom(formRef.current, formElRef.current)
+    formRef.current = merged
+    setForm(merged)
+    return merged
   }
 
-  const toggleWeekday = (day: number) => {
-    const current = formRef.current
-    const has = current.weekdayDays.includes(day)
-    const weekdayDays = has
-      ? current.weekdayDays.filter((d) => d !== day)
-      : [...current.weekdayDays, day]
-    applyForm({ ...current, weekdayDays }, ['weekdays'])
-  }
-
-  const handleSave = async () => {
-    setSaveError(null)
-    const current = formRef.current
-    const validation = validateWizard(current)
+  const showValidationErrors = (validation: WizardErrors) => {
     setErrors(validation)
-    if (Object.keys(validation).length > 0) {
-      const first = firstWizardStepWithErrors(validation)
-      if (first) setStep(first)
-      return
-    }
+    if (Object.keys(validation).length === 0) return
+    const first = firstWizardStepWithErrors(validation)
+    if (first) setStep(first)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
 
+  const persistMedication = async (current: WizardFormState) => {
     setSaving(true)
     try {
       const entry = buildMedicationFromWizard(
@@ -157,9 +147,44 @@ export function AddMedicationWizard() {
     } catch (err) {
       console.error(err)
       setSaveError(pl.wizard.saveFailed)
+      window.scrollTo({ top: 0, behavior: 'smooth' })
     } finally {
       setSaving(false)
     }
+  }
+
+  const handleFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    setSaveError(null)
+    const current = commitFormFromDom()
+
+    if (step < TOTAL_STEPS) {
+      const stepErrors = validateWizardStep(step, current)
+      if (Object.keys(stepErrors).length > 0) {
+        showValidationErrors(stepErrors)
+        return
+      }
+      setErrors({})
+      setStep((s) => s + 1)
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+      return
+    }
+
+    const validation = validateWizard(current)
+    if (Object.keys(validation).length > 0) {
+      showValidationErrors(validation)
+      return
+    }
+    void persistMedication(current)
+  }
+
+  const toggleWeekday = (day: number) => {
+    const current = formRef.current
+    const has = current.weekdayDays.includes(day)
+    const weekdayDays = has
+      ? current.weekdayDays.filter((d) => d !== day)
+      : [...current.weekdayDays, day]
+    applyForm({ ...current, weekdayDays }, ['weekdays'])
   }
 
   if (editId && existing === undefined) {
@@ -222,15 +247,23 @@ export function AddMedicationWizard() {
         </p>
       )}
 
-      <div className="mt-6 space-y-4">
+      <form
+        ref={formElRef}
+        className="mt-6"
+        onSubmit={handleFormSubmit}
+        noValidate
+      >
+      <div className="space-y-4">
         {step === 1 && (
           <>
             <label className="block">
               <span className="text-sm font-medium">{pl.wizard.fields.name}</span>
               <input
+                name="name"
                 className="mt-1 w-full min-h-12 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-elevated)] px-3"
                 value={form.name}
                 onChange={(e) => patch({ name: e.target.value })}
+                onBlur={(e) => patch({ name: e.target.value })}
                 autoComplete="off"
               />
               {errors.name && (
@@ -289,9 +322,11 @@ export function AddMedicationWizard() {
             <label className="block">
               <span className="text-sm font-medium">{pl.wizard.fields.dose}</span>
               <input
+                name="doseText"
                 className="mt-1 w-full min-h-12 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-elevated)] px-3"
                 value={form.doseText}
                 onChange={(e) => patch({ doseText: e.target.value })}
+                onBlur={(e) => patch({ doseText: e.target.value })}
               />
               {errors.doseText && (
                 <p className="mt-1 text-xs text-red-600">{errors.doseText}</p>
@@ -349,9 +384,11 @@ export function AddMedicationWizard() {
               <label className="block">
                 <span className="text-sm font-medium">{pl.wizard.fields.times}</span>
                 <input
+                  name="timesRaw"
                   className="mt-1 w-full min-h-12 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-elevated)] px-3"
                   value={form.timesRaw}
                   onChange={(e) => patch({ timesRaw: e.target.value })}
+                  onBlur={(e) => patch({ timesRaw: e.target.value })}
                   placeholder="07:30, 20:00"
                 />
                 {errors.times && (
@@ -566,25 +603,19 @@ export function AddMedicationWizard() {
             {pl.wizard.back}
           </button>
         )}
-        {step < TOTAL_STEPS ? (
-          <button
-            type="button"
-            className="min-h-12 flex-1 rounded-xl bg-brand font-semibold text-white"
-            onClick={handleNext}
-          >
-            {pl.wizard.next}
-          </button>
-        ) : (
-          <button
-            type="button"
-            disabled={saving}
-            className="min-h-12 flex-1 rounded-xl bg-brand font-semibold text-white disabled:opacity-60"
-            onClick={() => void handleSave()}
-          >
-            {saving ? pl.wizard.saving : pl.wizard.save}
-          </button>
-        )}
+        <button
+          type="submit"
+          disabled={saving}
+          className="min-h-12 flex-1 rounded-xl bg-brand font-semibold text-white disabled:opacity-60"
+        >
+          {saving
+            ? pl.wizard.saving
+            : step < TOTAL_STEPS
+              ? pl.wizard.next
+              : pl.wizard.save}
+        </button>
       </div>
+      </form>
     </div>
   )
 }

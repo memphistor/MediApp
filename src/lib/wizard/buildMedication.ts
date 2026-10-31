@@ -1,4 +1,5 @@
 import { isValidTimeHHmm, parseTimesInput } from '@/lib/dates'
+import { createId } from '@/lib/id'
 import type {
   EmptyStomachNote,
   MealTiming,
@@ -87,6 +88,40 @@ export function firstWizardStepWithErrors(errors: WizardErrors): number | null {
   return null
 }
 
+export function mergeWizardFormFromDom(
+  current: WizardFormState,
+  formEl: HTMLFormElement | null,
+): WizardFormState {
+  if (!formEl) return current
+  const fd = new FormData(formEl)
+  const text = (key: string, fallback: string) => {
+    const value = fd.get(key)
+    return value != null ? String(value) : fallback
+  }
+  const num = (key: string, fallback: number) => {
+    const raw = fd.get(key)
+    if (raw == null || raw === '') return fallback
+    const n = Number(raw)
+    return Number.isFinite(n) ? n : fallback
+  }
+  return {
+    ...current,
+    name: text('name', current.name),
+    doseText: text('doseText', current.doseText),
+    timesRaw: text('timesRaw', current.timesRaw),
+    purpose: text('purpose', current.purpose),
+    note: text('note', current.note),
+    color: text('color', current.color),
+    icon: text('icon', current.icon),
+    dateStart: text('dateStart', current.dateStart),
+    dateEnd: text('dateEnd', current.dateEnd),
+    everyNInterval: num('everyNInterval', current.everyNInterval),
+    monthlyDay: num('monthlyDay', current.monthlyDay),
+    cycleActive: num('cycleActive', current.cycleActive),
+    cycleBreak: num('cycleBreak', current.cycleBreak),
+  }
+}
+
 function buildSchedule(state: WizardFormState): Schedule {
   switch (state.scheduleType) {
     case 'daily':
@@ -155,7 +190,7 @@ export function buildMedicationFromWizard(
       : undefined
 
   return {
-    id: existing?.id ?? crypto.randomUUID(),
+    id: existing?.id ?? createId(),
     name: state.name.trim(),
     kind: state.kind as MedicationKind,
     form: state.form as MedicationForm,
