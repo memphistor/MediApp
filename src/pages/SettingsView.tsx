@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { ExportControls } from '@/components/export/ExportControls'
 import { useSettings } from '@/context/SettingsContext'
 import { pl } from '@/i18n/pl'
 import type { FontScale, ThemePreference } from '@/types/settings'
@@ -134,15 +133,6 @@ export function SettingsView() {
           />
           {pl.settings.persistentAlarm}
         </label>
-      </section>
-
-      <section>
-        <h3 className="text-sm font-semibold text-[var(--color-text-muted)]">
-          {pl.settings.exportData}
-        </h3>
-        <div className="mt-2">
-          <ExportControls compact />
-        </div>
       </section>
 
       <section>

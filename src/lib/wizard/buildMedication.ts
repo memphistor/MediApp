@@ -60,6 +60,33 @@ export function validateWizard(state: WizardFormState): WizardErrors {
   return errors
 }
 
+const STEP_ERROR_KEYS: Record<number, string[]> = {
+  1: ['name', 'kind', 'form'],
+  2: ['doseText', 'emptyStomach'],
+  3: ['scheduleType', 'times', 'weekdays', 'everyN'],
+}
+
+export function validateWizardStep(
+  step: number,
+  state: WizardFormState,
+): WizardErrors {
+  if (step >= 4) return {}
+  const all = validateWizard(state)
+  const keys = STEP_ERROR_KEYS[step] ?? []
+  const errors: WizardErrors = {}
+  for (const key of keys) {
+    if (all[key]) errors[key] = all[key]
+  }
+  return errors
+}
+
+export function firstWizardStepWithErrors(errors: WizardErrors): number | null {
+  for (const [step, keys] of Object.entries(STEP_ERROR_KEYS)) {
+    if (keys.some((key) => errors[key])) return Number(step)
+  }
+  return null
+}
+
 function buildSchedule(state: WizardFormState): Schedule {
   switch (state.scheduleType) {
     case 'daily':

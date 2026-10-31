@@ -12,7 +12,7 @@ Prywatne repozytorium GitHub: [memphistor/MediApp](https://github.com/memphistor
 
 Po wdrożeniu z gałęzi `main`: **https://memphistor.github.io/MediApp/**
 
-Wdrożenie: `npm run deploy:pages` (gałąź `gh-pages`). Pierwsze uruchomienie strony może potrwać 1–2 minuty.
+Wdrożenie: push na gałąź `main` uruchamia workflow **Deploy GitHub Pages** (albo ręcznie `npm run deploy:pages`). Pierwsze odświeżenie strony może potrwać 1–2 minuty.
 
 ## Uruchomienie lokalne
 
@@ -40,7 +40,7 @@ npm run preview
 - Tailwind CSS 4
 - React Router 7
 - Dexie (IndexedDB, dane lokalne)
-- vite-plugin-pwa (manifest; pełne powiadomienia w kolejnej fazie)
+- vite-plugin-pwa (manifest, powiadomienia w przeglądarce przez Service Worker)
 
 ## Dokumentacja
 

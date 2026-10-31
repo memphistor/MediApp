@@ -39,7 +39,7 @@ export const privacyPl = {
       title: 'Twoje prawa',
       paragraphs: [
         'Masz prawo dostępu, sprostowania, usunięcia, ograniczenia, przenoszenia danych oraz cofnięcia zgody.',
-        'Eksport CSV/PDF w Historii to kopia Twoich zapisów. Usunięcie wszystkich danych w Ustawieniach realizuje prawo do usunięcia na tym urządzeniu.',
+        'Usunięcie wszystkich danych w Ustawieniach realizuje prawo do usunięcia na tym urządzeniu.',
         'Cofnięcie zgody: usuń dane w aplikacji i przestań korzystać z MediApp.',
       ],
     },
@@ -48,7 +48,6 @@ export const privacyPl = {
       title: 'Usuwanie danych',
       paragraphs: [
         'Ustawienia → „Usuń wszystkie dane” → potwierdzenie. Zostaną usunięte pozycje, logi dawek i ustawienia (w tym zgody).',
-        'Pliki eksportu zapisane poza aplikacją (np. w Pobranych) musisz usunąć samodzielnie.',
       ],
     },
     {

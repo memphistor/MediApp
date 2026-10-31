@@ -1,6 +1,5 @@
 import { useMemo } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
-import { ExportControls } from '@/components/export/ExportControls'
 import { db } from '@/db/database'
 import { pl } from '@/i18n/pl'
 
@@ -21,7 +20,6 @@ export function HistoryView() {
   return (
     <div className="space-y-4">
       <h2 className="text-xl font-semibold">{pl.history.title}</h2>
-      <ExportControls />
       {!logs?.length ? (
         <p className="text-sm text-[var(--color-text-muted)]">{pl.history.empty}</p>
       ) : (

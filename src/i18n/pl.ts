@@ -23,7 +23,7 @@ export const pl = {
     body2:
       'MediApp nie ocenia terapii, nie sprawdza interakcji ani nie podpowiada dawkowania z bazy leków.',
     body3:
-      'Dane są przechowywane lokalnie na tym urządzeniu. Możesz je wyeksportować lub usunąć w ustawieniach.',
+      'Dane są przechowywane lokalnie na tym urządzeniu. Możesz je usunąć w ustawieniach.',
     accept: 'Rozumiem, zaczynam',
     privacyLink: 'Polityka prywatności',
   },
@@ -32,8 +32,6 @@ export const pl = {
     title: 'Dziś',
     empty: 'Brak zaplanowanych pozycji na dziś.',
     addFirst: 'Dodaj pierwszą pozycję',
-    noPushNote:
-      'Przypomnienia push pojawią się w kolejnej fazie — na razie sprawdzaj listę na dziś.',
     notificationsOn:
       'Powiadomienia włączone — sprawdzamy plan co 30 s, gdy aplikacja jest aktywna.',
     notificationsOff:
@@ -61,6 +59,9 @@ export const pl = {
     back: 'Wstecz',
     save: 'Zapisz',
     saving: 'Zapisywanie…',
+    fixErrors: 'Uzupełnij pola oznaczone na czerwono, żeby przejść dalej lub zapisać.',
+    saveFailed:
+      'Nie udało się zapisać w przeglądarce. Sprawdź, czy strona może zapisywać dane lokalnie (IndexedDB), i spróbuj ponownie.',
     fields: {
       name: 'Nazwa (wpisz ręcznie)',
       kind: 'Rodzaj',
@@ -143,28 +144,7 @@ export const pl = {
 
   history: {
     title: 'Historia',
-    exportPdf: 'Eksport PDF',
-    exportCsv: 'Eksport CSV',
     empty: 'Brak wpisów w dzienniku.',
-  },
-
-  export: {
-    rangeLabel: 'Zakres dziennika',
-    rangeAll: 'Cała historia',
-    range30: 'Ostatnie 30 dni',
-    range90: 'Ostatnie 90 dni',
-    empty: 'Brak danych do eksportu.',
-    working: 'Przygotowuję plik…',
-    largePdfConfirm:
-      'Dziennik ma ponad 500 wpisów. PDF może być duży. Kontynuować?',
-    pdfTitle: 'Eksport danych — MediApp',
-    generatedAt: 'Data eksportu',
-    policyVersion: 'Wersja polityki prywatności',
-    disclaimer:
-      'Dane wpisał użytkownik. Aplikacja ich nie weryfikuje. To nie jest ocena ani raport medyczny.',
-    medicationsSection: 'Pozycje',
-    logsSection: 'Dziennik dawek',
-    settingsTitle: 'Eksport danych',
   },
 
   privacy: {
@@ -173,7 +153,7 @@ export const pl = {
       bullets: [
         'Dane o lekach i notatkach przechowujemy tylko lokalnie na tym urządzeniu.',
         'MediApp jest notatnikiem — nie podpowiada dawkowania ani interakcji.',
-        'Możesz wyeksportować lub usunąć dane w ustawieniach.',
+        'Możesz usunąć dane w ustawieniach.',
       ],
       checkbox:
         'Wyrażam zgodę na przetwarzanie danych o moim zdrowiu wpisywanych przeze mnie w aplikacji (szczegóły w polityce prywatności).',
@@ -220,7 +200,6 @@ export const pl = {
     deleted: 'Dane zostały usunięte.',
     privacy: 'Polityka prywatności',
     deletionHelp: 'Jak usunąć dane',
-    exportData: 'Eksport danych',
     onboarding: 'Pokaż onboarding ponownie',
     notificationLimits: 'Limity powiadomień',
   },

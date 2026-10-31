@@ -1,12 +1,14 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { pl } from '@/i18n/pl'
 import type { MedicationKind, MedicationForm, Schedule } from '@/types/medication'
 import {
   buildMedicationFromWizard,
+  firstWizardStepWithErrors,
   medicationToWizardState,
   validateWizard,
+  validateWizardStep,
   type WizardFormState,
   type WizardErrors,
 } from '@/lib/wizard/buildMedication'
@@ -54,8 +56,8 @@ const initialForm: WizardFormState = {
   doseText: '',
   emptyStomach: '',
   meal: '',
-  timesRaw: '',
-  scheduleType: '',
+  timesRaw: '08:00',
+  scheduleType: 'daily',
   weekdayDays: [1, 2, 3, 4, 5],
   everyNInterval: 2,
   weeklyDay: 1,
@@ -78,46 +80,83 @@ export function AddMedicationWizard() {
     return (await getMedicationById(editId)) ?? null
   }, [editId])
   const [step, setStep] = useState(1)
+  const formRef = useRef<WizardFormState>(initialForm)
   const [form, setForm] = useState<WizardFormState>(initialForm)
   const [errors, setErrors] = useState<WizardErrors>({})
+  const [saveError, setSaveError] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
   const [hydrated, setHydrated] = useState(!editId)
 
   useEffect(() => {
     if (!editId || !existing || hydrated) return
-    setForm(medicationToWizardState(existing))
+    const next = medicationToWizardState(existing)
+    formRef.current = next
+    setForm(next)
     setHydrated(true)
   }, [editId, existing, hydrated])
 
+  const applyForm = (
+    next: WizardFormState,
+    clearErrorKeys?: string[],
+  ) => {
+    formRef.current = next
+    setForm(next)
+    if (clearErrorKeys?.length) {
+      setErrors((prev) => {
+        const updated = { ...prev }
+        for (const key of clearErrorKeys) {
+          delete updated[key]
+        }
+        return updated
+      })
+    }
+  }
+
   const patch = (partial: Partial<WizardFormState>) => {
-    setForm((f) => ({ ...f, ...partial }))
+    applyForm({ ...formRef.current, ...partial }, Object.keys(partial))
+  }
+
+  const handleNext = () => {
+    setSaveError(null)
+    const stepErrors = validateWizardStep(step, formRef.current)
+    setErrors(stepErrors)
+    if (Object.keys(stepErrors).length > 0) return
+    setStep((s) => s + 1)
   }
 
   const toggleWeekday = (day: number) => {
-    setForm((f) => {
-      const has = f.weekdayDays.includes(day)
-      const weekdayDays = has
-        ? f.weekdayDays.filter((d) => d !== day)
-        : [...f.weekdayDays, day]
-      return { ...f, weekdayDays }
-    })
+    const current = formRef.current
+    const has = current.weekdayDays.includes(day)
+    const weekdayDays = has
+      ? current.weekdayDays.filter((d) => d !== day)
+      : [...current.weekdayDays, day]
+    applyForm({ ...current, weekdayDays }, ['weekdays'])
   }
 
   const handleSave = async () => {
-    const validation = validateWizard(form)
+    setSaveError(null)
+    const current = formRef.current
+    const validation = validateWizard(current)
     setErrors(validation)
-    if (Object.keys(validation).length > 0) return
+    if (Object.keys(validation).length > 0) {
+      const first = firstWizardStepWithErrors(validation)
+      if (first) setStep(first)
+      return
+    }
 
     setSaving(true)
     try {
       const entry = buildMedicationFromWizard(
-        form,
+        current,
         existing ? { id: existing.id, createdAt: existing.createdAt } : undefined,
       )
       if (existing) await updateMedication(entry)
       else await createMedication(entry)
       await syncDoseLogsForMedication(entry.id)
       navigate(existing ? `/medication/${entry.id}` : '/', { replace: true })
+    } catch (err) {
+      console.error(err)
+      setSaveError(pl.wizard.saveFailed)
     } finally {
       setSaving(false)
     }
@@ -157,6 +196,31 @@ export function AddMedicationWizard() {
       <h2 className="text-xl font-semibold">
         {editId ? pl.wizard.editTitle : pl.wizard.title}
       </h2>
+
+      {Object.keys(errors).length > 0 && (
+        <div
+          className="mt-3 rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800 dark:border-red-900 dark:bg-red-950/40 dark:text-red-200"
+          role="alert"
+        >
+          <p>{pl.wizard.fixErrors}</p>
+          <ul className="mt-2 list-inside list-disc">
+            {Object.values(errors)
+              .filter(Boolean)
+              .map((message) => (
+                <li key={message}>{message}</li>
+              ))}
+          </ul>
+        </div>
+      )}
+
+      {saveError && (
+        <p
+          className="mt-3 rounded-xl border border-red-300 bg-red-100 px-3 py-2 text-sm text-red-900 dark:border-red-800 dark:bg-red-950/60 dark:text-red-100"
+          role="alert"
+        >
+          {saveError}
+        </p>
+      )}
 
       <div className="mt-6 space-y-4">
         {step === 1 && (
@@ -506,7 +570,7 @@ export function AddMedicationWizard() {
           <button
             type="button"
             className="min-h-12 flex-1 rounded-xl bg-brand font-semibold text-white"
-            onClick={() => setStep((s) => s + 1)}
+            onClick={handleNext}
           >
             {pl.wizard.next}
           </button>
