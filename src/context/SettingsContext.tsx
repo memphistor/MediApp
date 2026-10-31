@@ -13,6 +13,7 @@ import {
   DEFAULT_GAMIFICATION,
   clearAllUserData,
 } from '@/db/database'
+import { scheduleProfilBackup } from '@/services/profilBackup'
 import type { FontScale, ThemePreference, UserSettings } from '@/types/settings'
 
 interface SettingsContextValue {
@@ -68,6 +69,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     applyTheme(next.theme)
     applyFontScale(next.fontScale)
     await db.settings.put(next)
+    scheduleProfilBackup()
   }, [])
 
   const setTheme = useCallback(

@@ -1,14 +1,14 @@
-/** Preset accent colors for medications (hex, lowercase). */
+/** Preset accent colors for medications (hex, lowercase). Kept visually distinct. */
 export const MEDICATION_COLOR_OPTIONS = [
-  '#0f766e',
-  '#2563eb',
-  '#7c3aed',
-  '#db2777',
-  '#ea580c',
-  '#ca8a04',
+  '#dc2626', // czerwony
+  '#ea580c', // pomarańczowy
+  '#eab308', // żółty
+  '#16a34a', // zielony
+  '#2563eb', // niebieski
+  '#9333ea', // fioletowy
 ] as const
 
-export const DEFAULT_MEDICATION_COLOR = MEDICATION_COLOR_OPTIONS[0]
+export const DEFAULT_MEDICATION_COLOR = MEDICATION_COLOR_OPTIONS[3]
 
 export function normalizeMedicationColor(color: string): string {
   const trimmed = color.trim().toLowerCase()

@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { appPath } from '@/lib/profil/profilNavigation'
 import { TakenAtEditor } from '@/components/dose/TakenAtEditor'
 import {
   MedicationStockLine,
@@ -8,6 +9,11 @@ import type { MedicationEntry } from '@/types/medication'
 import type { DoseStatus } from '@/types/dose'
 import { pl } from '@/i18n/pl'
 import { ScheduleSummary } from '@/components/medication/ScheduleSummary'
+import {
+  MedicationIconBadge,
+  medicationAccentColor,
+  medicationAccentSoftFill,
+} from '@/components/medication/MedicationIconBadge'
 
 interface MedicationCardProps {
   medication: MedicationEntry
@@ -35,6 +41,7 @@ export function MedicationCard({
   onSkip,
 }: MedicationCardProps) {
   const stomach = emptyStomachLabel(medication.onEmptyStomach)
+  const accent = medicationAccentColor(medication.color)
   const subtitle = [
     medication.doseText,
     stomach ? `(${stomach} — twoja notatka)` : null,
@@ -51,20 +58,18 @@ export function MedicationCard({
   return (
     <article
       className={`rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface-elevated)] p-4 shadow-sm ${medicationStockBorderClass(medication) ?? ''}`}
-      style={{ borderLeftWidth: 4, borderLeftColor: medication.color }}
+      style={{ borderLeftWidth: 6, borderLeftColor: accent }}
     >
       <Link
-        to={`/medication/${medication.id}`}
+        to={appPath(`/medication/${medication.id}`)}
         className="block active:opacity-90"
       >
         <div className="flex items-start gap-3">
-          <span
-            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-xl"
-            style={{ backgroundColor: `${medication.color}22` }}
-            aria-hidden
-          >
-            {medication.icon}
-          </span>
+          <MedicationIconBadge
+            icon={medication.icon}
+            color={medication.color}
+            size={30}
+          />
           <div className="min-w-0 flex-1">
             <div className="flex items-baseline justify-between gap-2">
               <h3 className="truncate font-semibold text-[var(--color-text)]">
@@ -87,8 +92,8 @@ export function MedicationCard({
               <span
                 className="rounded-full px-2 py-0.5 text-xs font-medium"
                 style={{
-                  backgroundColor: `${medication.color}18`,
-                  color: medication.color,
+                  backgroundColor: medicationAccentSoftFill(accent),
+                  color: accent,
                 }}
               >
                 {pl.doseStatus[status]}

@@ -1,6 +1,8 @@
 import { lazy, Suspense } from 'react'
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { AppShell } from '@/components/layout/AppShell'
+import { ProfilPathGuard } from '@/components/profil/ProfilPathGuard'
+import { ProfilSearchSync } from '@/components/profil/ProfilSearchSync'
 import { useSettings } from '@/context/SettingsContext'
 
 const OnboardingView = lazy(() =>
@@ -65,33 +67,43 @@ function PageFallback() {
   )
 }
 
+function AppShellRoutes() {
+  return (
+    <Route
+      element={
+        <OnboardingGate>
+          <AppShell />
+        </OnboardingGate>
+      }
+    >
+      <Route index element={<TodayView />} />
+      <Route path="add" element={<AddMedicationWizard />} />
+      <Route path="medication/:id/edit" element={<AddMedicationWizard />} />
+      <Route path="medication/:id" element={<MedicationDetail />} />
+      <Route path="calendar" element={<CalendarView />} />
+      <Route path="history" element={<HistoryView />} />
+      <Route path="progress" element={<ProgressView />} />
+      <Route path="settings" element={<SettingsView />} />
+      <Route path="help/notifications" element={<NotificationLimitsView />} />
+    </Route>
+  )
+}
+
 export function AppRouter() {
   return (
     <BrowserRouter basename={routerBasename}>
+      <ProfilSearchSync />
       <Suspense fallback={<PageFallback />}>
-      <Routes>
-        <Route path="/onboarding" element={<OnboardingView />} />
-        <Route path="/privacy" element={<PrivacyPolicyView />} />
-        <Route path="/privacy-consent" element={<Navigate to="/" replace />} />
-        <Route
-          element={
-            <OnboardingGate>
-              <AppShell />
-            </OnboardingGate>
-          }
-        >
-          <Route index element={<TodayView />} />
-          <Route path="add" element={<AddMedicationWizard />} />
-          <Route path="medication/:id/edit" element={<AddMedicationWizard />} />
-          <Route path="medication/:id" element={<MedicationDetail />} />
-          <Route path="calendar" element={<CalendarView />} />
-          <Route path="history" element={<HistoryView />} />
-          <Route path="progress" element={<ProgressView />} />
-          <Route path="settings" element={<SettingsView />} />
-          <Route path="help/notifications" element={<NotificationLimitsView />} />
-        </Route>
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
+        <Routes>
+          <Route path="/onboarding" element={<OnboardingView />} />
+          <Route path="/privacy" element={<PrivacyPolicyView />} />
+          <Route path="/privacy-consent" element={<Navigate to="/" replace />} />
+          {AppShellRoutes()}
+          <Route path="/:profilId" element={<ProfilPathGuard />}>
+            {AppShellRoutes()}
+          </Route>
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
       </Suspense>
     </BrowserRouter>
   )

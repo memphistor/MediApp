@@ -1,11 +1,12 @@
 import { Link } from 'react-router-dom'
+import { appPath } from '@/lib/profil/profilNavigation'
 import { privacyPl } from '@/i18n/privacy-pl'
 import { pl } from '@/i18n/pl'
 
 export function PrivacyPolicyView() {
   return (
     <div className="mx-auto min-h-dvh max-w-lg px-6 py-8 safe-top safe-bottom">
-      <Link to="/settings" className="text-sm font-medium text-brand">
+      <Link to={appPath('/settings')} className="text-sm font-medium text-brand">
         ← {pl.wizard.back}
       </Link>
       <h1 className="mt-4 text-2xl font-bold">{privacyPl.title}</h1>

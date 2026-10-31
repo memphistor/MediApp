@@ -1,6 +1,6 @@
 import 'fake-indexeddb/auto'
 import { beforeEach, describe, expect, it } from 'vitest'
-import { db } from '@/db/database'
+import { db, resetAppStorageForTests } from '@/db/database'
 import { createMedicationNote } from '@/repositories/medicationNoteRepository'
 import { buildMedicationFromWizard, type WizardFormState } from '@/lib/wizard/buildMedication'
 import { createMedication } from '@/repositories/medicationRepository'
@@ -24,8 +24,8 @@ const validWizard: WizardFormState = {
   dateEnd: '',
   purpose: '',
   note: '',
-  color: '#0f766e',
-  icon: '💊',
+  color: '#16a34a',
+  icon: 'pill-teal',
   trackStock: false,
   stockRemaining: 30,
   stockUnitsPerIntake: 1,
@@ -33,6 +33,7 @@ const validWizard: WizardFormState = {
 
 describe('medication notes', () => {
   beforeEach(async () => {
+    await resetAppStorageForTests()
     await db.delete()
     await db.open()
   })

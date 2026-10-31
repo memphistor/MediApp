@@ -1,6 +1,11 @@
 import { useNavigate, useParams, Link } from 'react-router-dom'
+import { appPath } from '@/lib/profil/profilNavigation'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { ScheduleSummary } from '@/components/medication/ScheduleSummary'
+import {
+  MedicationIconBadge,
+  medicationAccentColor,
+} from '@/components/medication/MedicationIconBadge'
 import {
   MedicationStockLine,
   medicationStockBorderClass,
@@ -30,7 +35,7 @@ export function MedicationDetail() {
     return (
       <div>
         <p>{pl.detail.notFound}</p>
-        <Link to="/" className="text-brand">{pl.wizard.back}</Link>
+        <Link to={appPath('/')} className="text-brand">{pl.wizard.back}</Link>
       </div>
     )
   }
@@ -45,6 +50,8 @@ export function MedicationDetail() {
   const canLogPrn =
     med.schedule.type === 'asNeeded' && isEntryInDateRange(new Date(), med)
 
+  const accent = medicationAccentColor(med.color)
+
   const handleLogIntake = async () => {
     await logAsNeededIntake(med.id)
     navigator.vibrate?.(10)
@@ -54,20 +61,20 @@ export function MedicationDetail() {
     if (!window.confirm(pl.detail.deleteConfirm)) return
     await deleteMedication(med.id)
     await syncAllDoseLogs()
-    navigate('/', { replace: true })
+    navigate(appPath('/'), { replace: true })
   }
 
   return (
     <div className="space-y-4">
-      <Link to="/" className="text-sm font-medium text-brand">
+      <Link to={appPath('/')} className="text-sm font-medium text-brand">
         ← {pl.wizard.back}
       </Link>
       <div
         className={`rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface-elevated)] p-5 ${medicationStockBorderClass(med) ?? ''}`}
-        style={{ borderTopWidth: 4, borderTopColor: med.color }}
+        style={{ borderTopWidth: 6, borderTopColor: accent }}
       >
         <div className="flex items-center gap-3">
-          <span className="text-3xl">{med.icon}</span>
+          <MedicationIconBadge icon={med.icon} color={med.color} size={40} />
           <div>
             <h2 className="text-xl font-bold">{med.name}</h2>
             <p className="text-sm text-[var(--color-text-muted)]">
@@ -135,7 +142,7 @@ export function MedicationDetail() {
 
       <div className="flex flex-col gap-2">
         <Link
-          to={`/medication/${med.id}/edit`}
+          to={appPath(`/medication/${med.id}/edit`)}
           className="flex min-h-12 items-center justify-center rounded-xl bg-brand text-sm font-semibold text-white"
         >
           {pl.detail.edit}

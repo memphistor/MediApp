@@ -1,4 +1,5 @@
 import { db } from '@/db/database'
+import { scheduleProfilBackup } from '@/services/profilBackup'
 import { deleteNotesForMedication } from '@/repositories/medicationNoteRepository'
 import type { MedicationEntry } from '@/types/medication'
 
@@ -6,12 +7,14 @@ export async function createMedication(
   entry: MedicationEntry,
 ): Promise<void> {
   await db.medications.put(entry)
+  scheduleProfilBackup()
 }
 
 export async function updateMedication(
   entry: MedicationEntry,
 ): Promise<void> {
   await db.medications.put(entry)
+  scheduleProfilBackup()
 }
 
 export async function getMedicationById(
@@ -30,4 +33,5 @@ export async function deleteMedication(id: string): Promise<void> {
     await deleteNotesForMedication(id)
     await db.medications.delete(id)
   })
+  scheduleProfilBackup()
 }

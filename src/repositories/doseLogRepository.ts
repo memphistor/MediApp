@@ -1,4 +1,5 @@
 import { db } from '@/db/database'
+import { scheduleProfilBackup } from '@/services/profilBackup'
 import { recalculateAndSave } from '@/repositories/gamificationRepository'
 import {
   consumeStockForIntake,
@@ -67,6 +68,7 @@ export async function updateDoseStatus(
   if (!options?.skipGamification) {
     await recalculateAndSave()
   }
+  scheduleProfilBackup()
 }
 
 export async function updateDoseTakenAt(
@@ -77,6 +79,7 @@ export async function updateDoseTakenAt(
   if (!existing || existing.status !== 'taken') return false
   await db.doseLogs.put({ ...existing, takenAt })
   await recalculateAndSave()
+  scheduleProfilBackup()
   return true
 }
 
@@ -93,6 +96,7 @@ export async function logAsNeededIntake(medicationId: string): Promise<DoseLog> 
   await db.doseLogs.put(log)
   await consumeStockForIntake(medicationId)
   await recalculateAndSave()
+  scheduleProfilBackup()
   return log
 }
 

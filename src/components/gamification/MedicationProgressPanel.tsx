@@ -9,6 +9,7 @@ import {
   PROGRESS_PERIODS,
   type ProgressPeriod,
 } from '@/lib/gamification/progressPeriods'
+import { medicationIconLabel } from '@/lib/wizard/medicationIcons'
 import type { DoseLog } from '@/types/dose'
 import { pl } from '@/i18n/pl'
 import { MedicationNotesBlock } from '@/components/gamification/MedicationNotesBlock'
@@ -75,7 +76,7 @@ export function MedicationProgressPanel({
         >
           {medications.map((m) => (
             <option key={m.id} value={m.id}>
-              {m.icon} {m.name}
+              {medicationIconLabel(m.icon)} — {m.name}
             </option>
           ))}
         </select>

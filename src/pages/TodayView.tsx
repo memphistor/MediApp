@@ -1,8 +1,11 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
+import { appPath } from '@/lib/profil/profilNavigation'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { DayRing } from '@/components/gamification/DayRing'
 import { MedicationCard } from '@/components/medication/MedicationCard'
+import { MedicationIconBadge } from '@/components/medication/MedicationIconBadge'
+import { medicationAccentColor } from '@/lib/medication/medicationAccent'
 import {
   MedicationStockLine,
   medicationStockBorderClass,
@@ -149,13 +152,20 @@ export function TodayView() {
               <li
                 key={med.id}
                 className={`flex items-center justify-between gap-3 rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface-elevated)] px-4 py-3 ${medicationStockBorderClass(med) ?? ''}`}
+                style={{
+                  borderLeftWidth: 6,
+                  borderLeftColor: medicationAccentColor(med.color),
+                }}
               >
-                <Link to={`/medication/${med.id}`} className="min-w-0">
+                <Link to={appPath(`/medication/${med.id}`)} className="flex min-w-0 items-center gap-3">
+                  <MedicationIconBadge icon={med.icon} color={med.color} size={26} />
+                  <span className="min-w-0">
                   <p className="truncate font-medium">{med.name}</p>
                   <p className="text-xs text-[var(--color-text-muted)]">
                     {med.doseText}
                   </p>
                   <MedicationStockLine medication={med} compact />
+                  </span>
                 </Link>
                 <button
                   type="button"
@@ -175,7 +185,7 @@ export function TodayView() {
       )}
 
       <Link
-        to="/add"
+        to={appPath('/add')}
         className="flex min-h-12 items-center justify-center rounded-2xl border border-dashed border-brand text-sm font-semibold text-brand"
       >
         {hasMedications ? pl.today.addMore : pl.today.addFirst}

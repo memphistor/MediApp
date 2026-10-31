@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { appPath } from '@/lib/profil/profilNavigation'
 import { pl } from '@/i18n/pl'
 
 export function NotificationLimitsView() {
@@ -7,7 +8,7 @@ export function NotificationLimitsView() {
 
   return (
     <div className="space-y-4">
-      <Link to="/settings" className="text-sm font-medium text-brand">
+      <Link to={appPath('/settings')} className="text-sm font-medium text-brand">
         ← {pl.wizard.back}
       </Link>
       <h2 className="text-xl font-semibold">{copy.title}</h2>

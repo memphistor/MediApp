@@ -1,9 +1,11 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
+import { appPath } from '@/lib/profil/profilNavigation'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { FormSelect, selectClassName } from '@/components/medication/FormSelect'
 import { MedicationIconPicker } from '@/components/medication/MedicationIconPicker'
 import { MedicationColorPicker } from '@/components/medication/MedicationColorPicker'
+import { MedicationIconBadge } from '@/components/medication/MedicationIconBadge'
 import { pl } from '@/i18n/pl'
 import type { MedicationKind, MedicationForm, Schedule } from '@/types/medication'
 import {
@@ -21,6 +23,7 @@ import {
 } from '@/repositories/medicationRepository'
 import { syncDoseLogsForMedication } from '@/services/syncDoseLogs'
 import { DEFAULT_MEDICATION_COLOR } from '@/lib/wizard/medicationColors'
+import { DEFAULT_MEDICATION_ICON } from '@/lib/wizard/medicationIcons'
 
 const DAY_LABELS = ['Nd', 'Pn', 'Wt', 'Śr', 'Cz', 'Pt', 'So']
 
@@ -71,7 +74,7 @@ const initialForm: WizardFormState = {
   purpose: '',
   note: '',
   color: DEFAULT_MEDICATION_COLOR,
-  icon: '💊',
+  icon: DEFAULT_MEDICATION_ICON,
   trackStock: false,
   stockRemaining: 30,
   stockUnitsPerIntake: 1,
@@ -156,7 +159,10 @@ export function AddMedicationWizard() {
       if (prior) await updateMedication(entry)
       else await createMedication(entry)
       await syncDoseLogsForMedication(entry.id)
-      navigate(prior ? `/medication/${entry.id}` : '/', { replace: true })
+      navigate(
+        prior ? appPath(`/medication/${entry.id}`) : appPath('/'),
+        { replace: true },
+      )
     } catch (err) {
       console.error(err)
       setSaveError(pl.wizard.saveFailed)
@@ -197,7 +203,7 @@ export function AddMedicationWizard() {
     return (
       <div>
         <p>{pl.detail.notFound}</p>
-        <Link to="/" className="text-brand">{pl.wizard.back}</Link>
+        <Link to={appPath('/')} className="text-brand">{pl.wizard.back}</Link>
       </div>
     )
   }
@@ -210,7 +216,7 @@ export function AddMedicationWizard() {
     <div className="pb-8">
       <div className="mb-4">
         <Link
-          to={editId ? `/medication/${editId}` : '/'}
+          to={editId ? appPath(`/medication/${editId}`) : appPath('/')}
           className="inline-flex min-h-11 items-center text-sm font-medium text-brand"
         >
           ← {pl.wizard.back}
@@ -585,6 +591,14 @@ export function AddMedicationWizard() {
 
         <section className="space-y-3">
           <SectionTitle>{pl.wizard.sections.appearance}</SectionTitle>
+          <input type="hidden" name="color" value={form.color} readOnly />
+          <input type="hidden" name="icon" value={form.icon} readOnly />
+          <div className="flex items-center gap-3 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2">
+            <MedicationIconBadge icon={form.icon} color={form.color} size={28} />
+            <p className="text-sm text-[var(--color-text-muted)]">
+              Podgląd na liście dziś
+            </p>
+          </div>
           <fieldset>
             <legend className="text-sm font-medium">{pl.wizard.fields.color}</legend>
             <MedicationColorPicker
@@ -596,6 +610,7 @@ export function AddMedicationWizard() {
             <legend className="text-sm font-medium">{pl.wizard.fields.icon}</legend>
             <MedicationIconPicker
               value={form.icon}
+              accentColor={form.color}
               onChange={(icon) => patch({ icon })}
             />
           </fieldset>

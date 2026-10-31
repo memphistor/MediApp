@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { appPath } from '@/lib/profil/profilNavigation'
 import { AppLogo } from '@/components/brand/AppLogo'
 import { useSettings } from '@/context/SettingsContext'
 import { pl } from '@/i18n/pl'
@@ -11,7 +12,7 @@ export function OnboardingView() {
 
   useEffect(() => {
     if (ready && settings.onboardingCompleted) {
-      navigate('/', { replace: true })
+      navigate(appPath('/'), { replace: true })
     }
   }, [ready, settings.onboardingCompleted, navigate])
 
@@ -63,7 +64,7 @@ export function OnboardingView() {
         className="mt-8 min-h-14 w-full rounded-2xl bg-brand text-lg font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50"
         onClick={() => {
           completeOnboarding()
-          navigate('/', { replace: true })
+          navigate(appPath('/'), { replace: true })
         }}
       >
         {pl.onboarding.accept}

@@ -12,7 +12,7 @@ const entry: MedicationEntry = {
   times: ['09:00', '21:00'],
   schedule: { type: 'daily' },
   color: '#000',
-  icon: '💊',
+  icon: 'pill-teal',
   createdAt: '2026-01-01T00:00:00.000Z',
   updatedAt: '2026-01-01T00:00:00.000Z',
 }

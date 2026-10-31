@@ -1,6 +1,6 @@
 import 'fake-indexeddb/auto'
 import { beforeEach, describe, expect, it } from 'vitest'
-import { db } from '@/db/database'
+import { db, resetAppStorageForTests } from '@/db/database'
 import {
   buildMedicationFromWizard,
   validateWizard,
@@ -29,8 +29,8 @@ const validWizard: WizardFormState = {
   dateEnd: '',
   purpose: '',
   note: '',
-  color: '#0f766e',
-  icon: '💊',
+  color: '#16a34a',
+  icon: 'pill-teal',
   trackStock: true,
   stockRemaining: 30,
   stockUnitsPerIntake: 1,
@@ -38,12 +38,23 @@ const validWizard: WizardFormState = {
 
 describe('medication save flow (IndexedDB)', () => {
   beforeEach(async () => {
+    await resetAppStorageForTests()
     await db.delete()
     await db.open()
   })
 
   it('validateWizard accepts typical new entry', () => {
     expect(validateWizard(validWizard)).toEqual({})
+  })
+
+  it('persists chosen accent color', async () => {
+    const entry = buildMedicationFromWizard({
+      ...validWizard,
+      color: '#dc2626',
+    })
+    await createMedication(entry)
+    const stored = await getMedicationById(entry.id)
+    expect(stored?.color).toBe('#dc2626')
   })
 
   it('createMedication + syncDoseLogs produces today planned dose', async () => {

@@ -16,7 +16,7 @@ function dailyMed(stockRemaining: number): MedicationEntry {
     times: ['08:00', '20:00'],
     schedule: { type: 'daily' },
     color: '#000',
-    icon: '💊',
+    icon: 'pill-teal',
     stockRemaining,
     stockUnitsPerIntake: 1,
     createdAt: '',

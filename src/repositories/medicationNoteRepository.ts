@@ -1,4 +1,5 @@
 import { db } from '@/db/database'
+import { scheduleProfilBackup } from '@/services/profilBackup'
 import { endOfLocalDay, startOfLocalDay } from '@/lib/dates'
 import { createId } from '@/lib/id'
 import type { MedicationNote } from '@/types/medicationNote'
@@ -22,6 +23,7 @@ export async function createMedicationNote(input: {
     updatedAt: now,
   }
   await db.medicationNotes.put(note)
+  scheduleProfilBackup()
   return note
 }
 

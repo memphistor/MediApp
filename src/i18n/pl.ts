@@ -21,7 +21,7 @@ export const pl = {
     body1:
       'Osobisty notatnik i przypominacz: wpisujesz pozycje i godziny, aplikacja przypomina. Nie ma logowania ani synchronizacji w chmurze.',
     body2:
-      'Wpisy zapisują się tylko w tej przeglądarce na tym urządzeniu. Możesz je skasować w Ustawieniach → Usuń wszystkie dane.',
+      'Wpisy zapisują się w tej przeglądarce. W Ustawieniach możesz utworzyć link z końcówką, np. …/testfp, i dodać go do zakładek.',
     accept: 'Zaczynam',
     disclaimerConfirm:
       'Przeczytałem/am i rozumiem powyższe ważne informacje.',
@@ -292,6 +292,20 @@ export const pl = {
     dataInfo: 'Informacje o danych',
     onboarding: 'Pokaż ekran powitalny ponownie',
     notificationLimits: 'Limity powiadomień',
+    profilTitle: 'Link profilu (twoje leki)',
+    profilHint:
+      'Zapisz link z własną końcówką, np. …/MediApp/testfp — ten sam adres po aktualizacji aplikacji otwiera twoje leki w tej przeglądarce. Opcjonalnie ?v=1 odświeża wersję strony.',
+    profilNone: 'Nie masz jeszcze linku profilu — dane są w domyślnej bazie na tym urządzeniu.',
+    profilCreate: 'Utwórz link profilu',
+    profilActive: 'Twój profil',
+    profilCopyLink: 'Kopiuj link',
+    profilCopyWithKopia: 'Kopiuj link z kopią w adresie',
+    profilCopied: 'Skopiowano link do schowka.',
+    profilCopyFailed: 'Nie udało się skopiować — zaznacz link ręcznie.',
+    profilKopiaTooLarge:
+      'Kopia w linku byłaby za duża — skopiowano sam profil. Używaj tej samej przeglądarki lub zmniejsz historię dawek.',
+    profilKopiaNote:
+      'Wariant z kopią w #kopia= pomaga po wyczyszczeniu pamięci przeglądarki (wczytuje dane, gdy baza profilu jest pusta).',
   },
 
   notificationHelp: {

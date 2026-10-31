@@ -1,22 +1,33 @@
-import { NavLink, Outlet, useLocation } from 'react-router-dom'
+import { NavLink, Outlet } from 'react-router-dom'
 import { AppLogo } from '@/components/brand/AppLogo'
+import {
+  BottomNavIcon,
+  type BottomNavIconId,
+} from '@/components/layout/BottomNavIcon'
 import { pl } from '@/i18n/pl'
+import { appPath } from '@/lib/profil/profilNavigation'
 import { useDoseLogSync } from '@/hooks/useDoseLogSync'
+import { useProfilBackupLoop } from '@/hooks/useProfilBackupLoop'
 import { useReminderWatcher } from '@/hooks/useReminderWatcher'
 
-const mainNav = [
-  { to: '/', label: pl.nav.today, end: true },
-  { to: '/calendar', label: pl.nav.calendar },
-  { to: '/add', label: pl.nav.add, accent: true },
-  { to: '/progress', label: pl.nav.progress },
-  { to: '/settings', label: pl.nav.settings },
-] as const
+const mainNav: {
+  to: string
+  label: string
+  icon: BottomNavIconId
+  end?: boolean
+  accent?: boolean
+}[] = [
+  { to: '/', label: pl.nav.today, icon: 'today', end: true },
+  { to: '/calendar', label: pl.nav.calendar, icon: 'calendar' },
+  { to: '/add', label: pl.nav.add, icon: 'add', accent: true },
+  { to: '/progress', label: pl.nav.progress, icon: 'progress' },
+  { to: '/settings', label: pl.nav.settings, icon: 'settings' },
+]
 
 export function AppShell() {
   const { ready } = useDoseLogSync()
   useReminderWatcher()
-  const location = useLocation()
-  const hideNav = location.pathname === '/add'
+  useProfilBackupLoop()
 
   if (!ready) {
     return (
@@ -42,7 +53,7 @@ export function AppShell() {
             </div>
           </div>
           <NavLink
-            to="/history"
+            to={appPath('/history')}
             className="min-h-11 min-w-11 rounded-lg px-2 text-sm font-medium text-brand underline-offset-2 hover:underline"
           >
             {pl.history.title}
@@ -52,38 +63,45 @@ export function AppShell() {
 
       <main className="flex-1 px-4 py-4 pb-24">{<Outlet />}</main>
 
-      {!hideNav && (
-        <nav
-          className="safe-bottom fixed bottom-0 left-0 right-0 z-20 border-t border-[var(--color-border)] bg-[var(--color-surface-elevated)]"
-          aria-label="Główna nawigacja"
-        >
-          <ul className="mx-auto flex max-w-lg justify-around px-1 py-1">
-            {mainNav.map((item) => (
-              <li key={item.to} className="flex-1">
-                <NavLink
-                  to={item.to}
-                  end={'end' in item ? item.end : false}
-                  className={({ isActive }) =>
-                    [
-                      'flex min-h-12 flex-col items-center justify-center gap-0.5 rounded-xl text-xs font-medium transition-colors',
-                      'accent' in item && item.accent
-                        ? 'text-brand'
-                        : isActive
-                          ? 'text-brand'
-                          : 'text-[var(--color-text-muted)]',
-                    ].join(' ')
-                  }
-                >
-                  <span className="text-base leading-none">
-                    {'accent' in item && item.accent ? '＋' : '•'}
-                  </span>
-                  {item.label}
-                </NavLink>
-              </li>
-            ))}
-          </ul>
-        </nav>
-      )}
+      <nav
+        className="safe-bottom fixed bottom-0 left-0 right-0 z-20 border-t border-[var(--color-border)]/80 bg-[var(--color-surface-elevated)]/95 backdrop-blur-md"
+        aria-label="Główna nawigacja"
+      >
+        <ul className="mx-auto flex max-w-lg items-stretch justify-around px-2 pb-1 pt-1.5">
+          {mainNav.map((item) => (
+            <li key={item.to} className="flex min-w-0 flex-1 justify-center">
+              <NavLink
+                to={appPath(item.to === '/' ? '/' : item.to)}
+                end={item.end ?? false}
+                className={({ isActive }) =>
+                  [
+                    'flex min-h-[3.25rem] min-w-[3.25rem] flex-col items-center justify-center gap-0.5 rounded-2xl px-1 py-1 transition-colors',
+                    item.accent || isActive
+                      ? 'text-brand'
+                      : 'text-[var(--color-text-muted)] hover:text-[var(--color-text)]',
+                  ].join(' ')
+                }
+              >
+                {({ isActive }) => (
+                  <>
+                    <BottomNavIcon
+                      id={item.icon}
+                      active={isActive}
+                    />
+                    <span
+                      className={`max-w-full truncate text-[10px] font-medium leading-tight tracking-tight ${
+                        isActive ? 'text-brand' : ''
+                      }`}
+                    >
+                      {item.label}
+                    </span>
+                  </>
+                )}
+              </NavLink>
+            </li>
+          ))}
+        </ul>
+      </nav>
     </div>
   )
 }

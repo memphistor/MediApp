@@ -26,7 +26,7 @@ const validBase: WizardFormState = {
   purpose: '',
   note: '',
   color: '#000',
-  icon: '💊',
+  icon: 'pill-teal',
   trackStock: false,
   stockRemaining: 30,
   stockUnitsPerIntake: 1,

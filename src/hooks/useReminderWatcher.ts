@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { appPath } from '@/lib/profil/profilNavigation'
 import { useSettings } from '@/context/SettingsContext'
 import {
   handleReminderActionMessage,
@@ -20,7 +21,7 @@ function focusDose(
 ): void {
   const id = logIds[0]
   if (!id) return
-  navigate(`/?focusLog=${encodeURIComponent(id)}`)
+  navigate(`${appPath('/')}?focusLog=${encodeURIComponent(id)}`)
 }
 
 export function useReminderWatcher(): void {

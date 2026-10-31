@@ -1,6 +1,14 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { appPath } from '@/lib/profil/profilNavigation'
 import { useSettings } from '@/context/SettingsContext'
+import { getActiveProfilId } from '@/db/database'
+import {
+  buildShareableProfilUrl,
+  copyTextToClipboard,
+  startProfilLink,
+} from '@/lib/profil/profilLink'
+import { buildAppUrlWithProfil } from '@/lib/profil/profilId'
 import { pl } from '@/i18n/pl'
 import type { FontScale, ThemePreference } from '@/types/settings'
 
@@ -17,6 +25,9 @@ export function SettingsView() {
   } = useSettings()
   const navigate = useNavigate()
   const [message, setMessage] = useState<string | null>(null)
+  const [newProfilSlug, setNewProfilSlug] = useState('testfp')
+  const profilId = getActiveProfilId()
+  const profilUrl = profilId ? buildAppUrlWithProfil(profilId) : null
 
   const themes: ThemePreference[] = ['light', 'dark', 'system']
   const fonts: FontScale[] = ['normal', 'large']
@@ -119,7 +130,7 @@ export function SettingsView() {
           />
         </label>
         <Link
-          to="/help/notifications"
+          to={appPath('/help/notifications')}
           className="mt-3 inline-flex min-h-11 items-center text-sm font-medium text-brand"
         >
           {pl.settings.notificationLimits}
@@ -133,6 +144,94 @@ export function SettingsView() {
           />
           {pl.settings.persistentAlarm}
         </label>
+      </section>
+
+      <section>
+        <h3 className="text-sm font-semibold text-[var(--color-text-muted)]">
+          {pl.settings.profilTitle}
+        </h3>
+        <p className="mt-2 text-sm text-[var(--color-text-muted)]">
+          {pl.settings.profilHint}
+        </p>
+        {profilId && profilUrl ? (
+          <div className="mt-3 space-y-2">
+            <p className="text-sm">
+              {pl.settings.profilActive}:{' '}
+              <code className="rounded bg-[var(--color-surface)] px-1.5 py-0.5 text-xs">
+                {profilId}
+              </code>
+            </p>
+            <p className="break-all rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-xs">
+              {profilUrl}
+            </p>
+            <div className="grid gap-2 sm:grid-cols-2">
+              <button
+                type="button"
+                className="min-h-11 rounded-xl border border-brand bg-brand/10 text-sm font-semibold text-brand"
+                onClick={() => {
+                  void copyTextToClipboard(profilUrl).then((ok) => {
+                    setMessage(
+                      ok ? pl.settings.profilCopied : pl.settings.profilCopyFailed,
+                    )
+                  })
+                }}
+              >
+                {pl.settings.profilCopyLink}
+              </button>
+              <button
+                type="button"
+                className="min-h-11 rounded-xl border border-[var(--color-border)] text-sm font-medium"
+                onClick={() => {
+                  void buildShareableProfilUrl({ includeKopiaInHash: true }).then(
+                    ({ url, kopiaOmitted }) => {
+                      void copyTextToClipboard(url).then((ok) => {
+                        if (kopiaOmitted) {
+                          setMessage(pl.settings.profilKopiaTooLarge)
+                        } else {
+                          setMessage(
+                            ok
+                              ? pl.settings.profilCopied
+                              : pl.settings.profilCopyFailed,
+                          )
+                        }
+                      })
+                    },
+                  )
+                }}
+              >
+                {pl.settings.profilCopyWithKopia}
+              </button>
+            </div>
+            <p className="text-xs text-[var(--color-text-muted)]">
+              {pl.settings.profilKopiaNote}
+            </p>
+          </div>
+        ) : (
+          <div className="mt-3 space-y-2">
+            <p className="text-sm text-[var(--color-text-muted)]">
+              {pl.settings.profilNone}
+            </p>
+            <label className="block text-sm">
+              Końcówka linku (litery, cyfry)
+              <input
+                className="mt-1 w-full min-h-11 rounded-xl border border-[var(--color-border)] px-3 font-mono text-sm"
+                value={newProfilSlug}
+                onChange={(e) => setNewProfilSlug(e.target.value)}
+                placeholder="testfp"
+                autoCapitalize="off"
+                autoCorrect="off"
+                spellCheck={false}
+              />
+            </label>
+            <button
+              type="button"
+              className="min-h-12 w-full rounded-xl bg-brand text-sm font-semibold text-white"
+              onClick={() => startProfilLink(newProfilSlug)}
+            >
+              {pl.settings.profilCreate}
+            </button>
+          </div>
+        )}
       </section>
 
       <section>
