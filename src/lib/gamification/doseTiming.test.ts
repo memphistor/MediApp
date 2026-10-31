@@ -3,6 +3,7 @@ import {
   classifyDoseTiming,
   isDayFullyOnTime,
   onTimeRateAmongTaken,
+  takenAdherenceRate,
   timingCountsForLogs,
   TIMING_EARLY_TOLERANCE_MINUTES,
   TIMING_LATE_TOLERANCE_MINUTES,
@@ -61,6 +62,15 @@ describe('timingCountsForLogs', () => {
     expect(counts.onTime).toBe(1)
     expect(counts.missed).toBe(1)
     expect(onTimeRateAmongTaken(counts)).toBe(1)
+  })
+
+  it('includes still-planned doses in adherence denominator', () => {
+    const scheduled = '2026-03-10T08:00:00.000Z'
+    const counts = timingCountsForLogs([
+      dose(scheduled, 'taken', scheduled),
+      dose('2026-03-10T20:00:00.000Z', 'planned'),
+    ])
+    expect(takenAdherenceRate(counts)).toBe(0.5)
   })
 })
 

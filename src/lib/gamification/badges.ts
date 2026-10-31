@@ -3,7 +3,7 @@ import type { Badge } from '@/types/gamification'
 export const BADGE_DEFINITIONS = [
   { id: 'streak_7', label: 'Tydzień pełnego planu' },
   { id: 'streak_30', label: 'Miesiąc pełnego planu' },
-  { id: 'taken_100', label: '100 odhaczonych dawek' },
+  { id: 'taken_100', label: '100 przyjętych dawek' },
 ] as const
 
 export interface BadgeQualification {

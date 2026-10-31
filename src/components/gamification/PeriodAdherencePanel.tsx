@@ -1,5 +1,4 @@
 import {
-  onTimeRateAmongTaken,
   takenAdherenceRate,
   timingCountsForRange,
   type DoseTimingCounts,
@@ -32,7 +31,6 @@ function PeriodCard({
   const taken =
     counts.onTime + counts.early + counts.late + counts.unknown
   const adherence = pct(takenAdherenceRate(counts))
-  const onTime = pct(onTimeRateAmongTaken(counts))
 
   return (
     <div className="rounded-xl border border-[var(--color-border)] px-3 py-2">
@@ -43,17 +41,12 @@ function PeriodCard({
         </p>
       ) : (
         <>
-          <p className="mt-1 text-2xl font-bold text-brand">{adherence}%</p>
-          <p className="text-xs text-[var(--color-text-muted)]">
-            {pl.progress.periodAdherence
+          <p className="mt-1 text-lg font-semibold text-brand">{adherence}%</p>
+          <p className="mt-1 text-xs leading-relaxed text-[var(--color-text-muted)]">
+            {pl.progress.periodCardDetail
               .replace('{taken}', String(taken))
-              .replace('{due}', String(counts.totalScheduled - counts.planned))}
-          </p>
-          <p className="mt-1 text-xs text-[var(--color-text-muted)]">
-            {pl.progress.periodOnTime
-              .replace('{onTime}', String(counts.onTime))
-              .replace('{taken}', String(taken))
-              .replace('{pct}', String(onTime))}
+              .replace('{due}', String(counts.totalScheduled))
+              .replace('{onTime}', String(counts.onTime))}
           </p>
         </>
       )}

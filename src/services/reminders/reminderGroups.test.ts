@@ -66,4 +66,24 @@ describe('buildReminderGroups', () => {
     )
     expect(groups).toHaveLength(0)
   })
+
+  it('skips medications with reminders disabled', () => {
+    const logs: DoseLog[] = [
+      {
+        id: '1',
+        medicationId: 'm1',
+        scheduledAt: '2026-03-10T07:00:00.000Z',
+        status: 'planned',
+      },
+    ]
+    const groups = buildReminderGroups(
+      logs,
+      [{ ...med, remindersEnabled: false }],
+      new Date('2026-03-10T08:00:00.000Z'),
+      {},
+      false,
+      300_000,
+    )
+    expect(groups).toHaveLength(0)
+  })
 })

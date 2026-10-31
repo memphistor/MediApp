@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import {
+  buildMedicationFromWizard,
   firstWizardStepWithErrors,
   validateWizard,
   validateWizardStep,
@@ -30,6 +31,7 @@ const validBase: WizardFormState = {
   trackStock: false,
   stockRemaining: 30,
   stockUnitsPerIntake: 1,
+  remindersEnabled: true,
 }
 
 describe('validateWizardStep', () => {
@@ -68,5 +70,17 @@ describe('firstWizardStepWithErrors', () => {
 
   it('zwraca null gdy brak błędów', () => {
     expect(firstWizardStepWithErrors(validateWizard(validBase))).toBeNull()
+  })
+})
+
+describe('buildMedicationFromWizard reminders', () => {
+  it('forces reminders off for as needed', () => {
+    const entry = buildMedicationFromWizard({
+      ...validBase,
+      scheduleType: 'asNeeded',
+      timesRaw: '',
+      remindersEnabled: true,
+    })
+    expect(entry.remindersEnabled).toBe(false)
   })
 })

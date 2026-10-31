@@ -1,5 +1,6 @@
 import { isValidTimeHHmm, parseTimesInput } from '@/lib/dates'
 import { createId } from '@/lib/id'
+import { defaultRemindersEnabled } from '@/lib/medication/medicationReminders'
 import { normalizeMedicationColor } from '@/lib/wizard/medicationColors'
 import { DEFAULT_MEDICATION_ICON, resolveMedicationIconDisplay } from '@/lib/wizard/medicationIcons'
 import type {
@@ -35,6 +36,7 @@ export interface WizardFormState {
   trackStock: boolean
   stockRemaining: number
   stockUnitsPerIntake: number
+  remindersEnabled: boolean
 }
 
 export type WizardErrors = Partial<Record<string, string>>
@@ -191,6 +193,8 @@ export function medicationToWizardState(entry: MedicationEntry): WizardFormState
     trackStock: entry.stockRemaining != null,
     stockRemaining: entry.stockRemaining ?? 30,
     stockUnitsPerIntake: entry.stockUnitsPerIntake ?? 1,
+    remindersEnabled:
+      entry.remindersEnabled ?? defaultRemindersEnabled(entry),
   }
 }
 
@@ -231,6 +235,8 @@ export function buildMedicationFromWizard(
     stockUnitsPerIntake: state.trackStock
       ? Math.max(1, Math.floor(state.stockUnitsPerIntake))
       : undefined,
+    remindersEnabled:
+      state.scheduleType === 'asNeeded' ? false : state.remindersEnabled,
     createdAt: existing?.createdAt ?? now,
     updatedAt: now,
   }

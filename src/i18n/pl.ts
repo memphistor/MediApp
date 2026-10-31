@@ -90,7 +90,10 @@ export const pl = {
       stockRemaining: 'Aktualnie w opakowaniu (szt.)',
       stockUnitsPerIntake: 'Szt. na jedno przyjęcie',
       stockHint:
-        'Po odhaczeniu „Wzięta” aplikacja odejmie podaną liczbę sztuk. Możesz uzupełnić zapas na karcie pozycji.',
+        'Po zaznaczeniu „Wzięta” aplikacja odejmie podaną liczbę sztuk. Możesz uzupełnić zapas na karcie pozycji.',
+      remindersEnable: 'Przypomnienia o tej pozycji',
+      remindersHint:
+        'Powiadomienie push i panel na ekranie Dziś o zaplanowanej godzinie. Globalne włączenie jest w Ustawieniach.',
       weekdays: 'Dni tygodnia',
       everyNDays: 'Co ile dni?',
       weeklyDay: 'Dzień tygodnia',
@@ -164,6 +167,9 @@ export const pl = {
       'Usunąć tę pozycję i wszystkie powiązane wpisy w dzienniku na tym urządzeniu?',
     edit: 'Edytuj',
     logIntake: 'Zapisz przyjęcie',
+    reminders: 'Przypomnienia',
+    remindersHint:
+      'Tylko ta pozycja. W Ustawieniach włączasz powiadomienia dla całej aplikacji.',
   },
 
   stock: {
@@ -200,6 +206,7 @@ export const pl = {
 
   history: {
     title: 'Historia',
+    analyticsLink: 'Analityka →',
     empty: 'Brak wpisów w dzienniku.',
     sectionPast: 'Przeszłe',
     sectionPlanned: 'Zaplanowane',
@@ -217,14 +224,28 @@ export const pl = {
   progress: {
     title: 'Postęp',
     dayRing: 'Pierścień dnia',
+    weekRing: 'Ten tydzień (pon.–niedz.)',
+    weekCount: 'Przyjęto {taken} z {total} dawek z planu w tym tygodniu',
+    weekDaysAria: 'Postęp w poszczególne dni tygodnia',
+    overviewTitle: 'Skrót',
+    overviewMonth: 'Ten miesiąc: {pct}% planu ({taken} z {due} dawek przyjętych)',
+    overviewEmpty: 'Brak zaplanowanych dawek w tym miesiącu.',
+    analyticsCta: 'Szczegółowa analityka',
+    analyticsHint: 'Terminowość, okresy, rozbicie per pozycja i dzień po dniu.',
+    analyticsTitle: 'Analityka',
+    analyticsIntro:
+      'Pełne statystyki całego planu oraz wybranej pozycji. Historia dawek nadal jest na zakładce Historia.',
+    analyticsBack: '← Wróć do Postępu',
     streak: 'Seria dni',
     streakDays: '{n} dni z rzędu z pełnym planem',
-    todayCount: 'Dziś zapisano {taken} z {total} pozycji',
-    monthStats: 'W tym miesiącu odhaczono {percent}% zaplanowanych pozycji',
+    todayCount: 'Dziś przyjęto {taken} z {total} pozycji z planu',
+    monthStats: 'W tym miesiącu przyjęto {percent}% zaplanowanych pozycji',
     periodTitle: 'Postęp w czasie',
     periodHint:
-      'Procent odhaczonych dawek z planu (bez oczekujących) oraz terminowość w każdym okresie.',
-    periodAdherence: '{taken} z {due} dawek z planu odhaczone',
+      'Ile dawek z planu zostało przyjętych oraz ile wziętych było w terminie.',
+    periodAdherence: '{taken} z {due} dawek z planu przyjętych',
+    periodCardDetail:
+      '{taken} z {due} przyjętych · w terminie {onTime} z {taken}',
     periodOnTime: 'W terminie: {onTime}/{taken} ({pct}%)',
     periods: {
       day: 'Dziś',
@@ -233,11 +254,12 @@ export const pl = {
       year: 'Ostatni rok',
     },
     perMed: {
+      kicker: 'Jedna pozycja z planu',
       title: 'Postęp per pozycja',
       hint: 'Wybierz lek lub suplement, żeby zobaczyć dokładnie kiedy go brałeś.',
       select: 'Pozycja',
       period: 'Okres',
-      summary: 'Z planu: {taken} z {due} ({pct}%)',
+      summary: 'Przyjęte z planu: {taken} z {due} ({pct}%)',
       intakeList: 'Wpisy w okresie',
       empty: 'Brak wpisów w tym okresie dla tej pozycji.',
       noMedications: 'Dodaj pierwszą pozycję, żeby śledzić postęp per lek.',
@@ -256,17 +278,20 @@ export const pl = {
       notesBodyRequired: 'Wpisz treść notatki.',
       notesSaveFailed: 'Nie udało się zapisać notatki.',
     },
-    shieldActive: 'Tarcza dostępna — jeden niepełny dzień nie zeruje serii',
-    shieldRecharge: 'Tarcza zużyta — odnawia się po 7 pełnych dniach z rzędu',
+    shieldActive:
+      'Masz jednorazową ochronę serii — jeden niepełny dzień jej nie zeruje',
+    shieldRecharge:
+      'Ochrona wykorzystana — wraca po 7 kolejnych dniach z pełnym planem',
     badges: 'Odznaki',
     badgeLocked: 'Jeszcze nie zdobyta',
     badgeStreak7: 'Tydzień pełnego planu',
     badgeStreak30: 'Miesiąc pełnego planu',
-    badgeTaken100: '100 odhaczonych dawek',
+    badgeTaken100: '100 przyjętych dawek',
     timing: {
+      scopeAll: 'Cały plan — terminowość',
       title: 'Terminowość przyjmowania',
       hint:
-        '„W terminie” = odhaczenie od 30 min przed do 90 min po zaplanowanej godzinie (wg zapisu w aplikacji).',
+        '„W terminie” = przyjęcie od 30 min przed do 90 min po zaplanowanej godzinie (wg zapisu w aplikacji).',
       today: 'Dziś',
       last7Days: 'Ostatnie 7 dni',
       thisMonth: 'Ten miesiąc',
@@ -290,13 +315,17 @@ export const pl = {
 
   settings: {
     title: 'Ustawienia',
-    notifications: 'Przypomnienia',
-    notificationsEnable: 'Powiadomienia o zaplanowanych godzinach',
+    notifications: 'Powiadomienia (cała aplikacja)',
+    notificationsEnable: 'Włącz powiadomienia push o zaplanowanych godzinach',
     notificationsHint:
-      'Działają najlepiej, gdy aplikacja jest zainstalowana (PWA). Na iOS mogą być mniej niezawodne.',
+      'Działają najlepiej, gdy aplikacja jest zainstalowana (PWA). Na iOS mogą być mniej niezawodne. Które leki przypominają — ustawiasz przy pozycji.',
+    notificationsPerMed:
+      'Przy każdej pozycji z harmonogramem możesz włączyć lub wyłączyć przypomnienia tylko dla niej.',
     permissionDenied: 'Brak zgody przeglądarki — użyj panelu na ekranie Dziś.',
-    snoozeMinutes: 'Odłożenie (minuty)',
-    persistentAlarm: 'Alarm uporczywy do odhaczenia',
+    snoozeMinutes: 'Domyślne odłożenie (minuty)',
+    persistentAlarm: 'Domyślnie uporczywe przypomnienie',
+    persistentAlarmHint:
+      'Powtarza powiadomienie co kilka minut, dopóki nie oznaczysz dawki. Dotyczy pozycji z włączonymi przypomnieniami.',
     theme: 'Wygląd',
     themeLight: 'Jasny',
     themeDark: 'Ciemny',

@@ -109,6 +109,9 @@ export function SettingsView() {
         <p className="mt-2 text-xs text-[var(--color-text-muted)]">
           {pl.settings.notificationsHint}
         </p>
+        <p className="mt-1 text-xs text-[var(--color-text-muted)]">
+          {pl.settings.notificationsPerMed}
+        </p>
         {'Notification' in window &&
           Notification.permission === 'denied' &&
           settings.notificationsEnabled && (
@@ -144,6 +147,9 @@ export function SettingsView() {
           />
           {pl.settings.persistentAlarm}
         </label>
+        <p className="mt-1 text-xs text-[var(--color-text-muted)]">
+          {pl.settings.persistentAlarmHint}
+        </p>
       </section>
 
       <section>

@@ -29,6 +29,7 @@ const validWizard: WizardFormState = {
   trackStock: false,
   stockRemaining: 30,
   stockUnitsPerIntake: 1,
+  remindersEnabled: true,
 }
 
 describe('medication notes', () => {

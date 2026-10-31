@@ -34,6 +34,7 @@ const validWizard: WizardFormState = {
   trackStock: true,
   stockRemaining: 30,
   stockUnitsPerIntake: 1,
+  remindersEnabled: true,
 }
 
 describe('medication save flow (IndexedDB)', () => {

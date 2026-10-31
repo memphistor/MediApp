@@ -1,57 +1,17 @@
-import { useMemo, useState, type ReactNode } from 'react'
+import { Link } from 'react-router-dom'
+import { useMemo } from 'react'
+import { CollapsibleSection } from '@/components/layout/CollapsibleSection'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { formatLocaleDateTime } from '@/lib/dates'
 import { DoseStatusBadge } from '@/components/dose/DoseStatusBadge'
 import { doseStatusContextFromLog } from '@/lib/dose/doseStatusDisplay'
 import { TakenAtEditor } from '@/components/dose/TakenAtEditor'
 import { splitHistoryLogs } from '@/lib/history/historySections'
+import { appPath } from '@/lib/profil/profilNavigation'
 import { db } from '@/db/database'
 import { pl } from '@/i18n/pl'
 import type { DoseLog } from '@/types/dose'
 import type { MedicationEntry } from '@/types/medication'
-
-function HistoryCollapsibleSection({
-  title,
-  count,
-  defaultOpen,
-  children,
-}: {
-  title: string
-  count: number
-  defaultOpen: boolean
-  children: ReactNode
-}) {
-  const [open, setOpen] = useState(defaultOpen)
-  const panelId = useMemo(() => `history-section-${title}`, [title])
-
-  return (
-    <section className="overflow-hidden rounded-xl border border-[var(--color-border)]">
-      <button
-        type="button"
-        className="flex w-full items-center justify-between gap-3 px-4 py-3 text-left text-sm font-semibold hover:bg-[var(--color-surface-elevated)]"
-        aria-expanded={open}
-        aria-controls={panelId}
-        onClick={() => setOpen((v) => !v)}
-      >
-        <span>{title}</span>
-        <span className="flex items-center gap-2 font-normal text-[var(--color-text-muted)]">
-          <span className="tabular-nums">{count}</span>
-          <span
-            className={`inline-block text-xs transition-transform ${open ? 'rotate-180' : ''}`}
-            aria-hidden
-          >
-            ▼
-          </span>
-        </span>
-      </button>
-      {open && (
-        <div id={panelId} className="border-t border-[var(--color-border)]">
-          {children}
-        </div>
-      )}
-    </section>
-  )
-}
 
 function HistoryLogList({
   logs,
@@ -122,12 +82,20 @@ export function HistoryView() {
 
   return (
     <div className="space-y-4">
-      <h2 className="text-xl font-semibold">{pl.history.title}</h2>
+      <div className="flex flex-wrap items-start justify-between gap-2">
+        <h2 className="text-xl font-semibold">{pl.history.title}</h2>
+        <Link
+          to={appPath('/progress/analytics')}
+          className="text-sm font-medium text-brand"
+        >
+          {pl.history.analyticsLink}
+        </Link>
+      </div>
       {!total ? (
         <p className="text-sm text-[var(--color-text-muted)]">{pl.history.empty}</p>
       ) : (
         <div className="space-y-3">
-          <HistoryCollapsibleSection
+          <CollapsibleSection
             title={pl.history.sectionPast}
             count={past.length}
             defaultOpen
@@ -138,8 +106,8 @@ export function HistoryView() {
               medications={medications}
               emptyLabel={pl.history.sectionEmpty}
             />
-          </HistoryCollapsibleSection>
-          <HistoryCollapsibleSection
+          </CollapsibleSection>
+          <CollapsibleSection
             title={pl.history.sectionPlanned}
             count={planned.length}
             defaultOpen={false}
@@ -150,7 +118,7 @@ export function HistoryView() {
               medications={medications}
               emptyLabel={pl.history.sectionEmpty}
             />
-          </HistoryCollapsibleSection>
+          </CollapsibleSection>
         </div>
       )}
     </div>

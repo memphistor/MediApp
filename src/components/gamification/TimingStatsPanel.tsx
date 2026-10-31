@@ -1,4 +1,5 @@
 import { useMemo } from 'react'
+import { CollapsibleSection } from '@/components/layout/CollapsibleSection'
 import { addDays, toDateKey } from '@/lib/dates'
 import {
   lastDayTimingRows,
@@ -13,6 +14,7 @@ import { pl } from '@/i18n/pl'
 type TimingStatsPanelProps = {
   logs: DoseLog[]
   referenceDate?: Date
+  embedded?: boolean
 }
 
 function pct(n: number): number {
@@ -85,6 +87,7 @@ function SummaryLine({
 export function TimingStatsPanel({
   logs,
   referenceDate = new Date(),
+  embedded = false,
 }: TimingStatsPanelProps) {
   const dateKey = toDateKey(referenceDate)
 
@@ -113,8 +116,12 @@ export function TimingStatsPanel({
     1,
   )
 
+  const shellClass = embedded
+    ? 'space-y-4 p-4 pt-3'
+    : 'space-y-4 rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface-elevated)] p-4'
+
   return (
-    <section className="space-y-4 rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface-elevated)] p-4">
+    <section className={shellClass}>
       <div>
         <h3 className="font-semibold">{pl.progress.timing.title}</h3>
         <p className="mt-1 text-xs leading-relaxed text-[var(--color-text-muted)]">
@@ -161,9 +168,8 @@ export function TimingStatsPanel({
         </div>
       )}
 
-      <div>
-        <p className="text-sm font-medium">{pl.progress.timing.dailyTitle}</p>
-        <ul className="mt-2 space-y-1">
+      <CollapsibleSection title={pl.progress.timing.dailyTitle} defaultOpen={false}>
+        <ul className="space-y-1 px-4 py-3">
           {dayRows.map(({ dateKey, counts }) => {
             const label = new Date(dateKey + 'T12:00:00').toLocaleDateString(
               'pl-PL',
@@ -207,7 +213,7 @@ export function TimingStatsPanel({
             )
           })}
         </ul>
-      </div>
+      </CollapsibleSection>
     </section>
   )
 }

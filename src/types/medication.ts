@@ -47,6 +47,8 @@ export interface MedicationEntry {
   stockRemaining?: number
   /** Units consumed per intake (default 1). */
   stockUnitsPerIntake?: number
+  /** When false, no push/in-app reminder groups for this entry. */
+  remindersEnabled?: boolean
   createdAt: string
   updatedAt: string
 }

@@ -1,5 +1,6 @@
 import type { DoseLog } from '@/types/dose'
 import type { MedicationEntry } from '@/types/medication'
+import { isMedicationRemindersEnabled } from '@/lib/medication/medicationReminders'
 
 export interface ReminderGroup {
   groupKey: string
@@ -24,6 +25,8 @@ export function buildReminderGroups(
   const due = logs.filter((log) => {
     if (log.status !== 'planned') return false
     if (new Date(log.scheduledAt).getTime() > nowMs) return false
+    const med = medById.get(log.medicationId)
+    if (med && !isMedicationRemindersEnabled(med)) return false
     const snoozeUntil = snoozeUntilByLogId[log.id]
     if (snoozeUntil && new Date(snoozeUntil).getTime() > nowMs) return false
     if (!log.lastNotifiedAt) return true

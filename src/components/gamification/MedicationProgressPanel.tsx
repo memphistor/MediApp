@@ -28,6 +28,8 @@ type MedicationProgressPanelProps = {
   logs: DoseLog[]
   medications: MedOption[]
   referenceDate?: Date
+  /** Inside analytics wrapper — no outer card chrome. */
+  embedded?: boolean
 }
 
 function pct(rate: number): number {
@@ -38,6 +40,7 @@ export function MedicationProgressPanel({
   logs,
   medications,
   referenceDate = new Date(),
+  embedded = false,
 }: MedicationProgressPanelProps) {
   const [medId, setMedId] = useState('')
   const [period, setPeriod] = useState<ProgressPeriod>('month')
@@ -55,7 +58,13 @@ export function MedicationProgressPanel({
 
   if (medications.length === 0) {
     return (
-      <section className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface-elevated)] p-4">
+      <section
+        className={
+          embedded
+            ? 'space-y-3 p-4'
+            : 'rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface-elevated)] p-4'
+        }
+      >
         <h3 className="font-semibold">{pl.progress.perMed.title}</h3>
         <p className="mt-2 text-sm text-[var(--color-text-muted)]">
           {pl.progress.perMed.noMedications}
@@ -66,11 +75,15 @@ export function MedicationProgressPanel({
 
   const taken =
     counts.onTime + counts.early + counts.late + counts.unknown
-  const due = counts.totalScheduled - counts.planned
+  const due = counts.totalScheduled
   const selectedMed = medications.find((m) => m.id === medId)
 
+  const shellClass = embedded
+    ? 'space-y-3 p-4 pt-3'
+    : 'space-y-3 rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface-elevated)] p-4'
+
   return (
-    <section className="space-y-3 rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface-elevated)] p-4">
+    <section className={shellClass}>
       <h3 className="font-semibold">{pl.progress.perMed.title}</h3>
       <p className="text-xs text-[var(--color-text-muted)]">
         {pl.progress.perMed.hint}
@@ -106,7 +119,7 @@ export function MedicationProgressPanel({
         </select>
       </label>
 
-      {due > 0 ? (
+      {counts.totalScheduled > 0 ? (
         <p className="text-sm text-[var(--color-text-muted)]">
           {pl.progress.perMed.summary
             .replace('{taken}', String(taken))

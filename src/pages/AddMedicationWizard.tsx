@@ -78,6 +78,7 @@ const initialForm: WizardFormState = {
   trackStock: false,
   stockRemaining: 30,
   stockUnitsPerIntake: 1,
+  remindersEnabled: true,
 }
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
@@ -409,9 +410,16 @@ export function AddMedicationWizard() {
           <FormSelect
             label={pl.wizard.fields.schedule}
             value={form.scheduleType}
-            onChange={(t) =>
-              patch({ scheduleType: t as Schedule['type'] })
-            }
+            onChange={(t) => {
+              const scheduleType = t as Schedule['type']
+              const partial: Partial<WizardFormState> = { scheduleType }
+              if (scheduleType === 'asNeeded') {
+                partial.remindersEnabled = false
+              } else if (formRef.current.scheduleType === 'asNeeded') {
+                partial.remindersEnabled = true
+              }
+              patch(partial)
+            }}
             error={errors.scheduleType}
           >
             {SCHEDULE_OPTIONS.map((t) => (
@@ -435,6 +443,25 @@ export function AddMedicationWizard() {
               {errors.times && (
                 <p className="mt-1 text-xs text-red-600">{errors.times}</p>
               )}
+            </label>
+          )}
+
+          {form.scheduleType !== 'asNeeded' && (
+            <label className="flex items-start gap-3 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-3 text-sm">
+              <input
+                type="checkbox"
+                className="mt-0.5 h-5 w-5 shrink-0"
+                checked={form.remindersEnabled}
+                onChange={(e) =>
+                  patch({ remindersEnabled: e.target.checked })
+                }
+              />
+              <span>
+                <span className="font-medium">{pl.wizard.fields.remindersEnable}</span>
+                <span className="mt-1 block text-xs text-[var(--color-text-muted)]">
+                  {pl.wizard.fields.remindersHint}
+                </span>
+              </span>
             </label>
           )}
 

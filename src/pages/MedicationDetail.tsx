@@ -12,9 +12,10 @@ import {
 } from '@/components/medication/MedicationStockLine'
 import { MedicationStockPanel } from '@/components/medication/MedicationStockPanel'
 import { pl } from '@/i18n/pl'
-import { getMedicationById, deleteMedication } from '@/repositories/medicationRepository'
+import { getMedicationById, deleteMedication, updateMedication } from '@/repositories/medicationRepository'
 import { logAsNeededIntake } from '@/repositories/doseLogRepository'
 import { isEntryInDateRange } from '@/lib/schedule/isActiveOnDate'
+import { isMedicationRemindersEnabled } from '@/lib/medication/medicationReminders'
 import { syncAllDoseLogs } from '@/services/syncDoseLogs'
 
 export function MedicationDetail() {
@@ -49,6 +50,18 @@ export function MedicationDetail() {
 
   const canLogPrn =
     med.schedule.type === 'asNeeded' && isEntryInDateRange(new Date(), med)
+
+  const showRemindersToggle =
+    med.schedule.type !== 'asNeeded' && med.times.length > 0
+  const remindersOn = isMedicationRemindersEnabled(med)
+
+  const handleRemindersToggle = async () => {
+    await updateMedication({
+      ...med,
+      remindersEnabled: !remindersOn,
+      updatedAt: new Date().toISOString(),
+    })
+  }
 
   const accent = medicationAccentColor(med.color)
 
@@ -117,6 +130,28 @@ export function MedicationDetail() {
           )}
         </dl>
       </div>
+
+      {showRemindersToggle && (
+        <section className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface-elevated)] p-4">
+          <h3 className="font-semibold">{pl.detail.reminders}</h3>
+          <label className="mt-3 flex items-start gap-3 text-sm">
+            <input
+              type="checkbox"
+              className="mt-0.5 h-5 w-5 shrink-0"
+              checked={remindersOn}
+              onChange={() => void handleRemindersToggle()}
+            />
+            <span>
+              <span className="font-medium">
+                {pl.wizard.fields.remindersEnable}
+              </span>
+              <span className="mt-1 block text-xs text-[var(--color-text-muted)]">
+                {pl.detail.remindersHint}
+              </span>
+            </span>
+          </label>
+        </section>
+      )}
 
       <section>
         <h3 className="font-semibold">{pl.detail.yourNotes}</h3>

@@ -117,13 +117,12 @@ export function onTimeRateAmongTaken(counts: DoseTimingCounts): number {
   return counts.onTime / taken
 }
 
-/** Share of scheduled doses (excl. still planned) marked taken. */
+/** Share of scheduled doses marked taken (same basis as the day ring). */
 export function takenAdherenceRate(counts: DoseTimingCounts): number {
-  const due = counts.totalScheduled - counts.planned
-  if (due === 0) return 0
+  if (counts.totalScheduled === 0) return 0
   const taken =
     counts.onTime + counts.early + counts.late + counts.unknown
-  return taken / due
+  return taken / counts.totalScheduled
 }
 
 export function isDayFullyOnTime(dayLogs: DoseLog[]): boolean {
