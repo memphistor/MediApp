@@ -13,6 +13,8 @@ import {
   medicationToWizardState,
   mergeWizardFormFromDom,
   validateWizard,
+  validateWizardStep,
+  firstWizardStepWithErrors,
   type WizardFormState,
   type WizardErrors,
 } from '@/lib/wizard/buildMedication'
@@ -103,6 +105,7 @@ export function AddMedicationWizard() {
   const [saveError, setSaveError] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
   const [hydrated, setHydrated] = useState(!editId)
+  const [step, setStep] = useState(1)
 
   useEffect(() => {
     if (editId) return
@@ -177,9 +180,23 @@ export function AddMedicationWizard() {
     event.preventDefault()
     setSaveError(null)
     const current = commitFormFromDom()
+    if (step < 3) {
+      const stepErrors = validateWizardStep(step, current)
+      if (Object.keys(stepErrors).length > 0) {
+        setErrors(stepErrors)
+        window.scrollTo({ top: 0, behavior: 'smooth' })
+        return
+      }
+      setErrors({})
+      setStep((currentStep) => currentStep + 1)
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+      return
+    }
     const validation = validateWizard(current)
     if (Object.keys(validation).length > 0) {
       setErrors(validation)
+      const errorStep = firstWizardStepWithErrors(validation)
+      if (errorStep) setStep(errorStep)
       window.scrollTo({ top: 0, behavior: 'smooth' })
       return
     }
@@ -227,6 +244,15 @@ export function AddMedicationWizard() {
       <h2 className="text-xl font-semibold">
         {editId ? pl.wizard.editTitle : pl.wizard.title}
       </h2>
+      <p className="mt-1 text-sm text-[var(--color-text-muted)]">
+        {pl.wizard.step} {step} {pl.wizard.of} 3
+        {' · '}
+        {step === 1
+          ? pl.wizard.sections.basic
+          : step === 2
+            ? pl.wizard.sections.schedule
+            : pl.wizard.sections.appearance}
+      </p>
 
       {Object.keys(errors).length > 0 && (
         <div
@@ -259,6 +285,8 @@ export function AddMedicationWizard() {
         onSubmit={handleFormSubmit}
         noValidate
       >
+        {step === 1 && (
+        <>
         <section className="space-y-3">
           <SectionTitle>{pl.wizard.sections.basic}</SectionTitle>
           <label className="block">
@@ -404,7 +432,11 @@ export function AddMedicationWizard() {
             {pl.wizard.fields.stockHint}
           </p>
         </section>
+        </>
+        )}
 
+        {step === 2 && (
+        <>
         <section className="space-y-3">
           <SectionTitle>{pl.wizard.sections.schedule}</SectionTitle>
           <FormSelect
@@ -615,7 +647,10 @@ export function AddMedicationWizard() {
             />
           </label>
         </section>
+        </>
+        )}
 
+        {step === 3 && (
         <section className="space-y-3">
           <SectionTitle>{pl.wizard.sections.appearance}</SectionTitle>
           <input type="hidden" name="color" value={form.color} readOnly />
@@ -641,14 +676,33 @@ export function AddMedicationWizard() {
             />
           </fieldset>
         </section>
+        )}
 
-        <button
-          type="submit"
-          disabled={saving}
-          className="min-h-12 w-full rounded-xl bg-brand font-semibold text-white disabled:opacity-60"
-        >
-          {saving ? pl.wizard.saving : pl.wizard.save}
-        </button>
+        <div className="flex gap-2">
+          {step > 1 && (
+            <button
+              type="button"
+              className="min-h-12 flex-1 rounded-xl border border-[var(--color-border)] font-semibold"
+              onClick={() => {
+                setErrors({})
+                setStep((currentStep) => currentStep - 1)
+              }}
+            >
+              {pl.wizard.back}
+            </button>
+          )}
+          <button
+            type="submit"
+            disabled={saving}
+            className="min-h-12 flex-1 rounded-xl bg-brand font-semibold text-white disabled:opacity-60"
+          >
+            {step < 3
+              ? pl.wizard.next
+              : saving
+                ? pl.wizard.saving
+                : pl.wizard.save}
+          </button>
+        </div>
       </form>
     </div>
   )

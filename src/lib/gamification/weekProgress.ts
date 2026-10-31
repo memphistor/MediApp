@@ -24,7 +24,9 @@ export function weekPlanProgress(
   progress: number
   adherencePct: number
 } {
-  const { from, to } = calendarWeekBounds(reference)
+  const { from, to: weekEnd } = calendarWeekBounds(reference)
+  const todayEnd = endOfLocalDay(reference)
+  const to = todayEnd.getTime() < weekEnd.getTime() ? todayEnd : weekEnd
   const counts = timingCountsForLogs(logsInLocalDateRange(logs, from, to))
   const taken =
     counts.onTime + counts.early + counts.late + counts.unknown

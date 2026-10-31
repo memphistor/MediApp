@@ -10,7 +10,7 @@ import { dayComplianceToneClass } from '@/lib/calendar/dayComplianceStyles'
 import { TakenAtEditor } from '@/components/dose/TakenAtEditor'
 import { DoseStatusBadge } from '@/components/dose/DoseStatusBadge'
 import { doseStatusContextFromLog } from '@/lib/dose/doseStatusDisplay'
-import { CalendarWeekStrip } from '@/components/calendar/CalendarWeekStrip'
+import { CollapsibleSection } from '@/components/layout/CollapsibleSection'
 import {
   formatTimingDeltaMinutes,
   timingLabelForLog,
@@ -98,18 +98,12 @@ export function CalendarView() {
     setSelectedKey(null)
   }
 
-  const selectCalendarDay = (key: string, date: Date) => {
-    setCursor({ year: date.getFullYear(), month: date.getMonth() })
-    setSelectedKey(key)
-  }
-
   const renderLog = (log: DoseLog) => {
     const med = medMap.get(log.medicationId)
     const timingLabels = pl.progress.timing
-    const timingText =
-      log.source === 'prn'
-        ? null
-        : timingLabelForLog(log, {
+    const showTiming = log.status === 'taken' && log.source !== 'prn'
+    const timingText = showTiming
+      ? timingLabelForLog(log, {
             onTime: timingLabels.onTime,
             early: timingLabels.early,
             late: timingLabels.late,
@@ -117,6 +111,7 @@ export function CalendarView() {
             missed: timingLabels.missed,
             planned: pl.doseStatus.planned,
           })
+      : null
     const delta = formatTimingDeltaMinutes(log)
     return (
       <li
@@ -176,11 +171,6 @@ export function CalendarView() {
         {monthLabel}
       </p>
 
-      <CalendarWeekStrip
-        selectedKey={selectedKey}
-        onSelectDay={selectCalendarDay}
-      />
-
       <div className="grid grid-cols-7 gap-1 text-center text-xs font-medium text-[var(--color-text-muted)]">
         {WEEKDAYS.map((w) => (
           <div key={w}>{w}</div>
@@ -213,17 +203,26 @@ export function CalendarView() {
           )
         })}
       </div>
-      <ul className="space-y-1 text-xs text-[var(--color-text-muted)]">
-        <li>{pl.calendar.legendFull}</li>
-        <li>{pl.calendar.legendPartial}</li>
-        <li>{pl.calendar.legendMissed}</li>
-        <li>{pl.calendar.legendPlanned}</li>
-        <li>{pl.calendar.legendPrn}</li>
-      </ul>
+      <CollapsibleSection title={pl.calendar.legendToggle}>
+        <ul className="space-y-1 px-4 py-3 text-xs text-[var(--color-text-muted)]">
+          <li>{pl.calendar.legendFull}</li>
+          <li>{pl.calendar.legendPartial}</li>
+          <li>{pl.calendar.legendMissed}</li>
+          <li>{pl.calendar.legendPlanned}</li>
+          <li>{pl.calendar.legendPrn}</li>
+        </ul>
+      </CollapsibleSection>
 
       {selectedKey && (
         <section className="space-y-3">
-          <h3 className="font-semibold">{selectedKey}</h3>
+          <h3 className="font-semibold">
+            {new Date(`${selectedKey}T12:00:00`).toLocaleDateString('pl-PL', {
+              weekday: 'long',
+              day: 'numeric',
+              month: 'long',
+              year: 'numeric',
+            })}
+          </h3>
           {selectedPlan.length === 0 && selectedPrn.length === 0 ? (
             <p className="text-sm text-[var(--color-text-muted)]">
               {pl.calendar.dayEmpty}

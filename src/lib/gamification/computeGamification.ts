@@ -23,11 +23,10 @@ export function computeGamification(
   const ring = dayRingProgress(todayLogs)
   const takenTotal = planned.filter((l) => l.status === 'taken').length
 
-  const initialShield = existing?.shieldAvailable ?? true
   const { currentStreak, shieldAvailable } = computeStreak(
     logsByDay,
     referenceDate,
-    initialShield,
+    true,
   )
 
   const year = referenceDate.getFullYear()

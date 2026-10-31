@@ -1,10 +1,7 @@
 import type { DoseLog } from '@/types/dose'
 
-export function isPlannedUpcoming(log: DoseLog, now = new Date()): boolean {
-  return (
-    log.status === 'planned' &&
-    new Date(log.scheduledAt).getTime() > now.getTime()
-  )
+export function isPlannedUpcoming(log: DoseLog, _now = new Date()): boolean {
+  return log.status === 'planned'
 }
 
 export function splitHistoryLogs(

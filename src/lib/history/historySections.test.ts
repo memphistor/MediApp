@@ -21,14 +21,14 @@ describe('historySections', () => {
     expect(isPlannedUpcoming(l, now)).toBe(true)
   })
 
-  it('past includes taken, missed, and overdue planned', () => {
+  it('keeps overdue planned doses in planned, not past', () => {
     const logs = [
       log({ id: 'f', scheduledAt: '2026-11-05T08:00:00.000Z', status: 'planned' }),
       log({ id: 't', scheduledAt: '2026-10-01T08:00:00.000Z', status: 'taken' }),
       log({ id: 'p', scheduledAt: '2026-10-30T08:00:00.000Z', status: 'planned' }),
     ]
     const { past, planned } = splitHistoryLogs(logs, now)
-    expect(planned.map((x) => x.id)).toEqual(['f'])
-    expect(past.map((x) => x.id)).toEqual(['p', 't'])
+    expect(planned.map((x) => x.id)).toEqual(['p', 'f'])
+    expect(past.map((x) => x.id)).toEqual(['t'])
   })
 })

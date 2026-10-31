@@ -55,29 +55,24 @@ export function DueReminderPanel() {
           <li key={line}>{line}</li>
         ))}
       </ul>
-      <div className="mt-4 grid grid-cols-3 gap-2">
-        <button
-          type="button"
-          className="min-h-12 rounded-xl bg-brand px-2 text-sm font-semibold text-white"
-          onClick={() =>
-            run(group.logIds.length > 1 ? 'taken-all' : 'taken')
-          }
-        >
-          {group.logIds.length > 1 ? pl.reminder.takeAll : pl.reminder.taken}
-        </button>
+      <div
+        className={`mt-4 grid gap-2 ${group.logIds.length > 1 ? 'grid-cols-2' : 'grid-cols-1'}`}
+      >
+        {group.logIds.length > 1 && (
+          <button
+            type="button"
+            className="min-h-12 rounded-xl bg-brand px-2 text-sm font-semibold text-white"
+            onClick={() => run('taken-all')}
+          >
+            {pl.reminder.takeAll}
+          </button>
+        )}
         <button
           type="button"
           className="min-h-12 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] px-2 text-sm font-medium"
           onClick={() => run('snooze')}
         >
           {pl.reminder.snooze}
-        </button>
-        <button
-          type="button"
-          className="min-h-12 rounded-xl border border-[var(--color-border)] px-2 text-sm font-medium text-[var(--color-text-muted)]"
-          onClick={() => run('skip')}
-        >
-          {pl.reminder.skip}
         </button>
       </div>
     </section>

@@ -71,6 +71,13 @@ function SummaryLine({
         <p className="mt-1 text-xs text-[var(--color-text-muted)]">
           {pl.progress.timing.noData}
         </p>
+      ) : taken === 0 ? (
+        <p className="mt-1 text-xs text-[var(--color-text-muted)]">
+          {pl.progress.timing.noneTaken.replace(
+            '{adherencePct}',
+            String(adherencePct),
+          )}
+        </p>
       ) : (
         <p className="mt-1 text-xs text-[var(--color-text-muted)]">
           {pl.progress.timing.summaryLine

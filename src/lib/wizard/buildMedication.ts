@@ -80,16 +80,23 @@ export function validateWizard(state: WizardFormState): WizardErrors {
 }
 
 const STEP_ERROR_KEYS: Record<number, string[]> = {
-  1: ['name', 'kind', 'form'],
-  2: ['doseText', 'emptyStomach'],
-  3: ['scheduleType', 'times', 'weekdays', 'everyN'],
+  1: [
+    'name',
+    'kind',
+    'form',
+    'doseText',
+    'emptyStomach',
+    'stockRemaining',
+    'stockUnitsPerIntake',
+  ],
+  2: ['scheduleType', 'times', 'weekdays', 'everyN'],
 }
 
 export function validateWizardStep(
   step: number,
   state: WizardFormState,
 ): WizardErrors {
-  if (step >= 4) return {}
+  if (step >= 3) return {}
   const all = validateWizard(state)
   const keys = STEP_ERROR_KEYS[step] ?? []
   const errors: WizardErrors = {}

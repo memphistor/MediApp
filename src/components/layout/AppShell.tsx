@@ -1,10 +1,9 @@
-import { NavLink, Outlet } from 'react-router-dom'
+import { Link, NavLink, Outlet } from 'react-router-dom'
 import { AppLogo } from '@/components/brand/AppLogo'
 import {
   BottomNavIcon,
   type BottomNavIconId,
 } from '@/components/layout/BottomNavIcon'
-import { HeaderBurgerMenu } from '@/components/layout/HeaderBurgerMenu'
 import { pl } from '@/i18n/pl'
 import { appPath } from '@/lib/profil/profilNavigation'
 import { useDoseLogSync } from '@/hooks/useDoseLogSync'
@@ -53,7 +52,12 @@ export function AppShell() {
               </p>
             </div>
           </div>
-          <HeaderBurgerMenu />
+          <Link
+            to={appPath('/settings')}
+            className="inline-flex min-h-11 items-center rounded-xl px-3 text-sm font-medium text-brand"
+          >
+            {pl.nav.settings}
+          </Link>
         </div>
       </header>
 

@@ -68,13 +68,14 @@ export function CalendarWeekStrip({
     let withPlan = 0
     let full = 0
     for (const key of dayKeys) {
+      if (key > todayKey) continue
       const planned = scheduledDoses(byDay.get(key) ?? [])
       if (planned.length === 0) continue
       withPlan += 1
       if (dayComplianceTone(planned) === 'full') full += 1
     }
     return { full, withPlan }
-  }, [byDay, dayKeys])
+  }, [byDay, dayKeys, todayKey])
 
   return (
     <section className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface-elevated)] p-4">

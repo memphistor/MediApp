@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom'
 import { useMemo } from 'react'
 import { CollapsibleSection } from '@/components/layout/CollapsibleSection'
 import { useLiveQuery } from 'dexie-react-hooks'
-import { formatLocaleDateTime } from '@/lib/dates'
+import { formatLocaleDateTime, toDateKey } from '@/lib/dates'
 import { DoseStatusBadge } from '@/components/dose/DoseStatusBadge'
 import { doseStatusContextFromLog } from '@/lib/dose/doseStatusDisplay'
 import { TakenAtEditor } from '@/components/dose/TakenAtEditor'
@@ -77,6 +77,13 @@ export function HistoryView() {
     () => splitHistoryLogs(logs ?? []),
     [logs],
   )
+  const todayKey = toDateKey(new Date())
+  const dueToday = planned.filter(
+    (log) => toDateKey(new Date(log.scheduledAt)) === todayKey,
+  )
+  const laterPlanned = planned.filter(
+    (log) => toDateKey(new Date(log.scheduledAt)) !== todayKey,
+  )
 
   const total = (logs ?? []).length
 
@@ -107,13 +114,37 @@ export function HistoryView() {
               emptyLabel={pl.history.sectionEmpty}
             />
           </CollapsibleSection>
+          {dueToday.length > 0 && (
+            <section className="overflow-hidden rounded-xl border border-brand/30">
+              <div className="flex items-center justify-between gap-3 px-4 py-3">
+                <h3 className="text-sm font-semibold">
+                  {pl.history.dueToday}
+                  <span className="ml-2 font-normal text-[var(--color-text-muted)]">
+                    {dueToday.length}
+                  </span>
+                </h3>
+                <Link
+                  to={appPath('/')}
+                  className="text-sm font-medium text-brand"
+                >
+                  {pl.history.backToToday}
+                </Link>
+              </div>
+              <HistoryLogList
+                logs={dueToday}
+                nameById={nameById}
+                medications={medications}
+                emptyLabel={pl.history.sectionEmpty}
+              />
+            </section>
+          )}
           <CollapsibleSection
             title={pl.history.sectionPlanned}
-            count={planned.length}
+            count={laterPlanned.length}
             defaultOpen={false}
           >
             <HistoryLogList
-              logs={planned}
+              logs={laterPlanned}
               nameById={nameById}
               medications={medications}
               emptyLabel={pl.history.sectionEmpty}

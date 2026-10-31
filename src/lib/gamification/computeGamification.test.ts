@@ -40,6 +40,37 @@ describe('computeStreak', () => {
     expect(r.currentStreak).toBe(2)
   })
 
+  it('drops a stored spent shield when the history never used it', () => {
+    const logs = [log('2026-03-09', 8, 'missed')]
+    const today = new Date(2026, 2, 10)
+    const state = computeGamification(
+      logs,
+      {
+        id: 'default',
+        currentStreak: 0,
+        shieldAvailable: false,
+        badges: [],
+        dayRingProgress: 0,
+        monthRate: 0,
+        takenTotal: 0,
+        todayTaken: 0,
+        todayTotal: 0,
+      },
+      today,
+    )
+    expect(state.currentStreak).toBe(0)
+    expect(state.shieldAvailable).toBe(true)
+  })
+
+  it('does not spend the shield when there is no streak to protect', () => {
+    const logs = [log('2026-03-09', 8, 'missed')]
+    const byDay = group(logs)
+    const today = new Date(2026, 2, 10)
+    const r = computeStreak(byDay, today, true)
+    expect(r.currentStreak).toBe(0)
+    expect(r.shieldAvailable).toBe(true)
+  })
+
   it('shield absorbs one imperfect day', () => {
     const logs = [
       log('2026-03-09', 8, 'missed'),

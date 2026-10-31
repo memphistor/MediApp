@@ -77,12 +77,11 @@ export function TodayView() {
     <div className="space-y-6">
       <div>
         <h2 className="text-xl font-semibold">{pl.today.title}</h2>
-        <p className="mt-1 text-sm text-[var(--color-text-muted)]">
-          {settings.notificationsEnabled &&
-          Notification.permission === 'granted'
-            ? pl.today.notificationsOn
-            : pl.today.notificationsOff}
-        </p>
+        {!settings.notificationsEnabled && ring.total > 0 && (
+          <p className="mt-1 text-sm text-[var(--color-text-muted)]">
+            {pl.today.notificationsOff}
+          </p>
+        )}
         {ring.total > 0 && (
           <div className="mt-4 flex justify-center">
             <DayRing
@@ -155,12 +154,14 @@ export function TodayView() {
         </Link>
       )}
 
-      <Link
-        to={appPath('/add')}
-        className="flex min-h-12 items-center justify-center rounded-2xl border border-dashed border-brand text-sm font-semibold text-brand"
-      >
-        {hasMedications ? pl.today.addMore : pl.today.addFirst}
-      </Link>
+      {!hasMedications && (
+        <Link
+          to={appPath('/add')}
+          className="flex min-h-12 items-center justify-center rounded-2xl border border-dashed border-brand text-sm font-semibold text-brand"
+        >
+          {pl.today.addFirst}
+        </Link>
+      )}
 
       {skipTarget && (
         <div

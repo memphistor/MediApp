@@ -17,7 +17,6 @@ export function ProgressBadges({ gam }: ProgressBadgesProps) {
       <div className="mt-2 flex flex-wrap gap-2">
         {BADGE_DEFINITIONS.map((def) => {
           const earned = earnedIds.has(def.id)
-          const stored = gam.badges.find((b) => b.id === def.id)
           return (
             <span
               key={def.id}
@@ -28,7 +27,7 @@ export function ProgressBadges({ gam }: ProgressBadgesProps) {
               }`}
               title={earned ? undefined : pl.progress.badgeLocked}
             >
-              {stored?.label ?? def.label}
+              {def.label}
             </span>
           )
         })}

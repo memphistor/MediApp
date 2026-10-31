@@ -35,10 +35,8 @@ export const pl = {
     emptyNoMeds: 'Nie masz jeszcze żadnych pozycji — dodaj pierwszą poniżej.',
     addFirst: 'Dodaj pierwszą pozycję',
     addMore: 'Dodaj pozycję',
-    notificationsOn:
-      'Powiadomienia włączone — sprawdzamy plan co 30 s, gdy aplikacja jest aktywna.',
     notificationsOff:
-      'Włącz powiadomienia w Ustawieniach lub odhaczaj pozycje na liście.',
+      'Powiadomienia są wyłączone. Odhaczaj pozycje na liście albo włącz je w Ustawieniach.',
     skipTitle: 'Pomiń dawkę',
     skipReasonLabel: 'Powód (opcjonalnie)',
     asNeededTitle: 'W razie potrzeby',
@@ -70,7 +68,7 @@ export const pl = {
     saveFailed:
       'Nie udało się zapisać w przeglądarce. Sprawdź, czy strona może zapisywać dane lokalnie (IndexedDB), i spróbuj ponownie.',
     fields: {
-      name: 'Nazwa (wpisz ręcznie)',
+      name: 'Nazwa',
       kind: 'Rodzaj',
       form: 'Forma',
       dose: 'Dawka (np. 1 tabletka lub 500 mg)',
@@ -192,6 +190,7 @@ export const pl = {
     legendMissed: 'Są pominięte lub opuszczone',
     legendPlanned: 'Tylko zaplanowane, nic jeszcze nie odhaczone',
     legendPrn: 'Przyjęcie doraźne (poza planem dnia)',
+    legendToggle: 'Co oznaczają kolory',
     dayEmpty: 'Brak dawek w tym dniu.',
     prnSection: 'Doraźne',
     planSection: 'Plan',
@@ -210,6 +209,8 @@ export const pl = {
     empty: 'Brak wpisów w dzienniku.',
     sectionPast: 'Przeszłe',
     sectionPlanned: 'Zaplanowane',
+    dueToday: 'Dziś do odhaczenia',
+    backToToday: 'Wróć do Dziś',
     sectionEmpty: 'Brak wpisów w tej sekcji.',
     plannedAt: 'Plan',
     takenAt: 'Wzięto',
@@ -296,6 +297,8 @@ export const pl = {
       last7Days: 'Ostatnie 7 dni',
       thisMonth: 'Ten miesiąc',
       noData: 'Brak zaplanowanych dawek w tym okresie.',
+      noneTaken:
+        'Nic jeszcze nie przyjęte. Przyjęcia z planu: {adherencePct}%.',
       summaryLine:
         '{onTime} z {taken} wziętych w terminie ({onTimePct}%). Przyjęcia z planu: {adherencePct}%.',
       todayBreakdown: 'Dziś — rozbicie',
@@ -342,7 +345,7 @@ export const pl = {
     notificationLimits: 'Limity powiadomień',
     profilTitle: 'Link profilu (twoje leki)',
     profilHint:
-      'Zapisz link z własną końcówką, np. …/MediApp/testfp — ten sam adres po aktualizacji aplikacji otwiera twoje leki w tej przeglądarce. Opcjonalnie ?v=1 odświeża wersję strony.',
+      'Zapisz ten adres w zakładkach. Otworzysz nim swoje leki w tej przeglądarce.',
     profilNone: 'Nie masz jeszcze linku profilu — dane są w domyślnej bazie na tym urządzeniu.',
     profilCreate: 'Utwórz link profilu',
     profilActive: 'Twój profil',
@@ -359,7 +362,7 @@ export const pl = {
   notificationHelp: {
     title: 'Limity powiadomień',
     lead: 'MediApp nie ma serwera push. Przypomnienie pojawia się, gdy aplikacja jest otwarta albo działa w tle z aktywnym Service Workerem i gdy przeglądarka ma zgodę.',
-    tick: 'Plan jest sprawdzany co około 30 sekund przy włączonych powiadomieniach.',
+    tick: 'Przypomnimy o godzinie z planu, gdy aplikacja jest otwarta albo działa w tle.',
     ios: 'Na iPhonie (Safari) powiadomienia PWA są mniej niezawodne niż na Androidzie. Dodaj aplikację do ekranu początkowego i otwieraj ją od czasu do czasu.',
     noPermission:
       'Bez zgody przeglądarki na ekranie Dziś zostaje panel z akcjami Wzięte, Odłóż i Pomiń.',

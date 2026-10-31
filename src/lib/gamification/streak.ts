@@ -10,6 +10,19 @@ export interface StreakResult {
   shieldAvailable: boolean
 }
 
+function hasFullDayAfter(
+  logsByDay: Map<string, DoseLog[]>,
+  today: Date,
+  startOffset: number,
+): boolean {
+  for (let j = startOffset; j <= MAX_STREAK_LOOKBACK; j++) {
+    const dayLogs = logsByDay.get(toDateKey(addDays(today, -j))) ?? []
+    if (isDayNeutral(dayLogs)) continue
+    return isFullDay(dayLogs)
+  }
+  return false
+}
+
 export function computeStreak(
   logsByDay: Map<string, DoseLog[]>,
   today: Date,
@@ -31,7 +44,11 @@ export function computeStreak(
       continue
     }
 
-    if (shield) {
+    if (
+      shield &&
+      !shieldUsed &&
+      hasFullDayAfter(logsByDay, today, i + 1)
+    ) {
       shield = false
       shieldUsed = true
       continue

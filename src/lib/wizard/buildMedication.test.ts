@@ -35,15 +35,19 @@ const validBase: WizardFormState = {
 }
 
 describe('validateWizardStep', () => {
-  it('wymaga pól z kroku 1', () => {
-    const errors = validateWizardStep(1, { ...validBase, name: '', kind: '' })
+  it('wymaga nazwy i dawki na kroku 1', () => {
+    const errors = validateWizardStep(1, {
+      ...validBase,
+      name: '',
+      doseText: '',
+    })
     expect(errors.name).toBeTruthy()
-    expect(errors.kind).toBeTruthy()
-    expect(errors.doseText).toBeUndefined()
+    expect(errors.doseText).toBeTruthy()
+    expect(errors.times).toBeUndefined()
   })
 
-  it('wymaga pól z kroku 3', () => {
-    const errors = validateWizardStep(3, {
+  it('wymaga godzin na kroku 2', () => {
+    const errors = validateWizardStep(2, {
       ...validBase,
       scheduleType: '',
       timesRaw: '',
@@ -53,7 +57,7 @@ describe('validateWizardStep', () => {
   })
 
   it('pomija godziny dla asNeeded', () => {
-    const errors = validateWizardStep(3, {
+    const errors = validateWizardStep(2, {
       ...validBase,
       scheduleType: 'asNeeded',
       timesRaw: '',

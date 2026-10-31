@@ -25,4 +25,19 @@ describe('weekPlanProgress', () => {
     expect(r.total).toBe(2)
     expect(r.progress).toBe(0.5)
   })
+
+  it('does not count doses after the reference day', () => {
+    const ref = new Date('2026-10-31T12:00:00')
+    const logs: DoseLog[] = [
+      {
+        id: 'sun',
+        medicationId: 'm',
+        scheduledAt: '2026-11-01T08:00:00',
+        status: 'planned',
+      },
+    ]
+    const r = weekPlanProgress(logs, ref)
+    expect(r.total).toBe(0)
+    expect(r.taken).toBe(0)
+  })
 })
