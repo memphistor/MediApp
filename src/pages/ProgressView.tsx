@@ -1,5 +1,8 @@
+import { useMemo } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { DayRing } from '@/components/gamification/DayRing'
+import { MedicationProgressPanel } from '@/components/gamification/MedicationProgressPanel'
+import { PeriodAdherencePanel } from '@/components/gamification/PeriodAdherencePanel'
 import { TimingStatsPanel } from '@/components/gamification/TimingStatsPanel'
 import { BADGE_DEFINITIONS } from '@/lib/gamification/badges'
 import { plantEmojiForStreak } from '@/lib/gamification/plantStage'
@@ -15,18 +18,30 @@ export function ProgressView() {
   )
 
   const gam = state ?? DEFAULT_GAMIFICATION
-  const monthPercent = Math.round(gam.monthRate * 100)
   const earnedIds = new Set(
     gam.badges.filter((b) => b.earnedAt).map((b) => b.id),
   )
 
-  const timingLogs = useLiveQuery(async () => {
-    const from = startOfLocalDay(addDays(new Date(), -90))
+  const progressLogs = useLiveQuery(async () => {
+    const from = startOfLocalDay(addDays(new Date(), -364))
     return db.doseLogs
       .where('scheduledAt')
       .above(from.toISOString())
       .toArray()
   }, [])
+
+  const medications = useLiveQuery(() => db.medications.toArray(), [])
+
+  const medOptions = useMemo(
+    () =>
+      (medications ?? [])
+        .slice()
+        .sort((a, b) => a.name.localeCompare(b.name, 'pl'))
+        .map((m) => ({ id: m.id, name: m.name, icon: m.icon })),
+    [medications],
+  )
+
+  const logs = progressLogs ?? []
 
   return (
     <div className="space-y-6">
@@ -46,6 +61,10 @@ export function ProgressView() {
           .replace('{total}', String(gam.todayTotal))}
       />
 
+      <PeriodAdherencePanel logs={logs} />
+
+      <MedicationProgressPanel logs={logs} medications={medOptions} />
+
       <div className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface-elevated)] p-4">
         <p className="font-semibold">{pl.progress.streak}</p>
         <p className="mt-1 text-3xl font-bold text-brand">
@@ -58,7 +77,7 @@ export function ProgressView() {
         </p>
       </div>
 
-      <TimingStatsPanel logs={timingLogs ?? []} />
+      <TimingStatsPanel logs={logs} />
 
       <div>
         <p className="font-semibold">{pl.progress.badges}</p>
@@ -82,10 +101,6 @@ export function ProgressView() {
           })}
         </div>
       </div>
-
-      <p className="text-sm text-[var(--color-text-muted)]">
-        {pl.progress.monthStats.replace('{percent}', String(monthPercent))}
-      </p>
     </div>
   )
 }
