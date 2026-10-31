@@ -1,6 +1,5 @@
 import { NavLink, Outlet, useLocation } from 'react-router-dom'
 import { pl } from '@/i18n/pl'
-import { DisclaimerBanner } from '@/components/legal/DisclaimerBanner'
 import { useDoseLogSync } from '@/hooks/useDoseLogSync'
 import { useReminderWatcher } from '@/hooks/useReminderWatcher'
 
@@ -46,8 +45,6 @@ export function AppShell() {
           </NavLink>
         </div>
       </header>
-
-      <DisclaimerBanner className="mx-4 mt-3" />
 
       <main className="flex-1 px-4 py-4 pb-24">{<Outlet />}</main>
 

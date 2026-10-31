@@ -22,7 +22,9 @@ export const pl = {
       'Osobisty notatnik i przypominacz: wpisujesz pozycje i godziny, aplikacja przypomina. Nie ma logowania ani synchronizacji w chmurze.',
     body2:
       'Wpisy zapisują się tylko w tej przeglądarce na tym urządzeniu. Możesz je skasować w Ustawieniach → Usuń wszystkie dane.',
-    accept: 'Rozumiem, zaczynam',
+    accept: 'Zaczynam',
+    disclaimerConfirm:
+      'Przeczytałem/am i rozumiem powyższe ważne informacje.',
   },
 
   today: {
