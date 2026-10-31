@@ -4,6 +4,7 @@ import {
   BottomNavIcon,
   type BottomNavIconId,
 } from '@/components/layout/BottomNavIcon'
+import { HeaderBurgerMenu } from '@/components/layout/HeaderBurgerMenu'
 import { pl } from '@/i18n/pl'
 import { appPath } from '@/lib/profil/profilNavigation'
 import { useDoseLogSync } from '@/hooks/useDoseLogSync'
@@ -21,7 +22,7 @@ const mainNav: {
   { to: '/calendar', label: pl.nav.calendar, icon: 'calendar' },
   { to: '/add', label: pl.nav.add, icon: 'add', accent: true },
   { to: '/progress', label: pl.nav.progress, icon: 'progress' },
-  { to: '/settings', label: pl.nav.settings, icon: 'settings' },
+  { to: '/history', label: pl.nav.history, icon: 'history' },
 ]
 
 export function AppShell() {
@@ -52,12 +53,7 @@ export function AppShell() {
               </p>
             </div>
           </div>
-          <NavLink
-            to={appPath('/history')}
-            className="min-h-11 min-w-11 rounded-lg px-2 text-sm font-medium text-brand underline-offset-2 hover:underline"
-          >
-            {pl.history.title}
-          </NavLink>
+          <HeaderBurgerMenu />
         </div>
       </header>
 

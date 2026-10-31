@@ -6,8 +6,10 @@ export const pl = {
     today: 'Dziś',
     calendar: 'Kalendarz',
     progress: 'Postęp',
+    history: 'Historia',
     settings: 'Ustawienia',
     add: 'Dodaj',
+    menuOpen: 'Menu',
   },
 
   disclaimer: {
@@ -40,6 +42,9 @@ export const pl = {
     skipTitle: 'Pomiń dawkę',
     skipReasonLabel: 'Powód (opcjonalnie)',
     asNeededTitle: 'W razie potrzeby',
+    asNeededLink: 'Pozycje w razie potrzeby',
+    asNeededLinkHint:
+      'Nie muszą być na liście na co dzień — wejdź, gdy coś bierzesz lub świadomie pomijasz.',
     logIntake: 'Zapisz przyjęcie',
     logged: 'Zapisano przyjęcie.',
   },
@@ -48,6 +53,7 @@ export const pl = {
     planned: 'Zaplanowana',
     taken: 'Wzięta',
     skipped: 'Pominięta',
+    skippedAsNeededOk: 'Nie brałem — OK',
     missed: 'Przegapiona',
   },
 
@@ -138,6 +144,16 @@ export const pl = {
     },
   },
 
+  asNeeded: {
+    title: 'W razie potrzeby',
+    empty: 'Nie masz pozycji oznaczonych jako „tylko w razie potrzeby”.',
+    intro:
+      'Tu zapisujesz przyjęcie albo świadome pominięcie — bez codziennej listy na ekranie Dziś.',
+    skipOk: 'Nie brałem — OK',
+    todayEntry: 'Dzisiejszy wpis',
+    noneToday: 'Dziś jeszcze nic nie zaznaczono.',
+  },
+
   detail: {
     title: 'Pozycja',
     yourNotes: 'Twoje notatki',
@@ -185,6 +201,9 @@ export const pl = {
   history: {
     title: 'Historia',
     empty: 'Brak wpisów w dzienniku.',
+    sectionPast: 'Przeszłe',
+    sectionPlanned: 'Zaplanowane',
+    sectionEmpty: 'Brak wpisów w tej sekcji.',
     plannedAt: 'Plan',
     takenAt: 'Wzięto',
     editTakenAt: 'Popraw godzinę',

@@ -3,6 +3,8 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { getActiveProfilId } from '@/db/database'
 import {
   buildPathWithProfil,
+  GLOBAL_APP_PATHS,
+  isGlobalAppPath,
   parseProfilFromPathname,
 } from '@/lib/profil/profilRoutes'
 import {
@@ -34,11 +36,28 @@ export function ProfilSearchSync() {
       return
     }
 
-    if (!profilId) return
+    if (isGlobalAppPath(location.pathname)) {
+      return
+    }
 
     const { profilId: pathProfil, appPath: inner } = parseProfilFromPathname(
       location.pathname,
     )
+
+    if (pathProfil && GLOBAL_APP_PATHS.has(inner)) {
+      navigate(
+        {
+          pathname: inner,
+          search: location.search,
+          hash: location.hash,
+        },
+        { replace: true },
+      )
+      return
+    }
+
+    if (!profilId) return
+
     if (pathProfil === profilId) return
 
     navigate(

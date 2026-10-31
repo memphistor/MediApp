@@ -29,7 +29,7 @@ const minimalWizard: WizardFormState = {
   purpose: '',
   note: '',
   color: '#2563eb',
-  icon: 'pill-teal',
+  icon: '💊',
   trackStock: false,
   stockRemaining: 30,
   stockUnitsPerIntake: 1,

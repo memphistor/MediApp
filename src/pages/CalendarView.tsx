@@ -8,6 +8,8 @@ import {
 } from '@/lib/gamification/dayStats'
 import { dayComplianceToneClass } from '@/lib/calendar/dayComplianceStyles'
 import { TakenAtEditor } from '@/components/dose/TakenAtEditor'
+import { DoseStatusBadge } from '@/components/dose/DoseStatusBadge'
+import { doseStatusContextFromLog } from '@/lib/dose/doseStatusDisplay'
 import { CalendarWeekStrip } from '@/components/calendar/CalendarWeekStrip'
 import {
   formatTimingDeltaMinutes,
@@ -137,8 +139,11 @@ export function CalendarView() {
             <TakenAtEditor logId={log.id} takenAt={log.takenAt} />
           )}
         </span>
-        <span className="shrink-0 text-xs text-[var(--color-text-muted)]">
-          {pl.doseStatus[log.status]}
+        <span className="shrink-0">
+          <DoseStatusBadge
+            status={log.status}
+            context={doseStatusContextFromLog(log, med)}
+          />
         </span>
       </li>
     )

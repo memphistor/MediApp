@@ -3,7 +3,7 @@ export type BottomNavIconId =
   | 'calendar'
   | 'add'
   | 'progress'
-  | 'settings'
+  | 'history'
 
 type BottomNavIconProps = {
   id: BottomNavIconId
@@ -108,18 +108,18 @@ export function BottomNavIcon({
             />
           </>
         )
-      case 'settings':
+      case 'history':
         return (
           <>
-            <circle
-              cx="12"
-              cy="12"
-              r="2.5"
+            <path
+              d="M6 4h12M6 8h8M6 12h10M6 16h6"
               stroke="currentColor"
               strokeWidth={stroke}
+              strokeLinecap="round"
             />
+            <circle cx="17" cy="17" r="5" stroke="currentColor" strokeWidth={stroke} />
             <path
-              d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M5.6 18.4l1.4-1.4M17 7l1.4-1.4"
+              d="M17 14.5V17l1.5 1.5"
               stroke="currentColor"
               strokeWidth={stroke}
               strokeLinecap="round"

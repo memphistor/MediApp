@@ -4,19 +4,12 @@ import { appPath } from '@/lib/profil/profilNavigation'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { DayRing } from '@/components/gamification/DayRing'
 import { MedicationCard } from '@/components/medication/MedicationCard'
-import { MedicationIconBadge } from '@/components/medication/MedicationIconBadge'
-import { medicationAccentColor } from '@/lib/medication/medicationAccent'
-import {
-  MedicationStockLine,
-  medicationStockBorderClass,
-} from '@/components/medication/MedicationStockLine'
-import { dayRingProgress } from '@/lib/gamification/dayStats'
 import { DueReminderPanel } from '@/components/reminders/DueReminderPanel'
+import { dayRingProgress, scheduledDoses } from '@/lib/gamification/dayStats'
 import { db } from '@/db/database'
 import { endOfLocalDay, startOfLocalDay } from '@/lib/dates'
-import { logAsNeededIntake, updateDoseStatus } from '@/repositories/doseLogRepository'
+import { updateDoseStatus } from '@/repositories/doseLogRepository'
 import { isEntryInDateRange } from '@/lib/schedule/isActiveOnDate'
-import { scheduledDoses } from '@/lib/gamification/dayStats'
 import { useSettings } from '@/context/SettingsContext'
 import { pl } from '@/i18n/pl'
 import type { MedicationEntry } from '@/types/medication'
@@ -64,11 +57,13 @@ export function TodayView() {
     setSkipReason('')
   }
 
-  const entries = (logs ?? []).filter((log) => medMap.has(log.medicationId))
-  const ring = dayRingProgress(scheduledDoses(entries))
-  const asNeeded = (medications ?? []).filter(
-    (med) => med.schedule.type === 'asNeeded' && isEntryInDateRange(today, med),
+  const entries = (logs ?? []).filter(
+    (log) => medMap.has(log.medicationId) && log.source !== 'prn',
   )
+  const ring = dayRingProgress(scheduledDoses(entries))
+  const asNeededCount = (medications ?? []).filter(
+    (med) => med.schedule.type === 'asNeeded' && isEntryInDateRange(today, med),
+  ).length
   const hasMedications = (medications?.length ?? 0) > 0
 
   useEffect(() => {
@@ -105,7 +100,7 @@ export function TodayView() {
 
       <DueReminderPanel />
 
-      {entries.length === 0 && !asNeeded.length ? (
+      {entries.length === 0 && asNeededCount === 0 ? (
         <p className="rounded-xl border border-dashed border-[var(--color-border)] px-4 py-8 text-center text-sm text-[var(--color-text-muted)]">
           {hasMedications ? pl.today.empty : pl.today.emptyNoMeds}
         </p>
@@ -142,46 +137,22 @@ export function TodayView() {
         </ul>
       )}
 
-      {asNeeded.length > 0 && (
-        <section className="space-y-2">
-          <h3 className="text-sm font-semibold text-[var(--color-text-muted)]">
-            {pl.today.asNeededTitle}
-          </h3>
-          <ul className="space-y-2">
-            {asNeeded.map((med) => (
-              <li
-                key={med.id}
-                className={`flex items-center justify-between gap-3 rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface-elevated)] px-4 py-3 ${medicationStockBorderClass(med) ?? ''}`}
-                style={{
-                  borderLeftWidth: 6,
-                  borderLeftColor: medicationAccentColor(med.color),
-                }}
-              >
-                <Link to={appPath(`/medication/${med.id}`)} className="flex min-w-0 items-center gap-3">
-                  <MedicationIconBadge icon={med.icon} color={med.color} size={26} />
-                  <span className="min-w-0">
-                  <p className="truncate font-medium">{med.name}</p>
-                  <p className="text-xs text-[var(--color-text-muted)]">
-                    {med.doseText}
-                  </p>
-                  <MedicationStockLine medication={med} compact />
-                  </span>
-                </Link>
-                <button
-                  type="button"
-                  className="min-h-11 shrink-0 rounded-xl bg-brand px-3 text-sm font-semibold text-white"
-                  onClick={() => {
-                    void logAsNeededIntake(med.id).then(() => {
-                      navigator.vibrate?.(10)
-                    })
-                  }}
-                >
-                  {pl.today.logIntake}
-                </button>
-              </li>
-            ))}
-          </ul>
-        </section>
+      {asNeededCount > 0 && (
+        <Link
+          to={appPath('/as-needed')}
+          className="flex flex-col gap-1 rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface-elevated)] px-4 py-3 transition-colors hover:border-brand/40"
+        >
+          <span className="font-semibold text-[var(--color-text)]">
+            {pl.today.asNeededLink}
+          </span>
+          <span className="text-sm text-[var(--color-text-muted)]">
+            {pl.today.asNeededLinkHint}
+          </span>
+          <span className="text-xs font-medium text-brand">
+            {asNeededCount}{' '}
+            {asNeededCount === 1 ? 'pozycja' : 'pozycje'} →
+          </span>
+        </Link>
       )}
 
       <Link

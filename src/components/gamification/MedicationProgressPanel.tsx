@@ -11,10 +11,18 @@ import {
 } from '@/lib/gamification/progressPeriods'
 import { medicationIconLabel } from '@/lib/wizard/medicationIcons'
 import type { DoseLog } from '@/types/dose'
+import type { MedicationEntry } from '@/types/medication'
 import { pl } from '@/i18n/pl'
+import { DoseStatusBadge } from '@/components/dose/DoseStatusBadge'
 import { MedicationNotesBlock } from '@/components/gamification/MedicationNotesBlock'
 
-type MedOption = { id: string; name: string; icon: string }
+type MedOption = {
+  id: string
+  name: string
+  icon: string
+  kind: MedicationEntry['kind']
+  scheduleType: MedicationEntry['schedule']['type']
+}
 
 type MedicationProgressPanelProps = {
   logs: DoseLog[]
@@ -59,6 +67,7 @@ export function MedicationProgressPanel({
   const taken =
     counts.onTime + counts.early + counts.late + counts.unknown
   const due = counts.totalScheduled - counts.planned
+  const selectedMed = medications.find((m) => m.id === medId)
 
   return (
     <section className="space-y-3 rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface-elevated)] p-4">
@@ -123,9 +132,15 @@ export function MedicationProgressPanel({
                   <span className="font-medium">
                     {formatLocaleDateTime(log.scheduledAt)}
                   </span>
-                  <span className="shrink-0 text-[var(--color-text-muted)]">
-                    {pl.doseStatus[log.status]}
-                  </span>
+                  <DoseStatusBadge
+                    status={log.status}
+                    className="shrink-0"
+                    context={{
+                      medicationKind: selectedMed?.kind,
+                      scheduleType: selectedMed?.scheduleType,
+                      source: log.source,
+                    }}
+                  />
                 </div>
                 {log.source === 'prn' ? (
                   <p className="mt-0.5 text-[var(--color-text-muted)]">

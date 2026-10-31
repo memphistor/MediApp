@@ -85,6 +85,12 @@ export async function updateDoseTakenAt(
 
 export async function logAsNeededIntake(medicationId: string): Promise<DoseLog> {
   const now = new Date().toISOString()
+  const existing = await getTodayPrnLogForMedication(medicationId)
+  if (existing) {
+    await updateDoseStatus(existing.id, 'taken', { takenAt: now })
+    const updated = await db.doseLogs.get(existing.id)
+    return updated!
+  }
   const log: DoseLog = {
     id: crypto.randomUUID(),
     medicationId,
@@ -98,6 +104,50 @@ export async function logAsNeededIntake(medicationId: string): Promise<DoseLog> 
   await recalculateAndSave()
   scheduleProfilBackup()
   return log
+}
+
+export async function logAsNeededSkip(medicationId: string): Promise<DoseLog> {
+  const now = new Date().toISOString()
+  const existing = await getTodayPrnLogForMedication(medicationId)
+  if (existing) {
+    await updateDoseStatus(existing.id, 'skipped')
+    const updated = await db.doseLogs.get(existing.id)
+    return updated!
+  }
+  const log: DoseLog = {
+    id: crypto.randomUUID(),
+    medicationId,
+    scheduledAt: now,
+    status: 'skipped',
+    source: 'prn',
+  }
+  await db.doseLogs.put(log)
+  await recalculateAndSave()
+  scheduleProfilBackup()
+  return log
+}
+
+export async function getTodayPrnLogForMedication(
+  medicationId: string,
+  day: Date = new Date(),
+): Promise<DoseLog | undefined> {
+  const start = startOfLocalDay(day).toISOString()
+  const end = endOfLocalDay(day).toISOString()
+  const rows = await db.doseLogs
+    .where('medicationId')
+    .equals(medicationId)
+    .filter(
+      (log) =>
+        log.source === 'prn' &&
+        log.scheduledAt >= start &&
+        log.scheduledAt <= end,
+    )
+    .toArray()
+  if (rows.length === 0) return undefined
+  return rows.sort(
+    (a, b) =>
+      new Date(b.scheduledAt).getTime() - new Date(a.scheduledAt).getTime(),
+  )[0]
 }
 
 export async function getDoseLogById(id: string): Promise<DoseLog | undefined> {

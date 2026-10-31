@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { appPath } from '@/lib/profil/profilNavigation'
 import { TakenAtEditor } from '@/components/dose/TakenAtEditor'
+import { DoseStatusBadge } from '@/components/dose/DoseStatusBadge'
 import {
   MedicationStockLine,
   medicationStockBorderClass,
@@ -12,7 +13,6 @@ import { ScheduleSummary } from '@/components/medication/ScheduleSummary'
 import {
   MedicationIconBadge,
   medicationAccentColor,
-  medicationAccentSoftFill,
 } from '@/components/medication/MedicationIconBadge'
 
 interface MedicationCardProps {
@@ -89,15 +89,13 @@ export function MedicationCard({
               <TakenAtEditor logId={doseLogId} takenAt={takenAt} />
             )}
             <div className="mt-2 flex flex-wrap items-center gap-2">
-              <span
-                className="rounded-full px-2 py-0.5 text-xs font-medium"
-                style={{
-                  backgroundColor: medicationAccentSoftFill(accent),
-                  color: accent,
+              <DoseStatusBadge
+                status={status}
+                context={{
+                  medicationKind: medication.kind,
+                  scheduleType: medication.schedule.type,
                 }}
-              >
-                {pl.doseStatus[status]}
-              </span>
+              />
               <ScheduleSummary schedule={medication.schedule} compact />
             </div>
           </div>

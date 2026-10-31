@@ -37,7 +37,13 @@ export function ProgressView() {
       (medications ?? [])
         .slice()
         .sort((a, b) => a.name.localeCompare(b.name, 'pl'))
-        .map((m) => ({ id: m.id, name: m.name, icon: m.icon })),
+        .map((m) => ({
+          id: m.id,
+          name: m.name,
+          icon: m.icon,
+          kind: m.kind,
+          scheduleType: m.schedule.type,
+        })),
     [medications],
   )
 

@@ -25,6 +25,9 @@ const CalendarView = lazy(() =>
 const HistoryView = lazy(() =>
   import('@/pages/HistoryView').then((m) => ({ default: m.HistoryView })),
 )
+const AsNeededView = lazy(() =>
+  import('@/pages/AsNeededView').then((m) => ({ default: m.AsNeededView })),
+)
 const ProgressView = lazy(() =>
   import('@/pages/ProgressView').then((m) => ({ default: m.ProgressView })),
 )
@@ -82,6 +85,7 @@ function AppShellRoutes() {
       <Route path="medication/:id" element={<MedicationDetail />} />
       <Route path="calendar" element={<CalendarView />} />
       <Route path="history" element={<HistoryView />} />
+      <Route path="as-needed" element={<AsNeededView />} />
       <Route path="progress" element={<ProgressView />} />
       <Route path="settings" element={<SettingsView />} />
       <Route path="help/notifications" element={<NotificationLimitsView />} />

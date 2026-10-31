@@ -610,7 +610,6 @@ export function AddMedicationWizard() {
             <legend className="text-sm font-medium">{pl.wizard.fields.icon}</legend>
             <MedicationIconPicker
               value={form.icon}
-              accentColor={form.color}
               onChange={(icon) => patch({ icon })}
             />
           </fieldset>
