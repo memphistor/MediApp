@@ -361,15 +361,15 @@ export const pl = {
 
   notificationHelp: {
     title: 'Limity powiadomień',
-    lead: 'MediApp nie ma serwera push. Przypomnienie pojawia się, gdy aplikacja jest otwarta albo działa w tle z aktywnym Service Workerem i gdy przeglądarka ma zgodę.',
-    tick: 'Przypomnimy o godzinie z planu, gdy aplikacja jest otwarta albo działa w tle.',
-    ios: 'Na iPhonie (Safari) powiadomienia PWA są mniej niezawodne niż na Androidzie. Dodaj aplikację do ekranu początkowego i otwieraj ją od czasu do czasu.',
+    lead: 'MediApp nie ma serwera push. Przypomnienia są lokalne — planowane w aplikacji na godziny z twojego harmonogramu.',
+    tick: 'Gdy aplikacja jest otwarta, dodatkowo co ok. 30 sekund sprawdzamy zaległe dawki (np. alarm uporczywy).',
+    ios: 'Na iPhonie system może opóźnić lub zgrupować powiadomienia w trybie oszczędzania energii. W razie wątpliwości otwórz aplikację i sprawdź ekran Dziś.',
     noPermission:
-      'Bez zgody przeglądarki na ekranie Dziś zostaje panel z akcjami Wzięte, Odłóż i Pomiń.',
+      'Bez zgody systemu na powiadomienia na ekranie Dziś zostaje panel z akcjami Wzięte, Odłóż i Pomiń.',
     persistent:
-      'Alarm uporczywy powtarza to samo powiadomienie co 5 minut, dopóki dawka ma status zaplanowana.',
+      'Alarm uporczywy powtarza przypomnienie co 5 minut, dopóki dawka ma status zaplanowana (gdy aplikacja może działać w tle lub jest otwarta).',
     closed:
-      'Gdy aplikacja jest długo zamknięta — szczególnie na iOS — przypomnienie może nie przyjść, dopóki jej nie otworzysz.',
+      'Po długim zamknięciu aplikacji przez system przypomnienie może przyjść z opóźnieniem — szczególnie na iOS. Otwórz MediApp od czasu do czasu, aby odświeżyć plan.',
   },
 
   reminder: {

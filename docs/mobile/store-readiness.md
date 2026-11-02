@@ -28,7 +28,8 @@
 
 ## Po Fazie 3 (powiadomienia)
 
-- [ ] Uzasadnienie POST_NOTIFICATIONS / exact alarms (Android) w formularzu Play, jeśli wymagane
+- [x] `expo-notifications` + uzasadnienie POST_NOTIFICATIONS w `app.json` (Android)
+- [ ] Uzasadnienie exact alarms (Android) w formularzu Play, jeśli wymagane przy publikacji
 
 ## Testy przed produkcją
 

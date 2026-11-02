@@ -8,6 +8,7 @@ import {
   type DoseLogRow,
 } from '../mappers/doseLogMapper'
 import { recalculateAndSave } from './gamificationRepository'
+import { cancelGroupNotification } from '@/src/notifications/cancelNotifications'
 import {
   consumeStockForIntake,
   restoreStockForIntake,
@@ -114,7 +115,20 @@ export async function updateDoseStatus(
   if (!options?.skipGamification) {
     await recalculateAndSave()
   }
+  if (existing.status === 'planned' && status !== 'planned') {
+    await cancelGroupNotification(existing.scheduledAt)
+  }
   scheduleProfilBackup()
+}
+
+export async function markLogsNotified(logIds: string[]): Promise<void> {
+  const now = new Date().toISOString()
+  for (const id of logIds) {
+    const log = await getDoseLogById(id)
+    if (log && log.status === 'planned') {
+      await insertDoseLog({ ...log, lastNotifiedAt: now })
+    }
+  }
 }
 
 export async function getPlannedDoseLogs(): Promise<DoseLog[]> {

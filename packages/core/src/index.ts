@@ -74,6 +74,11 @@ export {
   isMedicationRemindersEnabled,
 } from './lib/medication/medicationReminders'
 export {
+  buildReminderGroups,
+  PERSISTENT_REMINDER_MS,
+  type ReminderGroup,
+} from './lib/reminders/reminderGroups'
+export {
   medicationAccentColor,
   medicationAccentSurface,
 } from './lib/medication/medicationAccent'

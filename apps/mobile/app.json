@@ -42,6 +42,13 @@
           "backgroundColor": "#f8fafc"
         }
       ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/images/icon.png",
+          "color": "#0f766e"
+        }
+      ],
       "expo-sqlite",
       "@react-native-community/datetimepicker"
     ],

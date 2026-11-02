@@ -32,6 +32,8 @@ import {
   updateMedication,
 } from '@/src/storage/repositories/medicationRepository'
 import { syncAllDoseLogs } from '@/src/storage/services/syncDoseLogs'
+import { getSettings } from '@/src/storage/repositories/settingsRepository'
+import { requestReminderRescheduleImmediate } from '@/src/notifications/reminderReschedule'
 
 type MedicationDetailViewProps = {
   medicationId: string
@@ -103,6 +105,8 @@ export function MedicationDetailView({
           void (async () => {
             await deleteMedication(medication.id)
             await syncAllDoseLogs()
+            const settings = await getSettings()
+            await requestReminderRescheduleImmediate(settings)
             bumpRefresh()
             router.replace('/(tabs)/')
           })()

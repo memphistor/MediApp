@@ -42,6 +42,7 @@ interface TodayDoseRowProps {
   medication: MedicationEntry
   onMarkTaken: (id: string) => void
   onSkip: (id: string) => void
+  focused?: boolean
 }
 
 export function TodayDoseRow({
@@ -49,6 +50,7 @@ export function TodayDoseRow({
   medication,
   onMarkTaken,
   onSkip,
+  focused = false,
 }: TodayDoseRowProps) {
   const router = useRouter()
   const scheme = useColorScheme() ?? 'light'
@@ -67,8 +69,9 @@ export function TodayDoseRow({
         styles.card,
         {
           backgroundColor: c.surfaceElevated,
-          borderColor: c.border,
+          borderColor: focused ? c.brand : c.border,
           borderLeftColor: accent,
+          borderWidth: focused ? 2 : 1,
         },
       ]}
     >

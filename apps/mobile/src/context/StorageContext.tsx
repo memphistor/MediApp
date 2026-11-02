@@ -10,7 +10,9 @@ import {
 import { AppState, type AppStateStatus } from 'react-native'
 
 import { ensureDemoMedicationIfEmpty } from '@/src/dev/seedDemoMedication'
+import { requestReminderRescheduleImmediate } from '@/src/notifications/reminderReschedule'
 import { initializeAppStorage } from '@/src/storage/database'
+import { getSettings } from '@/src/storage/repositories/settingsRepository'
 import { syncAllDoseLogs } from '@/src/storage/services/syncDoseLogs'
 
 interface StorageContextValue {
@@ -36,6 +38,8 @@ export function StorageProvider({ children }: { children: ReactNode }) {
     try {
       await syncAllDoseLogs()
       bumpRefresh()
+      const settings = await getSettings()
+      await requestReminderRescheduleImmediate(settings)
     } finally {
       setSyncing(false)
     }
@@ -48,6 +52,8 @@ export function StorageProvider({ children }: { children: ReactNode }) {
         await initializeAppStorage()
         await ensureDemoMedicationIfEmpty()
         await syncAllDoseLogs()
+        const settings = await getSettings()
+        await requestReminderRescheduleImmediate(settings)
         if (!cancelled) {
           setReady(true)
           setRefreshKey((k) => k + 1)

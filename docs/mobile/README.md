@@ -9,7 +9,7 @@ Natywna aplikacja na **iOS** i **Android** rozwijana na gałęzi **`mobile`**.
 | **Web (PWA)** | `main` | GitHub Pages |
 | **Mobile** | `mobile` | EAS Build → App Store / Google Play |
 
-Kod web w tym repozytorium (katalog `src/`) na gałęzi `mobile` służy jako baza do synchronizacji logiki do `packages/core`. Nowe funkcje produktu na sklepy dodajemy w `apps/mobile`.
+Kod web w tym repozytorium (katalog `src/`) na gałęzi `mobile` służy jako baza do synchronizacji logiki do `packages/core`. Nowe funkcje produktu na sklepy dodajemy w `apps/mobile`. **Faza 3 (mobile):** lokalne przypomnienia (`expo-notifications`).
 
 ## Struktura
 

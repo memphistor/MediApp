@@ -16,7 +16,7 @@
 6. **`@mediapp/core`** — typy i logika bez UI/DOM; testy Vitest w pakiecie.
 7. **Baza (Faza 1 — zaimplementowana):** `expo-sqlite`, plik **`MediApp.db`**, warstwa w [`apps/mobile/src/storage/`](../../apps/mobile/src/storage/) (schema v1, migracje, repozytoria, `syncDoseLogs`, `medicationStock`). Schema jak [`src/db/schema.ts`](../../src/db/schema.ts); bez tabeli `medication_notes` do późniejszej fazy.
 8. **Kreator i pozycje (Faza 2 — zaimplementowana):** 3-krokowy kreator na tabie Dodaj i edycja w `medication/[id]/edit`; szczegóły w `medication/[id]` (usuń, PRN, zapas, toggle przypomnień). UI w [`apps/mobile/src/components/wizard/`](../../apps/mobile/src/components/wizard/) i [`components/medication/`](../../apps/mobile/src/components/medication/); walidacja i `buildMedicationFromWizard` z `@mediapp/core`. Pickery: `@react-native-picker/picker`, `@react-native-community/datetimepicker`.
-9. **Powiadomienia (Faza 3 migracji):** `expo-notifications` — bez service workera PWA.
+9. **Powiadomienia (Faza 3 — zaimplementowana):** `expo-notifications` — model hybrydowy: scheduled lokalnie po sync + tick co 30 s (persistent/snooze); akcje Wzięte/Odłóż/Pomiń; [`apps/mobile/src/notifications/`](../../apps/mobile/src/notifications/); `buildReminderGroups` w `@mediapp/core`. Bez service workera PWA.
 
 ## UI
 
@@ -33,4 +33,4 @@
 ## Nie w Fazie 0
 
 - ~~`expo-sqlite`~~ — **Faza 1** (storage w `apps/mobile/src/storage/`)
-- `expo-notifications` — instalacja w Fazie 3.
+- ~~`expo-notifications`~~ — **Faza 3** (lokalne przypomnienia)

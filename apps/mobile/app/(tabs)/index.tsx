@@ -5,13 +5,16 @@ import {
   StyleSheet,
   Text,
   View,
+  Pressable,
 } from 'react-native'
 import * as Haptics from 'expo-haptics'
-import { Link } from 'expo-router'
+import { Link, useLocalSearchParams, useRouter } from 'expo-router'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
+import { DueReminderPanel } from '@/src/components/reminders/DueReminderPanel'
 import { SkipDoseModal } from '@/src/components/today/SkipDoseModal'
 import { TodayDoseRow } from '@/src/components/today/TodayDoseRow'
+import { useSettings } from '@/src/context/SettingsContext'
 import { useStorage } from '@/src/context/StorageContext'
 import { useTodayData } from '@/src/hooks/useTodayData'
 import { pl } from '@/src/i18n/pl'
@@ -24,10 +27,16 @@ export default function TodayScreen() {
   const c = themeColors(scheme)
   const today = useMemo(() => new Date(), [])
   const { entries, medMap, medications, loading } = useTodayData(today)
+  const { settings } = useSettings()
   const { bumpRefresh } = useStorage()
+  const { focusLog } = useLocalSearchParams<{ focusLog?: string }>()
+  const focusId = typeof focusLog === 'string' ? focusLog : undefined
+  const router = useRouter()
   const [skipTarget, setSkipTarget] = useState<string | null>(null)
 
   const hasMedications = medications.length > 0
+  const showNotificationsOff =
+    !settings.notificationsEnabled && entries.length > 0
 
   const handleTaken = useCallback(
     async (id: string) => {
@@ -59,7 +68,23 @@ export default function TodayScreen() {
         contentContainerStyle={styles.scroll}
         keyboardShouldPersistTaps="handled"
       >
-        <Text style={[styles.title, { color: c.text }]}>{pl.today.title}</Text>
+        <View style={styles.titleRow}>
+          <Text style={[styles.title, { color: c.text }]}>{pl.today.title}</Text>
+          <Pressable
+            onPress={() => router.push('/settings')}
+            accessibilityRole="button"
+          >
+            <Text style={[styles.settingsLink, { color: c.brand }]}>
+              {pl.settings.title}
+            </Text>
+          </Pressable>
+        </View>
+
+        {showNotificationsOff && (
+          <Text style={[styles.notificationsOff, { color: c.textMuted }]}>
+            {pl.today.notificationsOff}
+          </Text>
+        )}
 
         {__DEV__ && hasMedications && (
           <Text style={[styles.devHint, { color: c.textMuted }]}>
@@ -68,6 +93,8 @@ export default function TodayScreen() {
               : null}
           </Text>
         )}
+
+        <DueReminderPanel />
 
         {loading ? (
           <ActivityIndicator style={styles.loader} color={c.brand} />
@@ -100,6 +127,7 @@ export default function TodayScreen() {
                   medication={med}
                   onMarkTaken={handleTaken}
                   onSkip={setSkipTarget}
+                  focused={focusId === log.id}
                 />
               )
             })}
@@ -124,9 +152,24 @@ const styles = StyleSheet.create({
     padding: 16,
     paddingBottom: 32,
   },
+  titleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 12,
+  },
   title: {
     fontSize: 22,
     fontWeight: '600',
+    flex: 1,
+  },
+  settingsLink: {
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  notificationsOff: {
+    marginTop: 8,
+    fontSize: 14,
   },
   devHint: {
     marginTop: 8,

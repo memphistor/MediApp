@@ -1,13 +1,14 @@
 import { useFonts } from 'expo-font'
 import { Stack } from 'expo-router'
 import * as SplashScreen from 'expo-splash-screen'
-import { useEffect } from 'react'
+import { useEffect, type ReactNode } from 'react'
 import 'react-native-reanimated'
 
 import { useColorScheme } from '@/components/useColorScheme'
 import Colors from '@/constants/Colors'
 import { SettingsProvider } from '@/src/context/SettingsContext'
 import { StorageProvider } from '@/src/context/StorageContext'
+import { useReminderCoordinator } from '@/src/hooks/useReminderCoordinator'
 import { pl } from '@/src/i18n/pl'
 
 export { ErrorBoundary } from 'expo-router'
@@ -36,10 +37,17 @@ export default function RootLayout() {
   return (
     <StorageProvider>
       <SettingsProvider>
-        <RootStack />
+        <ReminderCoordinatorHost>
+          <RootStack />
+        </ReminderCoordinatorHost>
       </SettingsProvider>
     </StorageProvider>
   )
+}
+
+function ReminderCoordinatorHost({ children }: { children: ReactNode }) {
+  useReminderCoordinator()
+  return children
 }
 
 function RootStack() {

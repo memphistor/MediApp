@@ -20,6 +20,8 @@ import {
   updateMedication,
 } from '@/src/storage/repositories/medicationRepository'
 import { syncDoseLogsForMedication } from '@/src/storage/services/syncDoseLogs'
+import { getSettings } from '@/src/storage/repositories/settingsRepository'
+import { requestReminderRescheduleImmediate } from '@/src/notifications/reminderReschedule'
 
 export const wizardInitialForm: WizardFormState = {
   name: '',
@@ -118,6 +120,8 @@ export function useMedicationWizard({ medicationId }: UseMedicationWizardOptions
         if (prior) await updateMedication(entry)
         else await createMedication(entry)
         await syncDoseLogsForMedication(entry.id)
+        const settings = await getSettings()
+        await requestReminderRescheduleImmediate(settings)
         bumpRefresh()
         if (prior) {
           router.replace(`/medication/${entry.id}`)
