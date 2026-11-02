@@ -38,6 +38,25 @@ export async function getAllDoseLogs(): Promise<DoseLog[]> {
   return rows.map(rowToDoseLog)
 }
 
+export async function getDoseLogsBetween(
+  startIso: string,
+  endIso: string,
+): Promise<DoseLog[]> {
+  const rows = await getDb().getAllAsync<DoseLogRow>(
+    'SELECT * FROM dose_logs WHERE scheduled_at >= ? AND scheduled_at <= ? ORDER BY scheduled_at',
+    [startIso, endIso],
+  )
+  return rows.map(rowToDoseLog)
+}
+
+export async function getDoseLogsSince(sinceIso: string): Promise<DoseLog[]> {
+  const rows = await getDb().getAllAsync<DoseLogRow>(
+    'SELECT * FROM dose_logs WHERE scheduled_at >= ? ORDER BY scheduled_at',
+    [sinceIso],
+  )
+  return rows.map(rowToDoseLog)
+}
+
 export async function getDoseLogsForMedication(
   medicationId: string,
 ): Promise<DoseLog[]> {
@@ -121,6 +140,18 @@ export async function updateDoseStatus(
   scheduleProfilBackup()
 }
 
+export async function updateDoseTakenAt(
+  id: string,
+  takenAt: string,
+): Promise<boolean> {
+  const existing = await getDoseLogById(id)
+  if (!existing || existing.status !== 'taken') return false
+  await insertDoseLog({ ...existing, takenAt })
+  await recalculateAndSave()
+  scheduleProfilBackup()
+  return true
+}
+
 export async function markLogsNotified(logIds: string[]): Promise<void> {
   const now = new Date().toISOString()
   for (const id of logIds) {
@@ -173,6 +204,29 @@ export async function logAsNeededIntake(
   }
   await insertDoseLog(log)
   await consumeStockForIntake(medicationId)
+  await recalculateAndSave()
+  scheduleProfilBackup()
+  return log
+}
+
+export async function logAsNeededSkip(
+  medicationId: string,
+): Promise<DoseLog> {
+  const now = new Date().toISOString()
+  const existing = await getTodayPrnLogForMedication(medicationId)
+  if (existing) {
+    await updateDoseStatus(existing.id, 'skipped')
+    const updated = await getDoseLogById(existing.id)
+    return updated!
+  }
+  const log: DoseLog = {
+    id: createId(),
+    medicationId,
+    scheduledAt: now,
+    status: 'skipped',
+    source: 'prn',
+  }
+  await insertDoseLog(log)
   await recalculateAndSave()
   scheduleProfilBackup()
   return log

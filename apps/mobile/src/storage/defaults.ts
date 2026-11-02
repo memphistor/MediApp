@@ -4,7 +4,7 @@ export const DEFAULT_SETTINGS: UserSettings = {
   id: 'default',
   theme: 'system',
   fontScale: 'normal',
-  onboardingCompleted: true,
+  onboardingCompleted: false,
   privacyPolicyVersionAccepted: null,
   privacyConsentAt: null,
   specialCategoryConsentAt: null,

@@ -11,7 +11,14 @@ import * as Haptics from 'expo-haptics'
 import { Link, useLocalSearchParams, useRouter } from 'expo-router'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
+import {
+  dayRingProgress,
+  isEntryInDateRange,
+  scheduledDoses,
+} from '@mediapp/core'
+
 import { DueReminderPanel } from '@/src/components/reminders/DueReminderPanel'
+import { DayRing } from '@/src/components/gamification/DayRing'
 import { SkipDoseModal } from '@/src/components/today/SkipDoseModal'
 import { TodayDoseRow } from '@/src/components/today/TodayDoseRow'
 import { useSettings } from '@/src/context/SettingsContext'
@@ -37,6 +44,20 @@ export default function TodayScreen() {
   const hasMedications = medications.length > 0
   const showNotificationsOff =
     !settings.notificationsEnabled && entries.length > 0
+
+  const ring = useMemo(
+    () => dayRingProgress(scheduledDoses(entries)),
+    [entries],
+  )
+
+  const asNeededCount = useMemo(
+    () =>
+      medications.filter(
+        (med) =>
+          med.schedule.type === 'asNeeded' && isEntryInDateRange(today, med),
+      ).length,
+    [medications, today],
+  )
 
   const handleTaken = useCallback(
     async (id: string) => {
@@ -86,6 +107,20 @@ export default function TodayScreen() {
           </Text>
         )}
 
+        {ring.total > 0 ? (
+          <View style={styles.ringWrap}>
+            <DayRing
+              size="sm"
+              progress={ring.progress}
+              taken={ring.taken}
+              total={ring.total}
+              sublabel={pl.progress.todayCount
+                .replace('{taken}', String(ring.taken))
+                .replace('{total}', String(ring.total))}
+            />
+          </View>
+        ) : null}
+
         {__DEV__ && hasMedications && (
           <Text style={[styles.devHint, { color: c.textMuted }]}>
             {medications.some((m) => m.name.includes('demo'))
@@ -133,6 +168,28 @@ export default function TodayScreen() {
             })}
           </View>
         )}
+
+        {asNeededCount > 0 ? (
+          <Link href="/as-needed" asChild>
+            <Pressable
+              style={[
+                styles.asNeededCard,
+                { borderColor: c.border, backgroundColor: c.surfaceElevated },
+              ]}
+            >
+              <Text style={[styles.asNeededTitle, { color: c.text }]}>
+                {pl.today.asNeededLink}
+              </Text>
+              <Text style={[styles.asNeededHint, { color: c.textMuted }]}>
+                {pl.today.asNeededLinkHint}
+              </Text>
+              <Text style={[styles.asNeededCount, { color: c.brand }]}>
+                {asNeededCount}{' '}
+                {asNeededCount === 1 ? 'pozycja' : 'pozycje'} →
+              </Text>
+            </Pressable>
+          </Link>
+        ) : null}
       </ScrollView>
 
       <SkipDoseModal
@@ -171,6 +228,20 @@ const styles = StyleSheet.create({
     marginTop: 8,
     fontSize: 14,
   },
+  ringWrap: {
+    marginTop: 16,
+    alignItems: 'center',
+  },
+  asNeededCard: {
+    marginTop: 16,
+    borderWidth: 1,
+    borderRadius: 16,
+    padding: 16,
+    gap: 4,
+  },
+  asNeededTitle: { fontSize: 16, fontWeight: '600' },
+  asNeededHint: { fontSize: 14 },
+  asNeededCount: { fontSize: 12, fontWeight: '600', marginTop: 4 },
   devHint: {
     marginTop: 8,
     fontSize: 12,

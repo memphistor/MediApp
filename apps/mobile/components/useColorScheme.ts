@@ -1,6 +1,14 @@
-import { useColorScheme as useColorSchemeCore } from 'react-native';
+import { useColorScheme as useRNColorScheme } from 'react-native'
 
-export const useColorScheme = () => {
-  const coreScheme = useColorSchemeCore();
-  return coreScheme === 'dark' ? 'dark' : 'light';
-};
+import { useSettings } from '@/src/context/SettingsContext'
+
+export function useAppColorScheme(): 'light' | 'dark' {
+  const system = useRNColorScheme()
+  const { settings } = useSettings()
+  if (settings.theme === 'light') return 'light'
+  if (settings.theme === 'dark') return 'dark'
+  return system === 'dark' ? 'dark' : 'light'
+}
+
+/** Respects user theme preference from settings. */
+export const useColorScheme = useAppColorScheme

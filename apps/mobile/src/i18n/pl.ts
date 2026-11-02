@@ -324,7 +324,7 @@ export const pl = {
       'Działają najlepiej, gdy aplikacja jest zainstalowana (PWA). Na iOS mogą być mniej niezawodne. Które leki przypominają — ustawiasz przy pozycji.',
     notificationsPerMed:
       'Przy każdej pozycji z harmonogramem możesz włączyć lub wyłączyć przypomnienia tylko dla niej.',
-    permissionDenied: 'Brak zgody przeglądarki — użyj panelu na ekranie Dziś.',
+    permissionDenied: 'Brak zgody systemu — użyj panelu na ekranie Dziś lub włącz powiadomienia w ustawieniach telefonu.',
     snoozeMinutes: 'Domyślne odłożenie (minuty)',
     persistentAlarm: 'Domyślnie uporczywe przypomnienie',
     persistentAlarmHint:

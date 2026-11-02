@@ -21,8 +21,11 @@ interface SettingsContextValue {
   settings: UserSettings
   ready: boolean
   completeOnboarding: () => void
+  resetOnboarding: () => void
   replaceSettings: (next: UserSettings) => void
   deleteAllData: () => Promise<void>
+  setTheme: (theme: ThemePreference) => void
+  setFontScale: (scale: FontScale) => void
   setNotificationsEnabled: (enabled: boolean) => Promise<boolean>
   setSnoozeMinutesDefault: (minutes: number) => void
   setPersistentAlarmEnabled: (enabled: boolean) => void
@@ -50,6 +53,24 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
   const completeOnboarding = useCallback(() => {
     void persist({ ...settings, onboardingCompleted: true })
   }, [persist, settings])
+
+  const resetOnboarding = useCallback(() => {
+    void persist({ ...settings, onboardingCompleted: false })
+  }, [persist, settings])
+
+  const setTheme = useCallback(
+    (theme: ThemePreference) => {
+      void persist({ ...settings, theme })
+    },
+    [persist, settings],
+  )
+
+  const setFontScale = useCallback(
+    (fontScale: FontScale) => {
+      void persist({ ...settings, fontScale })
+    },
+    [persist, settings],
+  )
 
   const replaceSettings = useCallback(
     (next: UserSettings) => {
@@ -111,8 +132,11 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
       settings,
       ready,
       completeOnboarding,
+      resetOnboarding,
       replaceSettings,
       deleteAllData,
+      setTheme,
+      setFontScale,
       setNotificationsEnabled,
       setSnoozeMinutesDefault,
       setPersistentAlarmEnabled,
@@ -121,8 +145,11 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
       settings,
       ready,
       completeOnboarding,
+      resetOnboarding,
       replaceSettings,
       deleteAllData,
+      setTheme,
+      setFontScale,
       setNotificationsEnabled,
       setSnoozeMinutesDefault,
       setPersistentAlarmEnabled,

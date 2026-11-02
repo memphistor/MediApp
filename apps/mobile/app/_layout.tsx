@@ -1,11 +1,13 @@
 import { useFonts } from 'expo-font'
 import { Stack } from 'expo-router'
+import { StatusBar } from 'expo-status-bar'
 import * as SplashScreen from 'expo-splash-screen'
 import { useEffect, type ReactNode } from 'react'
 import 'react-native-reanimated'
 
-import { useColorScheme } from '@/components/useColorScheme'
+import { useAppColorScheme } from '@/components/useColorScheme'
 import Colors from '@/constants/Colors'
+import { OnboardingGate } from '@/src/components/layout/OnboardingGate'
 import { SettingsProvider } from '@/src/context/SettingsContext'
 import { StorageProvider } from '@/src/context/StorageContext'
 import { useReminderCoordinator } from '@/src/hooks/useReminderCoordinator'
@@ -38,7 +40,9 @@ export default function RootLayout() {
     <StorageProvider>
       <SettingsProvider>
         <ReminderCoordinatorHost>
-          <RootStack />
+          <OnboardingGate>
+            <RootStack />
+          </OnboardingGate>
         </ReminderCoordinatorHost>
       </SettingsProvider>
     </StorageProvider>
@@ -51,10 +55,12 @@ function ReminderCoordinatorHost({ children }: { children: ReactNode }) {
 }
 
 function RootStack() {
-  const scheme = useColorScheme() ?? 'light'
+  const scheme = useAppColorScheme()
   const headerTint = Colors[scheme].tint
 
   return (
+    <>
+      <StatusBar style={scheme === 'dark' ? 'light' : 'dark'} />
     <Stack
       screenOptions={{
         headerTintColor: headerTint,
@@ -86,5 +92,6 @@ function RootStack() {
         options={{ title: pl.wizard.editTitle }}
       />
     </Stack>
+    </>
   )
 }

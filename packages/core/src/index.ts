@@ -24,12 +24,16 @@ export {
   combineDateAndTime,
   daysBetweenCalendar,
   endOfLocalDay,
+  formatLocaleDateTime,
+  formatLocaleTime,
+  fromDatetimeLocalValue,
   isValidTimeHHmm,
   parseDateKey,
   parseTimesInput,
   startOfLocalDay,
   startOfWeekMonday,
   toDateKey,
+  toDatetimeLocalValue,
   weekDayKeys,
 } from './lib/dates'
 export { createId } from './lib/id'
@@ -102,16 +106,18 @@ export { computeGamification } from './lib/gamification/computeGamification'
 export { computeStreak } from './lib/gamification/streak'
 export {
   dayComplianceTone,
+  dayRingProgress,
   groupLogsByDateKey,
   isDayNeutral,
   isFullDay,
   scheduledDoses,
   type DayComplianceTone,
 } from './lib/gamification/dayStats'
-export { mergeBadges } from './lib/gamification/badges'
+export { BADGE_DEFINITIONS, mergeBadges } from './lib/gamification/badges'
 export { monthCompletionRate } from './lib/gamification/monthStats'
 export {
   periodBounds,
+  PROGRESS_PERIODS,
   type ProgressPeriod,
 } from './lib/gamification/progressPeriods'
 export {
@@ -120,9 +126,14 @@ export {
 } from './lib/gamification/weekProgress'
 export {
   classifyDoseTiming,
+  formatTimingDeltaMinutes,
+  lastDayTimingRows,
+  logsInLocalDateRange,
   onTimeRateAmongTaken,
+  takenAdherenceRate,
   timingCountsForLogs,
   timingCountsForRange,
+  timingLabelForLog,
   type DoseTimingClass,
   type DoseTimingCounts,
 } from './lib/gamification/doseTiming'

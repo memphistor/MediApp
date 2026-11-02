@@ -19,6 +19,7 @@ export const colors = {
 } as const
 
 export type ThemePalette = {
+  scheme: 'light' | 'dark'
   brand: string
   brandMuted: string
   surface: string
@@ -30,5 +31,5 @@ export type ThemePalette = {
 
 export function themeColors(scheme: 'light' | 'dark'): ThemePalette {
   const base = scheme === 'dark' ? colors.dark : colors.light
-  return { ...base, brand: colors.brand, brandMuted: colors.brandMuted }
+  return { scheme, ...base, brand: colors.brand, brandMuted: colors.brandMuted }
 }
