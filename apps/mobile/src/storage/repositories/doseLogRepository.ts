@@ -1,4 +1,4 @@
-import { endOfLocalDay, startOfLocalDay } from '@mediapp/core'
+import { createId, endOfLocalDay, startOfLocalDay } from '@mediapp/core'
 import type { DoseLog, DoseStatus } from '@mediapp/core'
 
 import { getDb } from '../database'
@@ -122,4 +122,44 @@ export async function getPlannedDoseLogs(): Promise<DoseLog[]> {
     "SELECT * FROM dose_logs WHERE status = 'planned'",
   )
   return rows.map(rowToDoseLog)
+}
+
+export async function getTodayPrnLogForMedication(
+  medicationId: string,
+  day: Date = new Date(),
+): Promise<DoseLog | undefined> {
+  const start = startOfLocalDay(day).toISOString()
+  const end = endOfLocalDay(day).toISOString()
+  const rows = await getDb().getAllAsync<DoseLogRow>(
+    `SELECT * FROM dose_logs
+     WHERE medication_id = ? AND source = 'prn'
+       AND scheduled_at >= ? AND scheduled_at <= ?`,
+    [medicationId, start, end],
+  )
+  return rows[0] ? rowToDoseLog(rows[0]) : undefined
+}
+
+export async function logAsNeededIntake(
+  medicationId: string,
+): Promise<DoseLog> {
+  const now = new Date().toISOString()
+  const existing = await getTodayPrnLogForMedication(medicationId)
+  if (existing) {
+    await updateDoseStatus(existing.id, 'taken', { takenAt: now })
+    const updated = await getDoseLogById(existing.id)
+    return updated!
+  }
+  const log: DoseLog = {
+    id: createId(),
+    medicationId,
+    scheduledAt: now,
+    status: 'taken',
+    takenAt: now,
+    source: 'prn',
+  }
+  await insertDoseLog(log)
+  await consumeStockForIntake(medicationId)
+  await recalculateAndSave()
+  scheduleProfilBackup()
+  return log
 }

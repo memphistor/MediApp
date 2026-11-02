@@ -36,3 +36,23 @@ export async function restoreStockForIntake(
   if (!isStockTracked(med)) return
   await adjustMedicationStock(medicationId, unitsPerIntake(med))
 }
+
+export async function addMedicationStock(
+  medicationId: string,
+  amount: number,
+): Promise<void> {
+  if (!Number.isFinite(amount) || amount <= 0) return
+  const med = await getMedicationById(medicationId)
+  if (!med) return
+  const added = Math.floor(amount)
+  if (!isStockTracked(med)) {
+    await updateMedication({
+      ...med,
+      stockRemaining: added,
+      stockUnitsPerIntake: med.stockUnitsPerIntake ?? 1,
+      updatedAt: new Date().toISOString(),
+    })
+    return
+  }
+  await adjustMedicationStock(medicationId, added)
+}

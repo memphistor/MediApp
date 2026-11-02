@@ -11,6 +11,8 @@
   },
   "dependencies": {
     "@mediapp/core": "*",
+    "@react-native-community/datetimepicker": "9.2.1",
+    "@react-native-picker/picker": "2.11.4",
     "expo": "~58.0.22",
     "expo-constants": "~58.0.14",
     "expo-font": "~58.0.11",

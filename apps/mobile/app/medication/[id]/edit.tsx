@@ -1,15 +1,8 @@
 import { useLocalSearchParams } from 'expo-router'
 
-import { PlaceholderScreen } from '@/components/PlaceholderScreen'
-import { pl } from '@/src/i18n/pl'
+import { MedicationWizard } from '@/src/components/wizard/MedicationWizard'
 
 export default function MedicationEditScreen() {
   const { id } = useLocalSearchParams<{ id: string }>()
-
-  return (
-    <PlaceholderScreen
-      title={pl.wizard.editTitle}
-      subtitle={`ID: ${id ?? '—'} — w budowie`}
-    />
-  )
+  return <MedicationWizard medicationId={id} />
 }

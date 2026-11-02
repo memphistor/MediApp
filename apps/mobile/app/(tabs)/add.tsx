@@ -1,6 +1,5 @@
-import { PlaceholderScreen } from '@/components/PlaceholderScreen'
-import { pl } from '@/src/i18n/pl'
+import { MedicationWizard } from '@/src/components/wizard/MedicationWizard'
 
 export default function AddScreen() {
-  return <PlaceholderScreen title={pl.nav.add} subtitle="Kreator pozycji — w budowie" />
+  return <MedicationWizard />
 }

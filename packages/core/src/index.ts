@@ -40,6 +40,7 @@ export {
 } from './lib/schedule/buildOccurrences'
 export {
   isActiveOnDate,
+  isEntryInDateRange,
   isMedicationActiveOnDate,
 } from './lib/schedule/isActiveOnDate'
 
@@ -72,7 +73,10 @@ export {
   defaultRemindersEnabled,
   isMedicationRemindersEnabled,
 } from './lib/medication/medicationReminders'
-export { medicationAccentColor } from './lib/medication/medicationAccent'
+export {
+  medicationAccentColor,
+  medicationAccentSurface,
+} from './lib/medication/medicationAccent'
 export {
   estimateAverageDailyStockUnits,
   formatDailyDosesLeft,

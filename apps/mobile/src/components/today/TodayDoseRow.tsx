@@ -1,4 +1,5 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native'
+import { useRouter } from 'expo-router'
 import {
   doseStatusContextFromLog,
   doseStatusPillStyle,
@@ -49,6 +50,7 @@ export function TodayDoseRow({
   onMarkTaken,
   onSkip,
 }: TodayDoseRowProps) {
+  const router = useRouter()
   const scheme = useColorScheme() ?? 'light'
   const c = themeColors(scheme)
   const accent = medicationAccentColor(medication.color)
@@ -70,7 +72,11 @@ export function TodayDoseRow({
         },
       ]}
     >
-      <View style={styles.header}>
+      <Pressable
+        onPress={() => router.push(`/medication/${medication.id}`)}
+        style={styles.header}
+        accessibilityRole="button"
+      >
         <Text style={[styles.icon]}>{medication.icon}</Text>
         <View style={styles.headerText}>
           <View style={styles.titleRow}>
@@ -90,7 +96,7 @@ export function TodayDoseRow({
             </Text>
           </View>
         </View>
-      </View>
+      </Pressable>
       {canAct && (
         <View style={styles.actions}>
           <Pressable
