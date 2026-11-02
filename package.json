@@ -15,6 +15,7 @@
     "deploy:pages": "VITE_BASE_PATH=/MediApp/ npm run build && cp dist/index.html dist/404.html && gh-pages -d dist",
     "test": "vitest run",
     "test:core": "npm run test -w @mediapp/core",
+    "test:mobile": "vitest run --config apps/mobile/vitest.config.ts",
     "mobile": "npm run start -w mediapp-mobile",
     "lint:mobile": "npm run lint -w mediapp-mobile"
   },

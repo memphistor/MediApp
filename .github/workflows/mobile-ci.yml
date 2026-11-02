@@ -27,5 +27,8 @@ jobs:
       - name: Test @mediapp/core
         run: npm run test:core
 
+      - name: Test mobile storage mappers
+        run: npm run test:mobile
+
       - name: Typecheck mobile app
         run: npm run lint -w mediapp-mobile

@@ -6,6 +6,8 @@ import 'react-native-reanimated'
 
 import { useColorScheme } from '@/components/useColorScheme'
 import Colors from '@/constants/Colors'
+import { SettingsProvider } from '@/src/context/SettingsContext'
+import { StorageProvider } from '@/src/context/StorageContext'
 import { pl } from '@/src/i18n/pl'
 
 export { ErrorBoundary } from 'expo-router'
@@ -31,7 +33,13 @@ export default function RootLayout() {
 
   if (!loaded) return null
 
-  return <RootStack />
+  return (
+    <StorageProvider>
+      <SettingsProvider>
+        <RootStack />
+      </SettingsProvider>
+    </StorageProvider>
+  )
 }
 
 function RootStack() {

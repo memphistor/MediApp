@@ -16,7 +16,9 @@
     },
     "android": {
       "package": "com.memphistor.mediapp",
-      "permissions": ["android.permission.POST_NOTIFICATIONS"],
+      "permissions": [
+        "android.permission.POST_NOTIFICATIONS"
+      ],
       "adaptiveIcon": {
         "backgroundColor": "#0f766e",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
@@ -39,7 +41,8 @@
           "resizeMode": "contain",
           "backgroundColor": "#f8fafc"
         }
-      ]
+      ],
+      "expo-sqlite"
     ],
     "experiments": {
       "typedRoutes": true

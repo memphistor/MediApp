@@ -1,59 +1,161 @@
-import { StyleSheet, Text } from 'react-native'
-import { validateWizard, type WizardFormState } from '@mediapp/core'
+import { useCallback, useMemo, useState } from 'react'
+import {
+  ActivityIndicator,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native'
+import * as Haptics from 'expo-haptics'
+import { Link } from 'expo-router'
+import { SafeAreaView } from 'react-native-safe-area-context'
 
-import { PlaceholderScreen } from '@/components/PlaceholderScreen'
-import { useColorScheme } from '@/components/useColorScheme'
+import { SkipDoseModal } from '@/src/components/today/SkipDoseModal'
+import { TodayDoseRow } from '@/src/components/today/TodayDoseRow'
+import { useStorage } from '@/src/context/StorageContext'
+import { useTodayData } from '@/src/hooks/useTodayData'
 import { pl } from '@/src/i18n/pl'
+import { updateDoseStatus } from '@/src/storage/repositories/doseLogRepository'
 import { themeColors } from '@/src/theme/colors'
-
-/** Proof that @mediapp/core is wired in the mobile bundle. */
-const emptyWizard: WizardFormState = {
-  name: '',
-  kind: 'otc',
-  form: 'tablet',
-  doseText: '',
-  emptyStomach: 'na',
-  meal: '',
-  timesRaw: '',
-  scheduleType: 'daily',
-  weekdayDays: [1, 2, 3, 4, 5],
-  everyNInterval: 2,
-  weeklyDay: 1,
-  monthlyDay: 1,
-  cycleActive: 21,
-  cycleBreak: 7,
-  dateStart: '',
-  dateEnd: '',
-  purpose: '',
-  note: '',
-  color: '#0f766e',
-  icon: '💊',
-  trackStock: false,
-  stockRemaining: 30,
-  stockUnitsPerIntake: 1,
-  remindersEnabled: true,
-}
+import { useColorScheme } from '@/components/useColorScheme'
 
 export default function TodayScreen() {
   const scheme = useColorScheme() ?? 'light'
   const c = themeColors(scheme)
-  const errors = validateWizard(emptyWizard)
-  const errorCount = Object.keys(errors).length
+  const today = useMemo(() => new Date(), [])
+  const { entries, medMap, medications, loading } = useTodayData(today)
+  const { bumpRefresh } = useStorage()
+  const [skipTarget, setSkipTarget] = useState<string | null>(null)
+
+  const hasMedications = medications.length > 0
+
+  const handleTaken = useCallback(
+    async (id: string) => {
+      await updateDoseStatus(id, 'taken', { takenAt: new Date().toISOString() })
+      await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
+      bumpRefresh()
+    },
+    [bumpRefresh],
+  )
+
+  const handleSkipConfirm = useCallback(
+    async (reason: string) => {
+      if (!skipTarget) return
+      await updateDoseStatus(skipTarget, 'skipped', {
+        skipReason: reason || undefined,
+      })
+      setSkipTarget(null)
+      bumpRefresh()
+    },
+    [skipTarget, bumpRefresh],
+  )
 
   return (
-    <PlaceholderScreen title={pl.nav.today}>
-      <Text style={[styles.meta, { color: c.textMuted }]}>
-        @mediapp/core: walidacja pustego kreatora → {errorCount} błędów (oczekiwane
-        &gt; 0)
-      </Text>
-    </PlaceholderScreen>
+    <SafeAreaView
+      style={[styles.safe, { backgroundColor: c.surface }]}
+      edges={['bottom']}
+    >
+      <ScrollView
+        contentContainerStyle={styles.scroll}
+        keyboardShouldPersistTaps="handled"
+      >
+        <Text style={[styles.title, { color: c.text }]}>{pl.today.title}</Text>
+
+        {__DEV__ && hasMedications && (
+          <Text style={[styles.devHint, { color: c.textMuted }]}>
+            {medications.some((m) => m.name.includes('demo'))
+              ? 'Tryb dev: załadowano lek demo.'
+              : null}
+          </Text>
+        )}
+
+        {loading ? (
+          <ActivityIndicator style={styles.loader} color={c.brand} />
+        ) : entries.length === 0 ? (
+          <View
+            style={[
+              styles.empty,
+              { borderColor: c.border, backgroundColor: c.surfaceElevated },
+            ]}
+          >
+            <Text style={[styles.emptyText, { color: c.textMuted }]}>
+              {hasMedications ? pl.today.empty : pl.today.emptyNoMeds}
+            </Text>
+            {!hasMedications && (
+              <Link href="/(tabs)/add" style={styles.addLink}>
+                <Text style={[styles.addLinkText, { color: c.brand }]}>
+                  {pl.today.addFirst}
+                </Text>
+              </Link>
+            )}
+          </View>
+        ) : (
+          <View style={styles.list}>
+            {entries.map((log) => {
+              const med = medMap.get(log.medicationId)!
+              return (
+                <TodayDoseRow
+                  key={log.id}
+                  log={log}
+                  medication={med}
+                  onMarkTaken={handleTaken}
+                  onSkip={setSkipTarget}
+                />
+              )
+            })}
+          </View>
+        )}
+      </ScrollView>
+
+      <SkipDoseModal
+        visible={skipTarget != null}
+        onClose={() => setSkipTarget(null)}
+        onConfirm={handleSkipConfirm}
+      />
+    </SafeAreaView>
   )
 }
 
 const styles = StyleSheet.create({
-  meta: {
+  safe: {
+    flex: 1,
+  },
+  scroll: {
+    padding: 16,
+    paddingBottom: 32,
+  },
+  title: {
+    fontSize: 22,
+    fontWeight: '600',
+  },
+  devHint: {
+    marginTop: 8,
+    fontSize: 12,
+  },
+  loader: {
+    marginTop: 32,
+  },
+  empty: {
+    marginTop: 24,
+    borderWidth: 1,
+    borderStyle: 'dashed',
+    borderRadius: 16,
+    padding: 24,
+    alignItems: 'center',
+  },
+  emptyText: {
+    fontSize: 14,
+    textAlign: 'center',
+  },
+  addLink: {
     marginTop: 16,
-    fontSize: 13,
-    lineHeight: 18,
+  },
+  addLinkText: {
+    fontSize: 15,
+    fontWeight: '600',
+  },
+  list: {
+    marginTop: 16,
+    gap: 12,
   },
 })

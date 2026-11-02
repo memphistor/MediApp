@@ -9,6 +9,7 @@
 ## Web vs telefon
 
 - Wersja **www** (gałąź `main`) i **aplikacja ze sklepu** (gałąź `mobile`) **nie synchronizują się** automatycznie w v1.
+- Dane mobilne: plik SQLite **`MediApp.db`** (Faza 1), jeden zestaw na instalację.
 - Przeniesienie danych z web do app — opcjonalnie w **Fazie 5** (import pliku JSON / snapshot).
 
 ## Profil

@@ -14,7 +14,7 @@
 ## Warstwy
 
 6. **`@mediapp/core`** — typy i logika bez UI/DOM; testy Vitest w pakiecie.
-7. **Baza (Faza 1):** `expo-sqlite`, schema jak [`src/db/schema.ts`](../../src/db/schema.ts).
+7. **Baza (Faza 1 — zaimplementowana):** `expo-sqlite`, plik **`MediApp.db`**, warstwa w [`apps/mobile/src/storage/`](../../apps/mobile/src/storage/) (schema v1, migracje, repozytoria, `syncDoseLogs`, `medicationStock`). Schema jak [`src/db/schema.ts`](../../src/db/schema.ts); bez tabeli `medication_notes` do Fazy 2+.
 8. **Powiadomienia (Faza 3):** `expo-notifications` — bez service workera PWA.
 
 ## UI
@@ -31,4 +31,5 @@
 
 ## Nie w Fazie 0
 
-- `expo-sqlite`, `expo-notifications` — instalacja w Fazach 1 i 3.
+- ~~`expo-sqlite`~~ — **Faza 1** (storage w `apps/mobile/src/storage/`)
+- `expo-notifications` — instalacja w Fazie 3.
