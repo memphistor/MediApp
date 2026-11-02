@@ -4,13 +4,13 @@
 
 - [ ] **Apple Developer Program** (~99 USD/rok)
 - [ ] **Google Play Console** (jednorazowa opłata rejestracyjna)
-- [ ] Konto **Expo** + `eas init` w `apps/mobile` (powiązanie `projectId` w `app.json`)
+- [ ] Konto **Expo** + `eas init` w `apps/mobile` (powiązanie `projectId` w `app.json`) — **done:** `e6240fd1-1ad9-4b3f-ad9a-6be8762d538b`
 
 ## Buildy
 
 - [x] `eas.json` — profile `development`, `preview`, `production` (+ `app-bundle` na produkcji Android)
-- [ ] Pierwszy **`eas build --profile preview --platform ios`**
-- [ ] Później: Android AAB (`preview` / `production`)
+- [ ] Pierwszy **`eas build --profile preview --platform ios`** — pierwszy raz **interaktywnie** ([`eas-first-build.md`](./eas-first-build.md))
+- [ ] Android preview — build uruchomiony: [EAS build e90ce323](https://expo.dev/accounts/thememphistor/projects/mediapp/builds/e90ce323-73aa-4fce-ae1a-9ea15b58500e) (sprawdź status w dashboardzie)
 
 ## Materiały sklepu
 
