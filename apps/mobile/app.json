@@ -11,7 +11,8 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.memphistor.mediapp",
       "infoPlist": {
-        "NSUserNotificationsUsageDescription": "MediApp może wysyłać przypomnienia o godzinach, które sam ustawisz w harmonogramie pozycji."
+        "NSUserNotificationsUsageDescription": "MediApp może wysyłać przypomnienia o godzinach, które sam ustawisz w harmonogramie pozycji.",
+        "ITSAppUsesNonExemptEncryption": false
       }
     },
     "android": {
