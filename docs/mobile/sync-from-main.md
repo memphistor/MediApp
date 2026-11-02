@@ -21,7 +21,7 @@ Gdy na **`main`** zmienia się kreator, harmonogram, gamifikacja lub typy danych
 ## Czego nie kopiować do core
 
 - `src/lib/profil/profilId.ts`, `profilLink.ts`, `profilNavigation.ts`, `profilRoutes.ts` — URL i multi-profil (mobile v1: jeden profil na instalację).
-- `src/lib/profil/appSnapshot.ts` — implementacja Dexie zostaje na web; typ snapshot w `packages/core/src/snapshot/types.ts`.
+- `src/lib/profil/appSnapshot.ts` — implementacja Dexie zostaje na web; **walidacja** w `packages/core/src/snapshot/validateSnapshot.ts`.
 - `mergeWizardFormFromDom` w kreatorze — tylko web (FormData / DOM).
 
 ## Procedura

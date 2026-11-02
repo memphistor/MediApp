@@ -10,7 +10,7 @@
 
 - Wersja **www** (gałąź `main`) i **aplikacja ze sklepu** (gałąź `mobile`) **nie synchronizują się** automatycznie w v1.
 - Dane mobilne: plik SQLite **`MediApp.db`** (Faza 1), jeden zestaw na instalację.
-- Przeniesienie danych z web do app — opcjonalnie w **Fazie 5** (import pliku JSON / snapshot).
+- Przeniesienie danych z web do app — **eksport/import pliku JSON** (Faza 5); instrukcja: [migration-from-web.md](./migration-from-web.md).
 
 ## Profil
 

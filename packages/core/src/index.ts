@@ -156,3 +156,12 @@ export {
   assertSnapshotVersion,
   type AppSnapshot,
 } from './snapshot/types'
+export {
+  decodeSnapshotBase64Url,
+  encodeSnapshotBase64Url,
+} from './snapshot/encodeSnapshot'
+export {
+  parseSnapshotJson,
+  SnapshotValidationError,
+  validateAppSnapshot,
+} from './snapshot/validateSnapshot'

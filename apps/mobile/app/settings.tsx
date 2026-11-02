@@ -17,6 +17,7 @@ import type { FontScale, ThemePreference } from '@mediapp/core'
 
 import { useColorScheme } from '@/components/useColorScheme'
 import { useSettings } from '@/src/context/SettingsContext'
+import { BackupControls } from '@/src/components/settings/BackupControls'
 import { pl } from '@/src/i18n/pl'
 import { themeColors } from '@/src/theme/colors'
 
@@ -210,6 +211,8 @@ export default function SettingsScreen() {
             </Text>
           </Pressable>
         </Link>
+
+        <BackupControls onMessage={setMessage} />
 
         <Text style={[styles.sectionTitle, styles.sectionTop, { color: c.textMuted }]}>
           {pl.settings.data}

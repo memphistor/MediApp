@@ -2,7 +2,8 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { appPath } from '@/lib/profil/profilNavigation'
 import { useSettings } from '@/context/SettingsContext'
-import { getActiveProfilId } from '@/db/database'
+import { getActiveProfilId, getDb } from '@/db/database'
+import { exportAppSnapshot } from '@/lib/profil/appSnapshot'
 import {
   buildShareableProfilUrl,
   copyTextToClipboard,
@@ -41,6 +42,23 @@ export function SettingsView() {
   const fontLabels: Record<FontScale, string> = {
     normal: pl.settings.fontNormal,
     large: pl.settings.fontLarge,
+  }
+
+  async function downloadBackupJson() {
+    try {
+      const snapshot = await exportAppSnapshot(getDb())
+      const json = JSON.stringify(snapshot, null, 2)
+      const blob = new Blob([json], { type: 'application/json' })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `MediApp-kopia-${new Date().toISOString().slice(0, 10)}.json`
+      a.click()
+      URL.revokeObjectURL(url)
+      setMessage(pl.settings.backupExportDone)
+    } catch {
+      setMessage(pl.settings.backupExportFailed)
+    }
   }
 
   return (
@@ -238,6 +256,24 @@ export function SettingsView() {
             </button>
           </div>
         )}
+      </section>
+
+      <section>
+        <h3 className="text-sm font-semibold text-[var(--color-text-muted)]">
+          {pl.settings.backupTitle}
+        </h3>
+        <p className="mt-2 text-sm text-[var(--color-text-muted)]">
+          {pl.settings.backupHintWeb}
+        </p>
+        <button
+          type="button"
+          className="mt-3 min-h-12 w-full rounded-xl bg-brand text-sm font-semibold text-white"
+          onClick={() => {
+            void downloadBackupJson()
+          }}
+        >
+          {pl.settings.backupExport}
+        </button>
       </section>
 
       <section>
