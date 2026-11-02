@@ -1,0 +1,90 @@
+import { describe, expect, it } from 'vitest'
+import {
+  buildMedicationFromWizard,
+  firstWizardStepWithErrors,
+  validateWizard,
+  validateWizardStep,
+  type WizardFormState,
+} from '@/lib/wizard/buildMedication'
+
+const validBase: WizardFormState = {
+  name: 'Test',
+  kind: 'otc',
+  form: 'tablet',
+  doseText: '1 szt.',
+  emptyStomach: 'na',
+  meal: '',
+  timesRaw: '08:00',
+  scheduleType: 'daily',
+  weekdayDays: [1, 2, 3, 4, 5],
+  everyNInterval: 2,
+  weeklyDay: 1,
+  monthlyDay: 1,
+  cycleActive: 21,
+  cycleBreak: 7,
+  dateStart: '',
+  dateEnd: '',
+  purpose: '',
+  note: '',
+  color: '#000',
+  icon: '💊',
+  trackStock: false,
+  stockRemaining: 30,
+  stockUnitsPerIntake: 1,
+  remindersEnabled: true,
+}
+
+describe('validateWizardStep', () => {
+  it('wymaga nazwy i dawki na kroku 1', () => {
+    const errors = validateWizardStep(1, {
+      ...validBase,
+      name: '',
+      doseText: '',
+    })
+    expect(errors.name).toBeTruthy()
+    expect(errors.doseText).toBeTruthy()
+    expect(errors.times).toBeUndefined()
+  })
+
+  it('wymaga godzin na kroku 2', () => {
+    const errors = validateWizardStep(2, {
+      ...validBase,
+      scheduleType: '',
+      timesRaw: '',
+    })
+    expect(errors.scheduleType).toBeTruthy()
+    expect(errors.times).toBeTruthy()
+  })
+
+  it('pomija godziny dla asNeeded', () => {
+    const errors = validateWizardStep(2, {
+      ...validBase,
+      scheduleType: 'asNeeded',
+      timesRaw: '',
+    })
+    expect(errors.times).toBeUndefined()
+  })
+})
+
+describe('firstWizardStepWithErrors', () => {
+  it('wskazuje najwcześniejszy krok z błędem', () => {
+    const errors = validateWizard({ ...validBase, name: '', timesRaw: '' })
+    expect(firstWizardStepWithErrors(errors)).toBe(1)
+  })
+
+  it('zwraca null gdy brak błędów', () => {
+    expect(firstWizardStepWithErrors(validateWizard(validBase))).toBeNull()
+  })
+})
+
+describe('buildMedicationFromWizard reminders', () => {
+  it('forces reminders off for as needed', () => {
+    const entry = buildMedicationFromWizard({
+      ...validBase,
+      scheduleType: 'asNeeded',
+      timesRaw: '',
+      remindersEnabled: true,
+    })
+    expect(entry.remindersEnabled).toBe(false)
+  })
+})
