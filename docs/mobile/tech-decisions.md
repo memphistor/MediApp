@@ -17,20 +17,21 @@
 7. **Baza (Faza 1 — zaimplementowana):** `expo-sqlite`, plik **`MediApp.db`**, warstwa w [`apps/mobile/src/storage/`](../../apps/mobile/src/storage/) (schema v1, migracje, repozytoria, `syncDoseLogs`, `medicationStock`). Schema jak [`src/db/schema.ts`](../../src/db/schema.ts); bez tabeli `medication_notes` do późniejszej fazy.
 8. **Kreator i pozycje (Faza 2 — zaimplementowana):** 3-krokowy kreator na tabie Dodaj i edycja w `medication/[id]/edit`; szczegóły w `medication/[id]` (usuń, PRN, zapas, toggle przypomnień). UI w [`apps/mobile/src/components/wizard/`](../../apps/mobile/src/components/wizard/) i [`components/medication/`](../../apps/mobile/src/components/medication/); walidacja i `buildMedicationFromWizard` z `@mediapp/core`. Pickery: `@react-native-picker/picker`, `@react-native-community/datetimepicker`.
 9. **Powiadomienia (Faza 3 — zaimplementowana):** `expo-notifications` — model hybrydowy: scheduled lokalnie po sync + tick co 30 s (persistent/snooze); akcje Wzięte/Odłóż/Pomiń; [`apps/mobile/src/notifications/`](../../apps/mobile/src/notifications/); `buildReminderGroups` w `@mediapp/core`. Bez service workera PWA.
-10. **Ekrany produktowe (Faza 4 — zaimplementowana):** kalendarz, historia, postęp + `/progress/analytics`, lista PRN (`/as-needed`), onboarding z gate, pełne ustawienia (motyw, font, usuń dane); gamifikacja UI (`react-native-svg` DayRing, odznaki, tydzień) na istniejącym `gamificationRepository` + `@mediapp/core`. Bez eksportu RODO (Faza 6).
+10. **Ekrany produktowe (Faza 4 — zaimplementowana):** kalendarz, historia, postęp + `/progress/analytics`, lista PRN (`/as-needed`), onboarding z gate, pełne ustawienia (motyw, font, usuń dane); gamifikacja UI (`react-native-svg` DayRing, odznaki, tydzień) na istniejącym `gamificationRepository` + `@mediapp/core`.
 11. **Kopia zapasowa (Faza 5 — zaimplementowana):** eksport/import pliku `AppSnapshot` v1 (`expo-file-system`, `expo-sharing`, `expo-document-picker`); walidacja w `@mediapp/core`; opcjonalny auto-backup w AsyncStorage; **bez** linku profilu URL. Eksport JSON także w ustawieniach PWA (www) pod migrację.
+12. **Wydanie sklepowe (Faza 6):** compliance mobile ([`privacy-pl.ts`](../../apps/mobile/src/i18n/privacy-pl.ts), [`privacy-mobile.html`](../../public/privacy-mobile.html)), checklisty [`release-checklist.md`](./release-checklist.md), [`store-privacy-labels.md`](./store-privacy-labels.md), [`store-listing.md`](./store-listing.md); EAS preview/production — konta Apple/Google poza repo.
 
 ## UI
 
-11. **Styling: React Native `StyleSheet` + tokeny kolorów** ([`apps/mobile/src/theme/colors.ts`](../../apps/mobile/src/theme/colors.ts)), spójne z [`src/styles/index.css`](../../src/styles/index.css). NativeWind można dodać później, jeśli przepisywanie ekranów przyspieszy.
+13. **Styling: React Native `StyleSheet` + tokeny kolorów** ([`apps/mobile/src/theme/colors.ts`](../../apps/mobile/src/theme/colors.ts)), spójne z [`src/styles/index.css`](../../src/styles/index.css). NativeWind można dodać później, jeśli przepisywanie ekranów przyspieszy.
 
 ## Wersje
 
-12. **React** — wersja dobrana przez Expo (mobile); web na `main` może używać innej wersji React do czasu osobnego release.
+14. **React** — wersja dobrana przez Expo (mobile); web na `main` może używać innej wersji React do czasu osobnego release.
 
 ## Środowisko
 
-13. **Node 22** (`.nvmrc`) — zalecane dla Expo; unikać Node 26 przy problemach z Metro.
+15. **Node 22** (`.nvmrc`) — zalecane dla Expo; unikać Node 26 przy problemach z Metro.
 
 ## Nie w Fazie 0
 

@@ -23,7 +23,7 @@ export const pl = {
     body1:
       'Osobisty notatnik i przypominacz: wpisujesz pozycje i godziny, aplikacja przypomina. Nie ma logowania ani synchronizacji w chmurze.',
     body2:
-      'Wpisy zapisują się w tej przeglądarce. W Ustawieniach możesz utworzyć link z końcówką, np. …/testfp, i dodać go do zakładek.',
+      'Wpisy zostają na tym urządzeniu. W Ustawieniach możesz wyeksportować kopię JSON, usunąć wszystkie dane albo przeczytać informacje o przechowywaniu.',
     accept: 'Zaczynam',
     disclaimerConfirm:
       'Przeczytałem/am i rozumiem powyższe ważne informacje.',

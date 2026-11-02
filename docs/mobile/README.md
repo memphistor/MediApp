@@ -9,7 +9,7 @@ Natywna aplikacja na **iOS** i **Android** rozwijana na gałęzi **`mobile`**.
 | **Web (PWA)** | `main` | GitHub Pages |
 | **Mobile** | `mobile` | EAS Build → App Store / Google Play |
 
-Kod web w tym repozytorium (katalog `src/`) na gałęzi `mobile` służy jako baza do synchronizacji logiki do `packages/core`. Nowe funkcje produktu na sklepy dodajemy w `apps/mobile`. **Faza 4 (mobile):** kalendarz, historia, postęp, ustawienia, gamifikacja UI. **Faza 5:** kopia zapasowa JSON (eksport/import).
+Kod web w tym repozytorium (katalog `src/`) na gałęzi `mobile` służy jako baza do synchronizacji logiki do `packages/core`. Nowe funkcje produktu na sklepy dodajemy w `apps/mobile`. **Faza 6:** checklist wydania sklepowego — [`release-checklist.md`](./release-checklist.md).
 
 ## Struktura
 

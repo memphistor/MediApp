@@ -11,6 +11,7 @@ import { OnboardingGate } from '@/src/components/layout/OnboardingGate'
 import { SettingsProvider } from '@/src/context/SettingsContext'
 import { StorageProvider } from '@/src/context/StorageContext'
 import { useReminderCoordinator } from '@/src/hooks/useReminderCoordinator'
+import { privacyPl } from '@/src/i18n/privacy-pl'
 import { pl } from '@/src/i18n/pl'
 
 export { ErrorBoundary } from 'expo-router'
@@ -72,7 +73,7 @@ function RootStack() {
         name="onboarding"
         options={{ title: pl.onboarding.title, presentation: 'modal' }}
       />
-      <Stack.Screen name="privacy" options={{ title: 'Polityka prywatności' }} />
+      <Stack.Screen name="privacy" options={{ title: privacyPl.title }} />
       <Stack.Screen name="settings" options={{ title: pl.settings.title }} />
       <Stack.Screen
         name="help/notifications"

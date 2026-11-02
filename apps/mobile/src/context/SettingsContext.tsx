@@ -14,6 +14,7 @@ import {
   getSettings,
   upsertSettings,
 } from '@/src/storage/repositories/settingsRepository'
+import { cancelAllMediAppScheduledNotifications } from '@/src/notifications/cancelNotifications'
 import { requestReminderRescheduleImmediate } from '@/src/notifications/reminderReschedule'
 import type { FontScale, ThemePreference, UserSettings } from '@mediapp/core'
 
@@ -81,6 +82,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
 
   const deleteAllData = useCallback(async () => {
     await clearAllUserData()
+    await cancelAllMediAppScheduledNotifications()
     setSettings(DEFAULT_SETTINGS)
     await requestReminderRescheduleImmediate(DEFAULT_SETTINGS)
   }, [])
