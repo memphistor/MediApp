@@ -1,5 +1,5 @@
 import { medicationColorChoices } from '@mediapp/core'
-import { Pressable, StyleSheet, Text, View } from 'react-native'
+import { Pressable, StyleSheet, View } from 'react-native'
 
 import { useColorScheme } from '@/components/useColorScheme'
 import { themeColors } from '@/src/theme/colors'

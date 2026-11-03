@@ -1,6 +1,6 @@
 import { SymbolView } from 'expo-symbols'
 import { Link, Tabs } from 'expo-router'
-import { Platform, Pressable } from 'react-native'
+import { Pressable } from 'react-native'
 
 import { useClientOnlyValue } from '@/components/useClientOnlyValue'
 import { useColorScheme } from '@/components/useColorScheme'

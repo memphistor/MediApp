@@ -32,7 +32,8 @@ describe('validateAppSnapshot', () => {
   })
 
   it('rejects missing medications array', () => {
-    const { medications: _m, ...rest } = minimalFixture
+    const rest = { ...minimalFixture } as Record<string, unknown>
+    delete rest.medications
     expect(() => validateAppSnapshot(rest)).toThrow(SnapshotValidationError)
   })
 

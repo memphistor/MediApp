@@ -3,14 +3,9 @@ import { openDatabaseAsync, type SQLiteDatabase } from 'expo-sqlite'
 import { DEFAULT_GAMIFICATION, DEFAULT_SETTINGS } from './defaults'
 import {
   gamificationToRow,
-  rowToGamification,
   type GamificationRow,
 } from './mappers/gamificationMapper'
-import {
-  rowToSettings,
-  settingsToRow,
-  type SettingsRow,
-} from './mappers/settingsMapper'
+import { settingsToRow, type SettingsRow } from './mappers/settingsMapper'
 import { runMigrations } from './migrations'
 import { DB_FILE_NAME } from './schema'
 
