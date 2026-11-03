@@ -32,4 +32,4 @@ Ten sam plik JSON możesz **eksportować z aplikacji mobilnej** (**Eksportuj kop
 
 ## Bezpieczeństwo
 
-Plik zawiera **dane o zdowiu wpisywane przez Ciebie**. Traktuj go jak wrażliwy dokument — nie udostępniaj publicznie; przechowuj w zaufanym miejscu.
+Plik zawiera **dane o zdrowiu wpisywane przez Ciebie**. Traktuj go jak wrażliwy dokument. Nie udostępniaj publicznie; przechowuj w zaufanym miejscu.

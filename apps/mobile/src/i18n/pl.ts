@@ -26,13 +26,13 @@ export const pl = {
       'Wpisy zostają na tym urządzeniu. W Ustawieniach możesz wyeksportować kopię JSON, usunąć wszystkie dane albo przeczytać informacje o przechowywaniu.',
     accept: 'Zaczynam',
     disclaimerConfirm:
-      'Przeczytałem/am i rozumiem powyższe ważne informacje.',
+      'Przeczytałem/am i rozumiem informacje powyżej.',
   },
 
   today: {
     title: 'Dziś',
     empty: 'Brak zaplanowanych pozycji na dziś.',
-    emptyNoMeds: 'Nie masz jeszcze żadnych pozycji — dodaj pierwszą poniżej.',
+    emptyNoMeds: 'Nie masz jeszcze żadnych pozycji. Dodaj pierwszą poniżej.',
     addFirst: 'Dodaj pierwszą pozycję',
     addMore: 'Dodaj pozycję',
     notificationsOff:
@@ -42,7 +42,7 @@ export const pl = {
     asNeededTitle: 'W razie potrzeby',
     asNeededLink: 'Pozycje w razie potrzeby',
     asNeededLinkHint:
-      'Nie muszą być na liście na co dzień — wejdź, gdy coś bierzesz lub świadomie pomijasz.',
+      'Nie muszą być na liście na co dzień. Wejdź tu, gdy coś bierzesz lub świadomie pomijasz.',
     logIntake: 'Zapisz przyjęcie',
     logged: 'Zapisano przyjęcie.',
   },
@@ -51,7 +51,7 @@ export const pl = {
     planned: 'Zaplanowana',
     taken: 'Wzięta',
     skipped: 'Pominięta',
-    skippedAsNeededOk: 'Nie brałem — OK',
+    skippedAsNeededOk: 'Świadomie pominięte',
     missed: 'Przegapiona',
   },
 
@@ -66,7 +66,7 @@ export const pl = {
     saving: 'Zapisywanie…',
     fixErrors: 'Uzupełnij pola oznaczone poniżej, żeby zapisać.',
     saveFailed:
-      'Nie udało się zapisać w przeglądarce. Sprawdź, czy strona może zapisywać dane lokalnie (IndexedDB), i spróbuj ponownie.',
+      'Nie udało się zapisać pozycji. Spróbuj ponownie. Jeśli problem wraca, zamknij aplikację i uruchom ją od nowa.',
     fields: {
       name: 'Nazwa',
       kind: 'Rodzaj',
@@ -91,7 +91,7 @@ export const pl = {
         'Po zaznaczeniu „Wzięta” aplikacja odejmie podaną liczbę sztuk. Możesz uzupełnić zapas na karcie pozycji.',
       remindersEnable: 'Przypomnienia o tej pozycji',
       remindersHint:
-        'Powiadomienie push i panel na ekranie Dziś o zaplanowanej godzinie. Globalne włączenie jest w Ustawieniach.',
+        'Lokalne powiadomienie i panel na ekranie Dziś o zaplanowanej godzinie. Włączenie globalne jest w Ustawieniach.',
       weekdays: 'Dni tygodnia',
       everyNDays: 'Co ile dni?',
       weeklyDay: 'Dzień tygodnia',
@@ -149,8 +149,8 @@ export const pl = {
     title: 'W razie potrzeby',
     empty: 'Nie masz pozycji oznaczonych jako „tylko w razie potrzeby”.',
     intro:
-      'Tu zapisujesz przyjęcie albo świadome pominięcie — bez codziennej listy na ekranie Dziś.',
-    skipOk: 'Nie brałem — OK',
+      'Tu zapisujesz przyjęcie albo świadome pominięcie, bez codziennej listy na ekranie Dziś.',
+    skipOk: 'Świadomie pominięte',
     todayEntry: 'Dzisiejszy wpis',
     noneToday: 'Dziś jeszcze nic nie zaznaczono.',
   },
@@ -219,13 +219,14 @@ export const pl = {
     saveTakenAt: 'Zapisz',
     cancelEdit: 'Anuluj',
     takenAtInvalid: 'Podaj poprawną datę i godzinę.',
-    takenAtSaveFailed: 'Nie udało się zapisać — wpis musi być oznaczony jako wzięty.',
+    takenAtSaveFailed:
+      'Nie udało się zapisać. Wpis musi być oznaczony jako wzięty.',
   },
 
   progress: {
     title: 'Postęp',
     dayRing: 'Pierścień dnia',
-    weekRing: 'Ten tydzień (pon.–niedz.)',
+    weekRing: 'Ten tydzień (skrót)',
     weekCount: 'Przyjęto {taken} z {total} dawek z planu w tym tygodniu',
     weekDaysAria: 'Postęp w poszczególne dni tygodnia',
     overviewTitle: 'Skrót',
@@ -257,7 +258,7 @@ export const pl = {
     perMed: {
       kicker: 'Jedna pozycja z planu',
       title: 'Postęp per pozycja',
-      hint: 'Wybierz lek lub suplement, żeby zobaczyć dokładnie kiedy go brałeś.',
+      hint: 'Wybierz pozycję, żeby zobaczyć wpisy w wybranym okresie.',
       select: 'Pozycja',
       period: 'Okres',
       summary: 'Przyjęte z planu: {taken} z {due} ({pct}%)',
@@ -265,31 +266,18 @@ export const pl = {
       empty: 'Brak wpisów w tym okresie dla tej pozycji.',
       noMedications: 'Dodaj pierwszą pozycję, żeby śledzić postęp per lek.',
       prnEntry: 'Przyjęcie doraźne',
-      notesTitle: 'Twoje notatki o tej pozycji',
-      notesHint:
-        'Np. skutki uboczne lub zmiany, które zauważysz — zapis z datą i godziną. To Twoje obserwacje, nie zastępują porady lekarza.',
-      notesWhen: 'Kiedy to było?',
-      notesBody: 'Treść notatki',
-      notesPlaceholder: 'np. lekkie zawroty głowy po przyjęciu',
-      notesSave: 'Zapisz notatkę',
-      notesSaving: 'Zapisywanie…',
-      notesEmpty: 'Brak notatek w wybranym okresie.',
-      notesDelete: 'Usuń',
-      notesWhenInvalid: 'Podaj poprawną datę i godzinę.',
-      notesBodyRequired: 'Wpisz treść notatki.',
-      notesSaveFailed: 'Nie udało się zapisać notatki.',
     },
     shieldActive:
-      'Masz jednorazową ochronę serii — jeden niepełny dzień jej nie zeruje',
+      'Masz jednorazową ochronę serii: jeden niepełny dzień jej nie zeruje',
     shieldRecharge:
-      'Ochrona wykorzystana — wraca po 7 kolejnych dniach z pełnym planem',
+      'Ochrona wykorzystana. Wraca po 7 kolejnych dniach z pełnym planem',
     badges: 'Odznaki',
     badgeLocked: 'Jeszcze nie zdobyta',
     badgeStreak7: 'Tydzień pełnego planu',
     badgeStreak30: 'Miesiąc pełnego planu',
     badgeTaken100: '100 przyjętych dawek',
     timing: {
-      scopeAll: 'Cały plan — terminowość',
+      scopeAll: 'Cały plan: terminowość',
       title: 'Terminowość przyjmowania',
       hint:
         '„W terminie” = przyjęcie od 30 min przed do 90 min po zaplanowanej godzinie (wg zapisu w aplikacji).',
@@ -301,7 +289,7 @@ export const pl = {
         'Nic jeszcze nie przyjęte. Przyjęcia z planu: {adherencePct}%.',
       summaryLine:
         '{onTime} z {taken} wziętych w terminie ({onTimePct}%). Przyjęcia z planu: {adherencePct}%.',
-      todayBreakdown: 'Dziś — rozbicie',
+      todayBreakdown: 'Dziś: rozbicie',
       onTime: 'W terminie',
       early: 'Za wcześnie',
       late: 'Po terminie',
@@ -319,12 +307,13 @@ export const pl = {
   settings: {
     title: 'Ustawienia',
     notifications: 'Powiadomienia (cała aplikacja)',
-    notificationsEnable: 'Włącz powiadomienia push o zaplanowanych godzinach',
+    notificationsEnable: 'Włącz lokalne przypomnienia o zaplanowanych godzinach',
     notificationsHint:
-      'Działają najlepiej, gdy aplikacja jest zainstalowana (PWA). Na iOS mogą być mniej niezawodne. Które leki przypominają — ustawiasz przy pozycji.',
+      'System wysyła powiadomienia na godziny z harmonogramu. Na iPhonie w trybie oszczędzania energii mogą się opóźniać. Przy każdej pozycji możesz wyłączyć przypomnienia tylko dla niej.',
     notificationsPerMed:
       'Przy każdej pozycji z harmonogramem możesz włączyć lub wyłączyć przypomnienia tylko dla niej.',
-    permissionDenied: 'Brak zgody systemu — użyj panelu na ekranie Dziś lub włącz powiadomienia w ustawieniach telefonu.',
+    permissionDenied:
+      'Brak zgody systemu. Włącz powiadomienia w ustawieniach telefonu albo odhaczaj dawki na ekranie Dziś.',
     snoozeMinutes: 'Domyślne odłożenie (minuty)',
     persistentAlarm: 'Domyślnie uporczywe przypomnienie',
     persistentAlarmHint:
@@ -342,7 +331,7 @@ export const pl = {
       'Dane są tylko na tym telefonie. Zapisz plik JSON, aby przenieść je na inne urządzenie, po reinstalacji aplikacji albo z wersji www.',
     backupExport: 'Eksportuj kopię',
     backupImport: 'Importuj kopię',
-    backupExportDone: 'Gotowe — wybierz, gdzie zapisać plik.',
+    backupExportDone: 'Gotowe. Wybierz, gdzie zapisać plik.',
     backupExportFailed: 'Nie udało się przygotować kopii.',
     backupImportConfirmTitle: 'Importować kopię?',
     backupImportConfirmBody:
@@ -358,25 +347,11 @@ export const pl = {
     dataInfo: 'Informacje o danych',
     onboarding: 'Pokaż ekran powitalny ponownie',
     notificationLimits: 'Limity powiadomień',
-    profilTitle: 'Link profilu (twoje leki)',
-    profilHint:
-      'Zapisz ten adres w zakładkach. Otworzysz nim swoje leki w tej przeglądarce.',
-    profilNone: 'Nie masz jeszcze linku profilu — dane są w domyślnej bazie na tym urządzeniu.',
-    profilCreate: 'Utwórz link profilu',
-    profilActive: 'Twój profil',
-    profilCopyLink: 'Kopiuj link',
-    profilCopyWithKopia: 'Kopiuj link z kopią w adresie',
-    profilCopied: 'Skopiowano link do schowka.',
-    profilCopyFailed: 'Nie udało się skopiować — zaznacz link ręcznie.',
-    profilKopiaTooLarge:
-      'Kopia w linku byłaby za duża — skopiowano sam profil. Używaj tej samej przeglądarki lub zmniejsz historię dawek.',
-    profilKopiaNote:
-      'Wariant z kopią w #kopia= pomaga po wyczyszczeniu pamięci przeglądarki (wczytuje dane, gdy baza profilu jest pusta).',
   },
 
   notificationHelp: {
     title: 'Limity powiadomień',
-    lead: 'MediApp nie ma serwera push. Przypomnienia są lokalne — planowane w aplikacji na godziny z twojego harmonogramu.',
+    lead: 'MediApp nie ma serwera push. Przypomnienia są lokalne, planowane w aplikacji na godziny z Twojego harmonogramu.',
     tick: 'Gdy aplikacja jest otwarta, dodatkowo co ok. 30 sekund sprawdzamy zaległe dawki (np. alarm uporczywy).',
     ios: 'Na iPhonie system może opóźnić lub zgrupować powiadomienia w trybie oszczędzania energii. W razie wątpliwości otwórz aplikację i sprawdź ekran Dziś.',
     noPermission:
@@ -384,12 +359,11 @@ export const pl = {
     persistent:
       'Alarm uporczywy powtarza przypomnienie co 5 minut, dopóki dawka ma status zaplanowana (gdy aplikacja może działać w tle lub jest otwarta).',
     closed:
-      'Po długim zamknięciu aplikacji przez system przypomnienie może przyjść z opóźnieniem — szczególnie na iOS. Otwórz MediApp od czasu do czasu, aby odświeżyć plan.',
+      'Po długim zamknięciu aplikacji przez system przypomnienie może przyjść z opóźnieniem, zwłaszcza na iOS. Otwórz MediApp od czasu do czasu, aby odświeżyć plan.',
   },
 
   reminder: {
-    mockTitle: 'Podgląd przypomnienia',
-    activeTitle: 'Teraz — według twojego planu',
+    activeTitle: 'Teraz: według Twojego planu',
     grouped: 'Rano: 3 pozycje',
     groupedCount: '{count} pozycje o tej samej porze',
     taken: 'Wzięte',
