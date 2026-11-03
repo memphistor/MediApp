@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="pl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>MediApp — informacje o danych (mobile)</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+        --text: #0f172a;
+        --muted: #475569;
+        --bg: #f8fafc;
+        --brand: #0f766e;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --text: #f1f5f9;
+          --muted: #94a3b8;
+          --bg: #0f172a;
+        }
+      }
+      body {
+        font-family: system-ui, -apple-system, Segoe UI, sans-serif;
+        line-height: 1.55;
+        max-width: 42rem;
+        margin: 0 auto;
+        padding: 1.5rem;
+        color: var(--text);
+        background: var(--bg);
+      }
+      h1 {
+        font-size: 1.5rem;
+        color: var(--brand);
+      }
+      h2 {
+        font-size: 1.1rem;
+        margin-top: 1.75rem;
+      }
+      p {
+        margin: 0.75rem 0;
+      }
+      .meta {
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+      a {
+        color: var(--brand);
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Informacje o danych — MediApp (iOS / Android)</h1>
+    <p class="meta">Wersja: 2026-11 · Treść zgodna z ekranem in-app „Informacje o danych”</p>
+
+    <h2>Gdzie są Twoje wpisy</h2>
+    <p>
+      Wszystko, co dodasz (pozycje, harmonogram, odhaczenia), zapisuje się tylko na tym
+      telefonie — w lokalnej bazie SQLite (plik MediApp.db).
+    </p>
+    <p>
+      MediApp nie wysyła wpisów o lekach na serwer operatora. Nie ma logowania ani
+      synchronizacji w chmurze między urządzeniami.
+    </p>
+
+    <h2>Czego aplikacja nie robi</h2>
+    <p>Nie ma kont użytkowników ani analityki z treścią twoich wpisów.</p>
+    <p>
+      MediApp nie weryfikuje leków, nie sprawdza interakcji i nie podpowiada dawkowania —
+      to Twój notatnik i przypominacz.
+    </p>
+    <p>
+      Lokalne przypomnienia pokazują treść wyłącznie z danych, które sam wpiszesz (np. nazwa
+      pozycji i godzina).
+    </p>
+
+    <h2>Kopia zapasowa (JSON)</h2>
+    <p>
+      W Ustawieniach możesz wyeksportować plik JSON z lekami, dziennikiem dawek i ustawieniami
+      — np. przed wymianą telefonu lub reinstalacją aplikacji.
+    </p>
+    <p>
+      Import z pliku zastępuje dane na tym urządzeniu. Plik trzymasz we własnym folderze —
+      MediApp go nie uploaduje.
+    </p>
+
+    <h2>Usuwanie danych</h2>
+    <p>
+      Ustawienia → „Usuń wszystkie dane” → potwierdzenie. Usuwane są pozycje, dziennik dawek,
+      ustawienia i stan gamifikacji; anulowane są zaplanowane przypomnienia.
+    </p>
+    <p>
+      Odinstalowanie aplikacji usuwa plik bazy na urządzeniu — bez kopii JSON danych nie
+      odzyskasz.
+    </p>
+
+    <h2>Kontakt</h2>
+    <p>
+      Zgłoszenia dotyczące prywatności:
+      <a href="https://github.com/memphistor/MediApp/issues/new">GitHub Issues</a>
+      (bez publicznego umieszczania danych zdrowotnych).
+    </p>
+    <p class="meta">
+      Pełny dokument:
+      <a href="https://github.com/memphistor/MediApp/blob/main/docs/privacy-policy.md"
+        >docs/privacy-policy.md</a
+      >
+    </p>
+  </body>
+</html>
