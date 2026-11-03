@@ -2,8 +2,6 @@ import { describe, expect, it } from 'vitest'
 import { isPlannedUpcoming, splitHistoryLogs } from './historySections'
 import type { DoseLog } from '@/types/dose'
 
-const now = new Date('2026-10-31T12:00:00.000Z')
-
 function log(partial: Partial<DoseLog> & Pick<DoseLog, 'id' | 'scheduledAt' | 'status'>): DoseLog {
   return {
     medicationId: 'm1',
@@ -18,7 +16,7 @@ describe('historySections', () => {
       scheduledAt: '2026-11-01T08:00:00.000Z',
       status: 'planned',
     })
-    expect(isPlannedUpcoming(l, now)).toBe(true)
+    expect(isPlannedUpcoming(l)).toBe(true)
   })
 
   it('keeps overdue planned doses in planned, not past', () => {
@@ -27,7 +25,7 @@ describe('historySections', () => {
       log({ id: 't', scheduledAt: '2026-10-01T08:00:00.000Z', status: 'taken' }),
       log({ id: 'p', scheduledAt: '2026-10-30T08:00:00.000Z', status: 'planned' }),
     ]
-    const { past, planned } = splitHistoryLogs(logs, now)
+    const { past, planned } = splitHistoryLogs(logs)
     expect(planned.map((x) => x.id)).toEqual(['p', 'f'])
     expect(past.map((x) => x.id)).toEqual(['t'])
   })
