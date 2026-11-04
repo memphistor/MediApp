@@ -25,7 +25,7 @@ function parseLogIds(data: unknown): string[] {
 function focusDose(logIds: string[]): void {
   const id = logIds[0]
   if (!id) return
-  router.push(`/(tabs)/?focusLog=${encodeURIComponent(id)}`)
+  router.push({ pathname: '/', params: { focusLog: id } })
 }
 
 export function useReminderCoordinator(): void {

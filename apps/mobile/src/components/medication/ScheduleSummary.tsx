@@ -31,7 +31,7 @@ export function ScheduleSummary({ schedule, compact }: ScheduleSummaryProps) {
 
 const styles = StyleSheet.create({
   compact: {
-    fontSize: 12,
+    fontSize: 13,
   },
   normal: {
     fontSize: 14,

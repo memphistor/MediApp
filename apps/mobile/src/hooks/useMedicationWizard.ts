@@ -126,7 +126,7 @@ export function useMedicationWizard({ medicationId }: UseMedicationWizardOptions
         if (prior) {
           router.replace(`/medication/${entry.id}`)
         } else {
-          router.replace('/(tabs)/')
+          router.replace('/')
         }
       } catch (err) {
         console.error(err)

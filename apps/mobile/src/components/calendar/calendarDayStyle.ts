@@ -14,10 +14,13 @@ export function calendarDayStyle(
   tone: DayComplianceTone,
   c: ThemePalette,
 ): CalendarDayStyle {
+  const stone = c.scheme === 'dark' ? '#1e293b' : '#f1f5f9'
+  const stoneText = c.scheme === 'dark' ? '#cbd5e1' : '#475569'
+
   switch (tone) {
     case 'full':
       return {
-        backgroundColor: `${c.brand}33`,
+        backgroundColor: `${c.brand}24`,
         borderColor: 'transparent',
         borderWidth: 0,
         textColor: c.brand,
@@ -25,7 +28,7 @@ export function calendarDayStyle(
       }
     case 'partial':
       return {
-        backgroundColor: `${c.brand}1A`,
+        backgroundColor: `${c.brand}14`,
         borderColor: 'transparent',
         borderWidth: 0,
         textColor: c.brand,
@@ -33,16 +36,16 @@ export function calendarDayStyle(
       }
     case 'missed':
       return {
-        backgroundColor: c.scheme === 'dark' ? '#78350f' : '#fef3c7',
+        backgroundColor: stone,
         borderColor: 'transparent',
         borderWidth: 0,
-        textColor: c.scheme === 'dark' ? '#fde68a' : '#92400e',
+        textColor: stoneText,
         fontWeight: '500',
       }
     case 'planned':
       return {
         backgroundColor: c.surfaceElevated,
-        borderColor: `${c.brand}66`,
+        borderColor: c.border,
         borderWidth: 1,
         textColor: c.text,
         fontWeight: '400',
@@ -50,9 +53,9 @@ export function calendarDayStyle(
     case 'empty':
     default:
       return {
-        backgroundColor: c.surfaceElevated,
-        borderColor: c.border,
-        borderWidth: 1,
+        backgroundColor: 'transparent',
+        borderColor: 'transparent',
+        borderWidth: 0,
         textColor: c.textMuted,
         fontWeight: '400',
       }

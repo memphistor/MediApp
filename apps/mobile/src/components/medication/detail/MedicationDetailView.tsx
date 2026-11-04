@@ -1,7 +1,6 @@
 import {
   isEntryInDateRange,
   isMedicationRemindersEnabled,
-  medicationAccentColor,
 } from '@mediapp/core'
 import * as Haptics from 'expo-haptics'
 import { useRouter } from 'expo-router'
@@ -78,7 +77,6 @@ export function MedicationDetailView({
   const showRemindersToggle =
     medication.schedule.type !== 'asNeeded' && medication.times.length > 0
   const remindersOn = isMedicationRemindersEnabled(medication)
-  const accent = medicationAccentColor(medication.color)
 
   const handleRemindersToggle = async () => {
     await updateMedication({
@@ -108,7 +106,7 @@ export function MedicationDetailView({
             const settings = await getSettings()
             await requestReminderRescheduleImmediate(settings)
             bumpRefresh()
-            router.replace('/(tabs)/')
+            router.replace('/')
           })()
         },
       },
@@ -118,16 +116,17 @@ export function MedicationDetailView({
   return (
     <SafeAreaView
       style={[styles.safe, { backgroundColor: c.surface }]}
-      edges={['bottom']}
+      edges={[]}
     >
-      <ScrollView contentContainerStyle={styles.scroll}>
+      <ScrollView
+        contentContainerStyle={styles.scroll}
+        contentInsetAdjustmentBehavior="automatic"
+      >
         <View
           style={[
             styles.card,
             {
-              borderColor: c.border,
               backgroundColor: c.surfaceElevated,
-              borderTopColor: accent,
             },
           ]}
         >
@@ -301,10 +300,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   card: {
-    borderWidth: 1,
-    borderRadius: 16,
+    borderRadius: 20,
     padding: 16,
-    borderTopWidth: 6,
   },
   header: {
     flexDirection: 'row',
@@ -329,7 +326,7 @@ const styles = StyleSheet.create({
     fontSize: 13,
   },
   dd: {
-    fontSize: 15,
+    fontSize: 16,
     fontWeight: '500',
     marginTop: 2,
   },
@@ -357,7 +354,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   hint: {
-    fontSize: 12,
+    fontSize: 13,
     marginTop: 4,
   },
   noteItem: {
@@ -370,7 +367,7 @@ const styles = StyleSheet.create({
   },
   btnPrimary: {
     minHeight: 48,
-    borderRadius: 12,
+    borderRadius: 14,
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: 8,
@@ -378,17 +375,17 @@ const styles = StyleSheet.create({
   btnPrimaryText: {
     color: '#fff',
     fontWeight: '600',
-    fontSize: 15,
+    fontSize: 16,
   },
   btnOutline: {
     minHeight: 48,
-    borderRadius: 12,
+    borderRadius: 14,
     borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',
   },
   btnOutlineText: {
     fontWeight: '600',
-    fontSize: 15,
+    fontSize: 16,
   },
 })

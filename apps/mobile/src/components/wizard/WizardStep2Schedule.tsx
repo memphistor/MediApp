@@ -210,11 +210,12 @@ const styles = StyleSheet.create({
   },
   error: {
     marginTop: 4,
-    fontSize: 12,
+    fontSize: 13,
     color: '#dc2626',
   },
   hint: {
-    fontSize: 12,
+    fontSize: 13,
+    lineHeight: 18,
     marginTop: 4,
   },
   reminderBox: {

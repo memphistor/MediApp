@@ -27,6 +27,8 @@ export function MedicationIconBadge({
         {
           width: box,
           height: box,
+          borderRadius: box / 2,
+          borderWidth: 1.5,
           borderColor: accent,
           backgroundColor: medicationAccentSurface(color ?? accent),
         },
@@ -41,7 +43,6 @@ const styles = StyleSheet.create({
   badge: {
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 12,
-    borderWidth: 2,
+    borderRadius: 999,
   },
 })

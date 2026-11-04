@@ -1,6 +1,5 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { StyleSheet, Text, View } from 'react-native'
-import { Picker } from '@react-native-picker/picker'
 
 import {
   PROGRESS_PERIODS,
@@ -13,8 +12,11 @@ import {
 } from '@mediapp/core'
 
 import { useColorScheme } from '@/components/useColorScheme'
+import { ChoiceGroup } from '@/src/components/ui/ChoiceGroup'
 import { pl } from '@/src/i18n/pl'
 import { themeColors } from '@/src/theme/colors'
+import { radius, space } from '@/src/theme/tokens'
+import { useTypeScale } from '@/src/theme/useTypeScale'
 
 type PeriodAdherencePanelProps = {
   logs: DoseLog[]
@@ -26,8 +28,7 @@ function pct(rate: number): number {
 }
 
 function periodSignature(counts: DoseTimingCounts): string {
-  const taken =
-    counts.onTime + counts.early + counts.late + counts.unknown
+  const taken = counts.onTime + counts.early + counts.late + counts.unknown
   return `${taken}|${counts.totalScheduled}|${counts.onTime}`
 }
 
@@ -38,24 +39,26 @@ function PeriodCard({
   period: ProgressPeriod
   counts: DoseTimingCounts
 }) {
-  const scheme = useColorScheme()
+  const scheme = useColorScheme() ?? 'light'
   const c = themeColors(scheme)
+  const type = useTypeScale()
   const title = pl.progress.periods[period]
-  const taken =
-    counts.onTime + counts.early + counts.late + counts.unknown
+  const taken = counts.onTime + counts.early + counts.late + counts.unknown
   const adherence = pct(takenAdherenceRate(counts))
 
   return (
-    <View style={[styles.periodCard, { borderColor: c.border }]}>
-      <Text style={[styles.periodTitle, { color: c.text }]}>{title}</Text>
+    <View style={[styles.periodCard, { backgroundColor: c.surface }]}>
+      <Text style={[type.caption, { color: c.textMuted }]}>{title}</Text>
       {counts.totalScheduled === 0 ? (
-        <Text style={[styles.muted, { color: c.textMuted }]}>
+        <Text style={[type.caption, { color: c.textMuted, marginTop: space.sm }]}>
           {pl.progress.timing.noData}
         </Text>
       ) : (
         <>
-          <Text style={[styles.pct, { color: c.brand }]}>{adherence}%</Text>
-          <Text style={[styles.muted, { color: c.textMuted }]}>
+          <Text style={[type.metric, { color: c.brand, marginTop: space.xs }]}>
+            {adherence}%
+          </Text>
+          <Text style={[type.caption, { color: c.textMuted, marginTop: space.xs }]}>
             {pl.progress.periodCardDetail
               .replaceAll('{taken}', String(taken))
               .replace('{due}', String(counts.totalScheduled))
@@ -71,8 +74,9 @@ export function PeriodAdherencePanel({
   logs,
   referenceDate = new Date(),
 }: PeriodAdherencePanelProps) {
-  const scheme = useColorScheme()
+  const scheme = useColorScheme() ?? 'light'
   const c = themeColors(scheme)
+  const type = useTypeScale()
   const [longerPeriod, setLongerPeriod] = useState<ProgressPeriod>('month')
 
   const cards = PROGRESS_PERIODS.map((period) => {
@@ -88,48 +92,31 @@ export function PeriodAdherencePanel({
     (card) => periodSignature(card.counts) === periodSignature(longer[0].counts),
   )
   const visible = sameLonger
-    ? [
-        dayCard,
-        longer.find((card) => card.period === longerPeriod) ?? longer[0],
-      ].filter((card): card is (typeof cards)[number] => card != null)
+    ? [dayCard, longer.find((card) => card.period === longerPeriod) ?? longer[0]].filter(
+        (card): card is (typeof cards)[number] => card != null,
+      )
     : cards
 
   return (
-    <View
-      style={[
-        styles.card,
-        { borderColor: c.border, backgroundColor: c.surfaceElevated },
-      ]}
-    >
-      <Text style={[styles.title, { color: c.text }]}>
-        {pl.progress.periodTitle}
-      </Text>
-      <Text style={[styles.hint, { color: c.textMuted }]}>
+    <View style={[styles.card, { backgroundColor: c.surfaceElevated }]}>
+      <Text style={[type.section, { color: c.text }]}>{pl.progress.periodTitle}</Text>
+      <Text style={[type.caption, { color: c.textMuted, marginTop: space.xs }]}>
         {pl.progress.periodHint}
       </Text>
-      {sameLonger && (
-        <View style={styles.pickerWrap}>
-          <Text style={[styles.label, { color: c.text }]}>
-            {pl.progress.perMed.period}
-          </Text>
-          <View
-            style={[styles.pickerBox, { borderColor: c.border, backgroundColor: c.surface }]}
-          >
-            <Picker
-              selectedValue={longerPeriod}
-              onValueChange={(v) => setLongerPeriod(v as ProgressPeriod)}
-            >
-              {longer.map((card) => (
-                <Picker.Item
-                  key={card.period}
-                  label={pl.progress.periods[card.period]}
-                  value={card.period}
-                />
-              ))}
-            </Picker>
-          </View>
+      {sameLonger ? (
+        <View style={{ marginTop: space.md }}>
+          <ChoiceGroup
+            label={pl.progress.perMed.period}
+            layout="equal"
+            value={longerPeriod}
+            options={longer.map((card) => ({
+              value: card.period,
+              label: pl.progress.periodChip[card.period],
+            }))}
+            onChange={(value) => setLongerPeriod(value as ProgressPeriod)}
+          />
         </View>
-      )}
+      ) : null}
       <View style={styles.grid}>
         {visible.map(({ period, counts }) => (
           <View key={period} style={styles.gridItem}>
@@ -142,16 +129,13 @@ export function PeriodAdherencePanel({
 }
 
 const styles = StyleSheet.create({
-  card: { borderWidth: 1, borderRadius: 16, padding: 16, gap: 8 },
-  title: { fontSize: 16, fontWeight: '600' },
-  hint: { fontSize: 12, lineHeight: 18 },
-  pickerWrap: { marginTop: 8 },
-  label: { fontSize: 14, fontWeight: '500' },
-  pickerBox: { borderWidth: 1, borderRadius: 12, marginTop: 4, overflow: 'hidden' },
-  grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 8 },
-  gridItem: { width: '48%' },
-  periodCard: { borderWidth: 1, borderRadius: 12, padding: 12 },
-  periodTitle: { fontSize: 14, fontWeight: '500' },
-  pct: { fontSize: 20, fontWeight: '700', marginTop: 4 },
-  muted: { fontSize: 12, marginTop: 4, lineHeight: 16 },
+  card: { borderRadius: radius.card, padding: space.lg },
+  grid: { flexDirection: 'row', gap: space.sm, marginTop: space.lg, alignItems: 'stretch' },
+  gridItem: { flex: 1 },
+  periodCard: {
+    borderRadius: radius.control,
+    padding: space.md,
+    flex: 1,
+    minHeight: 120,
+  },
 })

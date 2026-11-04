@@ -1,20 +1,24 @@
 import { useMemo } from 'react'
-import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
-import { Link } from 'expo-router'
-import { SafeAreaView } from 'react-native-safe-area-context'
+import { ActivityIndicator, Pressable, View } from 'react-native'
+import { useRouter } from 'expo-router'
 
 import { splitHistoryLogs, toDateKey } from '@mediapp/core'
 
 import { useColorScheme } from '@/components/useColorScheme'
 import { HistoryLogList } from '@/src/components/history/HistoryLogList'
 import { CollapsibleSection } from '@/src/components/layout/CollapsibleSection'
+import { AppText } from '@/src/components/ui/AppText'
+import { Card } from '@/src/components/ui/Card'
+import { Screen } from '@/src/components/ui/Screen'
 import { useHistoryData } from '@/src/hooks/useProgressData'
 import { pl } from '@/src/i18n/pl'
 import { themeColors } from '@/src/theme/colors'
+import { space } from '@/src/theme/tokens'
 
 export default function HistoryScreen() {
-  const scheme = useColorScheme()
+  const scheme = useColorScheme() ?? 'light'
   const c = themeColors(scheme)
+  const router = useRouter()
   const data = useHistoryData()
 
   const nameById = useMemo(() => {
@@ -39,102 +43,79 @@ export default function HistoryScreen() {
   const medications = data?.medications ?? []
 
   return (
-    <SafeAreaView style={[styles.safe, { backgroundColor: c.surface }]} edges={['bottom']}>
-      <ScrollView contentContainerStyle={styles.scroll}>
-        <View style={styles.header}>
-          <Text style={[styles.title, { color: c.text }]}>{pl.history.title}</Text>
-          <Link href="/progress/analytics" asChild>
-            <Pressable>
-              <Text style={[styles.link, { color: c.brand }]}>
-                {pl.history.analyticsLink}
-              </Text>
-            </Pressable>
-          </Link>
-        </View>
+    <Screen>
+      <AppText variant="title">{pl.history.title}</AppText>
+      <Pressable
+        onPress={() => router.push('/progress/analytics')}
+        style={{ marginTop: space.sm, minHeight: 44, justifyContent: 'center' }}
+      >
+        <AppText variant="secondary" tone="brand">
+          {pl.history.analyticsLink}
+        </AppText>
+      </Pressable>
 
-        {!data ? (
-          <ActivityIndicator color={c.brand} style={{ marginTop: 24 }} />
-        ) : !total ? (
-          <Text style={[styles.empty, { color: c.textMuted }]}>{pl.history.empty}</Text>
-        ) : (
-          <>
-            <CollapsibleSection title={pl.history.sectionPast} defaultOpen>
+      {!data ? (
+        <ActivityIndicator color={c.brand} style={{ marginTop: space.xl }} />
+      ) : !total ? (
+        <AppText variant="secondary" tone="muted" style={{ marginTop: space.lg }}>
+          {pl.history.empty}
+        </AppText>
+      ) : (
+        <View style={{ marginTop: space.lg, gap: space.lg }}>
+          <CollapsibleSection title={pl.history.sectionPast} defaultOpen>
+            <HistoryLogList
+              logs={past}
+              nameById={nameById}
+              medications={medications}
+              emptyLabel={pl.history.sectionEmpty}
+            />
+          </CollapsibleSection>
+
+          {dueToday.length > 0 ? (
+            <Card>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  gap: space.sm,
+                  marginBottom: space.sm,
+                }}
+              >
+                <AppText variant="section" style={{ flex: 1 }}>
+                  {pl.history.dueToday}{' '}
+                  <AppText variant="section" tone="muted">
+                    {dueToday.length}
+                  </AppText>
+                </AppText>
+                <Pressable
+                  onPress={() => router.push('/')}
+                  style={{ minHeight: 44, justifyContent: 'center' }}
+                >
+                  <AppText variant="secondary" tone="brand">
+                    {pl.history.backToToday}
+                  </AppText>
+                </Pressable>
+              </View>
               <HistoryLogList
-                logs={past}
+                logs={dueToday}
                 nameById={nameById}
                 medications={medications}
                 emptyLabel={pl.history.sectionEmpty}
               />
-            </CollapsibleSection>
+            </Card>
+          ) : null}
 
-            {dueToday.length > 0 ? (
-              <View
-                style={[
-                  styles.dueToday,
-                  { borderColor: `${c.brand}4D`, backgroundColor: c.surfaceElevated },
-                ]}
-              >
-                <View style={styles.dueHeader}>
-                  <Text style={[styles.dueTitle, { color: c.text }]}>
-                    {pl.history.dueToday}{' '}
-                    <Text style={{ color: c.textMuted }}>{dueToday.length}</Text>
-                  </Text>
-                  <Link href="/(tabs)/" asChild>
-                    <Pressable>
-                      <Text style={{ color: c.brand, fontWeight: '600', fontSize: 14 }}>
-                        {pl.history.backToToday}
-                      </Text>
-                    </Pressable>
-                  </Link>
-                </View>
-                <HistoryLogList
-                  logs={dueToday}
-                  nameById={nameById}
-                  medications={medications}
-                  emptyLabel={pl.history.sectionEmpty}
-                />
-              </View>
-            ) : null}
-
-            <View style={styles.sectionGap}>
-              <CollapsibleSection title={pl.history.sectionPlanned}>
-                <HistoryLogList
-                  logs={laterPlanned}
-                  nameById={nameById}
-                  medications={medications}
-                  emptyLabel={pl.history.sectionEmpty}
-                />
-              </CollapsibleSection>
-            </View>
-          </>
-        )}
-      </ScrollView>
-    </SafeAreaView>
+          <CollapsibleSection title={pl.history.sectionPlanned}>
+            <HistoryLogList
+              logs={laterPlanned}
+              nameById={nameById}
+              medications={medications}
+              emptyLabel={pl.history.sectionEmpty}
+            />
+          </CollapsibleSection>
+        </View>
+      )}
+    </Screen>
   )
 }
-
-const styles = StyleSheet.create({
-  safe: { flex: 1 },
-  scroll: { padding: 16, paddingBottom: 32 },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    gap: 12,
-    marginBottom: 16,
-  },
-  title: { fontSize: 22, fontWeight: '600', flex: 1 },
-  link: { fontSize: 14, fontWeight: '600' },
-  empty: { fontSize: 14 },
-  dueToday: { marginTop: 16, borderWidth: 1, borderRadius: 16, overflow: 'hidden' },
-  dueHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    gap: 8,
-  },
-  dueTitle: { fontSize: 14, fontWeight: '600', flex: 1 },
-  sectionGap: { marginTop: 16 },
-})

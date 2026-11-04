@@ -18,12 +18,7 @@ export function ProgressBadges({ gam }: ProgressBadgesProps) {
   )
 
   return (
-    <View
-      style={[
-        styles.card,
-        { borderColor: c.border, backgroundColor: c.surfaceElevated },
-      ]}
-    >
+    <View style={[styles.card, { backgroundColor: c.surfaceElevated }]}>
       <Text style={[styles.title, { color: c.text }]}>{pl.progress.badges}</Text>
       <View style={styles.chips}>
         {BADGE_DEFINITIONS.map((def) => {
@@ -56,8 +51,8 @@ export function ProgressBadges({ gam }: ProgressBadgesProps) {
 }
 
 const styles = StyleSheet.create({
-  card: { borderWidth: 1, borderRadius: 16, padding: 16 },
-  title: { fontSize: 16, fontWeight: '600' },
+  card: { borderRadius: 20, padding: 16, backgroundColor: 'transparent' },
+  title: { fontSize: 17, fontWeight: '600' },
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 8 },
   chip: { borderRadius: 999, paddingHorizontal: 12, paddingVertical: 6 },
 })

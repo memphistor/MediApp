@@ -69,7 +69,7 @@ function SummaryLine({
     counts.onTime + counts.early + counts.late + counts.unknown
 
   return (
-    <View style={[styles.summary, { borderColor: c.border }]}>
+    <View style={[styles.summary, { backgroundColor: c.surface }]}>
       <Text style={[styles.summaryTitle, { color: c.text }]}>{title}</Text>
       {counts.totalScheduled === 0 ? (
         <Text style={[styles.muted, { color: c.textMuted }]}>
@@ -130,10 +130,12 @@ export function TimingStatsPanel({
   )
 
   return (
-    <View style={embedded ? styles.embedded : [styles.card, { borderColor: c.border, backgroundColor: c.surfaceElevated }]}>
-      <Text style={[styles.title, { color: c.text }]}>
-        {pl.progress.timing.title}
-      </Text>
+    <View style={embedded ? styles.embedded : [styles.card, { backgroundColor: c.surfaceElevated }]}>
+      {embedded ? null : (
+        <Text style={[styles.title, { color: c.text }]}>
+          {pl.progress.timing.title}
+        </Text>
+      )}
       <Text style={[styles.hint, { color: c.textMuted }]}>
         {pl.progress.timing.hint}
       </Text>
@@ -230,26 +232,26 @@ export function TimingStatsPanel({
 }
 
 const styles = StyleSheet.create({
-  card: { borderWidth: 1, borderRadius: 16, padding: 16, gap: 12 },
-  embedded: { padding: 16, paddingTop: 12, gap: 12 },
-  title: { fontSize: 16, fontWeight: '600' },
-  hint: { fontSize: 12, lineHeight: 18 },
-  summary: { borderWidth: 1, borderRadius: 12, padding: 12, marginTop: 4 },
-  summaryTitle: { fontSize: 14, fontWeight: '500' },
-  muted: { fontSize: 12, marginTop: 4, lineHeight: 16 },
+  card: { borderRadius: 20, padding: 16, gap: 12 },
+  embedded: { paddingTop: 4, gap: 12 },
+  title: { fontSize: 17, fontWeight: '600' },
+  hint: { fontSize: 13, lineHeight: 18 },
+  summary: { borderRadius: 14, padding: 12, marginTop: 4 },
+  summaryTitle: { fontSize: 15, fontWeight: '500' },
+  muted: { fontSize: 13, marginTop: 4, lineHeight: 18 },
   breakdown: { gap: 8, marginTop: 8 },
-  breakdownTitle: { fontSize: 14, fontWeight: '500' },
+  breakdownTitle: { fontSize: 15, fontWeight: '500' },
   barWrap: { marginTop: 4 },
   barHeader: { flexDirection: 'row', justifyContent: 'space-between' },
-  barLabel: { fontSize: 12 },
-  barValue: { fontSize: 12, opacity: 0.7 },
-  barTrack: { height: 8, borderRadius: 4, marginTop: 4, overflow: 'hidden' },
-  barFill: { height: '100%' },
+  barLabel: { fontSize: 13 },
+  barValue: { fontSize: 13, opacity: 0.7 },
+  barTrack: { height: 8, borderRadius: 999, marginTop: 4, overflow: 'hidden' },
+  barFill: { height: '100%', borderRadius: 999 },
   dayRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     gap: 8,
     paddingVertical: 4,
   },
-  dayStatus: { fontSize: 12, fontWeight: '500', flex: 1, textAlign: 'right' },
+  dayStatus: { fontSize: 13, fontWeight: '500', flex: 1, textAlign: 'right' },
 })

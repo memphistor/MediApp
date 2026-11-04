@@ -2,10 +2,8 @@ import {
   ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
-  Pressable,
   ScrollView,
   StyleSheet,
-  Text,
   View,
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -13,10 +11,13 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { WizardStep1Basic } from '@/src/components/wizard/WizardStep1Basic'
 import { WizardStep2Schedule } from '@/src/components/wizard/WizardStep2Schedule'
 import { WizardStep3Appearance } from '@/src/components/wizard/WizardStep3Appearance'
+import { AppText } from '@/src/components/ui/AppText'
+import { Button } from '@/src/components/ui/Button'
 import { useMedicationWizard } from '@/src/hooks/useMedicationWizard'
 import { pl } from '@/src/i18n/pl'
 import { useColorScheme } from '@/components/useColorScheme'
 import { themeColors } from '@/src/theme/colors'
+import { space } from '@/src/theme/tokens'
 
 type MedicationWizardProps = {
   medicationId?: string
@@ -58,7 +59,7 @@ export function MedicationWizard({ medicationId }: MedicationWizardProps) {
   if (loadError) {
     return (
       <View style={styles.centered}>
-        <Text style={{ color: c.textMuted }}>{loadError}</Text>
+        <AppText variant="secondary" tone="muted">{loadError}</AppText>
       </View>
     )
   }
@@ -66,7 +67,7 @@ export function MedicationWizard({ medicationId }: MedicationWizardProps) {
   return (
     <SafeAreaView
       style={[styles.safe, { backgroundColor: c.surface }]}
-      edges={['bottom']}
+      edges={isEdit ? [] : ['top']}
     >
       <KeyboardAvoidingView
         style={styles.flex}
@@ -74,17 +75,24 @@ export function MedicationWizard({ medicationId }: MedicationWizardProps) {
       >
         <ScrollView
           contentContainerStyle={styles.scroll}
+          contentInsetAdjustmentBehavior={isEdit ? 'automatic' : 'never'}
           keyboardShouldPersistTaps="handled"
         >
-          <Text style={[styles.title, { color: c.text }]}>
-            {isEdit ? pl.wizard.editTitle : pl.wizard.title}
-          </Text>
-          <Text style={[styles.stepLine, { color: c.textMuted }]}>
+          {isEdit ? null : (
+            <AppText variant="title">{pl.wizard.title}</AppText>
+          )}
+          <AppText
+            variant="secondary"
+            tone="muted"
+            style={{ marginTop: isEdit ? 0 : space.sm }}
+          >
             {pl.wizard.step} {step} {pl.wizard.of} 3 — {stepTitle}
-          </Text>
+          </AppText>
 
           {saveError ? (
-            <Text style={styles.saveError}>{saveError}</Text>
+            <AppText variant="secondary" style={styles.saveError}>
+              {saveError}
+            </AppText>
           ) : null}
 
           {step === 1 ? (
@@ -104,35 +112,22 @@ export function MedicationWizard({ medicationId }: MedicationWizardProps) {
 
           <View style={styles.actions}>
             {step > 1 ? (
-              <Pressable
-                onPress={goBack}
-                style={[
-                  styles.btnSecondary,
-                  { borderColor: c.border },
-                ]}
-              >
-                <Text style={[styles.btnSecondaryText, { color: c.text }]}>
-                  {pl.wizard.back}
-                </Text>
-              </Pressable>
-            ) : null}
-            <Pressable
-              onPress={goNextOrSave}
-              disabled={saving}
-              style={[
-                styles.btnPrimary,
-                { backgroundColor: c.brand, opacity: saving ? 0.6 : 1 },
-                step === 1 ? styles.btnFull : styles.btnFlex,
-              ]}
-            >
-              <Text style={styles.btnPrimaryText}>
-                {step < 3
+              <Button label={pl.wizard.back} variant="text" onPress={goBack} />
+            ) : (
+              <View />
+            )}
+            <Button
+              label={
+                step < 3
                   ? pl.wizard.next
                   : saving
                     ? pl.wizard.saving
-                    : pl.wizard.save}
-              </Text>
-            </Pressable>
+                    : pl.wizard.save
+              }
+              disabled={saving}
+              onPress={goNextOrSave}
+              style={styles.btnNext}
+            />
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -148,59 +143,28 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scroll: {
-    padding: 16,
-    paddingBottom: 32,
-    gap: 16,
+    paddingHorizontal: space.xl,
+    paddingTop: space.lg,
+    paddingBottom: 120,
+    gap: space.lg,
   },
   centered: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  title: {
-    fontSize: 22,
-    fontWeight: '600',
-  },
-  stepLine: {
-    fontSize: 14,
-  },
   saveError: {
     color: '#dc2626',
-    fontSize: 14,
   },
   actions: {
     flexDirection: 'row',
-    gap: 8,
-    marginTop: 8,
-  },
-  btnPrimary: {
-    minHeight: 48,
-    borderRadius: 12,
     alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 16,
+    justifyContent: 'space-between',
+    gap: space.sm,
+    marginTop: space.sm,
   },
-  btnPrimaryText: {
-    color: '#fff',
-    fontWeight: '600',
-    fontSize: 16,
-  },
-  btnSecondary: {
-    flex: 1,
-    minHeight: 48,
-    borderRadius: 12,
-    borderWidth: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  btnSecondaryText: {
-    fontWeight: '600',
-    fontSize: 16,
-  },
-  btnFlex: {
-    flex: 1,
-  },
-  btnFull: {
-    flex: 1,
+  btnNext: {
+    alignSelf: 'flex-end',
+    minWidth: 140,
   },
 })

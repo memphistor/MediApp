@@ -55,13 +55,13 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   label: {
-    fontSize: 14,
+    fontSize: 15,
     fontWeight: '500',
   },
   input: {
     minHeight: 44,
     borderWidth: 1,
-    borderRadius: 12,
+    borderRadius: 14,
     paddingHorizontal: 12,
     paddingVertical: 10,
     fontSize: 16,
@@ -71,7 +71,7 @@ const styles = StyleSheet.create({
     textAlignVertical: 'top',
   },
   error: {
-    fontSize: 12,
+    fontSize: 13,
     color: '#dc2626',
   },
 })

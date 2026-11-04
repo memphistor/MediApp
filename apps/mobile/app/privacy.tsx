@@ -1,33 +1,20 @@
-import { ScrollView, StyleSheet, Text } from 'react-native'
-
-import { useColorScheme } from '@/components/useColorScheme'
+import { AppText } from '@/src/components/ui/AppText'
+import { Screen } from '@/src/components/ui/Screen'
 import { privacyPl } from '@/src/i18n/privacy-pl'
-import { themeColors } from '@/src/theme/colors'
+import { space } from '@/src/theme/tokens'
 
 export default function PrivacyScreen() {
-  const scheme = useColorScheme() ?? 'light'
-  const c = themeColors(scheme)
-
   return (
-    <ScrollView
-      style={[styles.root, { backgroundColor: c.surface }]}
-      contentContainerStyle={styles.content}
-    >
-      <Text style={[styles.title, { color: c.text }]}>{privacyPl.title}</Text>
+    <Screen variant="stack">
       {privacyPl.sections.map((section) => (
-        <Text key={section.id} style={[styles.section, { color: c.text }]}>
-          <Text style={styles.sectionTitle}>{section.title}{'\n'}</Text>
+        <AppText key={section.id} variant="body" style={{ marginBottom: space.xl }}>
+          <AppText variant="section">
+            {section.title}
+            {'\n'}
+          </AppText>
           {section.paragraphs.join('\n\n')}
-        </Text>
+        </AppText>
       ))}
-    </ScrollView>
+    </Screen>
   )
 }
-
-const styles = StyleSheet.create({
-  root: { flex: 1 },
-  content: { padding: 20, paddingBottom: 40 },
-  title: { fontSize: 22, fontWeight: '600', marginBottom: 16 },
-  section: { fontSize: 15, lineHeight: 22, marginBottom: 20 },
-  sectionTitle: { fontWeight: '600' },
-})

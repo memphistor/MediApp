@@ -110,13 +110,13 @@ export function TakenAtEditor({
 const styles = StyleSheet.create({
   wrap: { marginTop: 4 },
   row: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: 8 },
-  text: { fontSize: 12 },
-  link: { fontSize: 12, fontWeight: '600' },
+  text: { fontSize: 13 },
+  link: { fontSize: 13, fontWeight: '600' },
   actions: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
     gap: 16,
     marginTop: 8,
   },
-  error: { fontSize: 12, marginTop: 4 },
+  error: { fontSize: 13, marginTop: 4 },
 })

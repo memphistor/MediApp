@@ -29,6 +29,7 @@ import {
 import { DoseStatusBadge } from '@/src/components/dose/DoseStatusBadge'
 import { TakenAtEditor } from '@/src/components/history/TakenAtEditor'
 import { CollapsibleSection } from '@/src/components/layout/CollapsibleSection'
+import { AppText } from '@/src/components/ui/AppText'
 import { useCalendarMonthLogs } from '@/src/hooks/useProgressData'
 import { useStorage } from '@/src/context/StorageContext'
 import { listMedications } from '@/src/storage/repositories/medicationRepository'
@@ -107,7 +108,7 @@ export default function CalendarScreen() {
     return (
       <View
         key={log.id}
-        style={[styles.logRow, { borderColor: c.border, backgroundColor: c.surfaceElevated }]}
+        style={[styles.logRow, { backgroundColor: c.surfaceElevated }]}
       >
         <View style={styles.logMain}>
           <Text style={[styles.logName, { color: c.text }]}>
@@ -130,21 +131,21 @@ export default function CalendarScreen() {
   }
 
   return (
-    <SafeAreaView style={[styles.safe, { backgroundColor: c.surface }]} edges={['bottom']}>
+    <SafeAreaView style={[styles.safe, { backgroundColor: c.surface }]} edges={['top']}>
       <ScrollView contentContainerStyle={styles.scroll}>
         <View style={styles.header}>
-          <Text style={[styles.title, { color: c.text }]}>{pl.calendar.title}</Text>
+          <AppText variant="title">{pl.calendar.title}</AppText>
           <View style={styles.nav}>
             <Pressable
               onPress={() => shiftMonth(-1)}
-              style={[styles.navBtn, { borderColor: c.border }]}
+              style={styles.navBtn}
               accessibilityLabel={pl.calendar.prevMonth}
             >
               <Text style={{ color: c.text, fontSize: 20 }}>‹</Text>
             </Pressable>
             <Pressable
               onPress={() => shiftMonth(1)}
-              style={[styles.navBtn, { borderColor: c.border }]}
+              style={styles.navBtn}
               accessibilityLabel={pl.calendar.nextMonth}
             >
               <Text style={{ color: c.text, fontSize: 20 }}>›</Text>
@@ -200,21 +201,39 @@ export default function CalendarScreen() {
             </View>
 
             <CollapsibleSection title={pl.calendar.legendToggle}>
-              <Text style={[styles.legendLine, { color: c.textMuted }]}>
-                {pl.calendar.legendFull}
-              </Text>
-              <Text style={[styles.legendLine, { color: c.textMuted }]}>
-                {pl.calendar.legendPartial}
-              </Text>
-              <Text style={[styles.legendLine, { color: c.textMuted }]}>
-                {pl.calendar.legendMissed}
-              </Text>
-              <Text style={[styles.legendLine, { color: c.textMuted }]}>
-                {pl.calendar.legendPlanned}
-              </Text>
-              <Text style={[styles.legendLine, { color: c.textMuted }]}>
-                {pl.calendar.legendPrn}
-              </Text>
+              {(
+                [
+                  ['full', pl.calendar.legendFull],
+                  ['partial', pl.calendar.legendPartial],
+                  ['missed', pl.calendar.legendMissed],
+                  ['planned', pl.calendar.legendPlanned],
+                ] as const
+              ).map(([tone, label]) => {
+                const sample = calendarDayStyle(tone, c)
+                return (
+                  <View key={tone} style={styles.legendRow}>
+                    <View
+                      style={{
+                        width: 16,
+                        height: 16,
+                        borderRadius: 4,
+                        backgroundColor: sample.backgroundColor,
+                        borderColor: sample.borderColor,
+                        borderWidth: sample.borderWidth || 0,
+                      }}
+                    />
+                    <Text style={[styles.legendLine, { color: c.text, flex: 1 }]}>
+                      {label}
+                    </Text>
+                  </View>
+                )
+              })}
+              <View style={styles.legendRow}>
+                <View style={[styles.prnDot, { backgroundColor: c.brand, position: 'relative', bottom: 0 }]} />
+                <Text style={[styles.legendLine, { color: c.text, flex: 1 }]}>
+                  {pl.calendar.legendPrn}
+                </Text>
+              </View>
             </CollapsibleSection>
 
             {selectedKey ? (
@@ -260,21 +279,21 @@ export default function CalendarScreen() {
 
 const styles = StyleSheet.create({
   safe: { flex: 1 },
-  scroll: { padding: 16, paddingBottom: 32 },
+  scroll: { paddingHorizontal: 20, paddingTop: 8, paddingBottom: 32 },
   header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  title: { fontSize: 22, fontWeight: '600' },
+  title: { fontSize: 28, fontWeight: '600', lineHeight: 34 },
   nav: { flexDirection: 'row', gap: 8 },
   navBtn: {
     minWidth: 44,
     minHeight: 44,
-    borderWidth: 1,
-    borderRadius: 12,
+    borderRadius: 14,
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: 'transparent',
   },
-  monthLabel: { marginTop: 8, fontSize: 14, textTransform: 'capitalize' },
+  monthLabel: { marginTop: 8, fontSize: 15, textTransform: 'capitalize' },
   weekRow: { flexDirection: 'row', marginTop: 16 },
-  weekday: { flex: 1, textAlign: 'center', fontSize: 12, fontWeight: '600' },
+  weekday: { flex: 1, textAlign: 'center', fontSize: 13, fontWeight: '500' },
   grid: { flexDirection: 'row', flexWrap: 'wrap', marginTop: 8 },
   cellEmpty: { width: `${100 / 7}%`, aspectRatio: 1 },
   cell: {
@@ -292,20 +311,25 @@ const styles = StyleSheet.create({
     height: 6,
     borderRadius: 3,
   },
-  legendLine: { fontSize: 12, marginBottom: 4 },
+  legendLine: { fontSize: 13, lineHeight: 18 },
+  legendRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    marginBottom: 8,
+  },
   dayDetail: { marginTop: 20, gap: 8 },
-  dayTitle: { fontSize: 16, fontWeight: '600' },
-  sectionLabel: { fontSize: 12, fontWeight: '600', marginBottom: 8 },
+  dayTitle: { fontSize: 17, fontWeight: '600' },
+  sectionLabel: { fontSize: 13, fontWeight: '600', marginBottom: 8 },
   logRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     gap: 8,
-    borderWidth: 1,
-    borderRadius: 12,
-    padding: 12,
+    borderRadius: 20,
+    padding: 16,
     marginBottom: 8,
   },
   logMain: { flex: 1 },
-  logName: { fontSize: 14, fontWeight: '500' },
-  timing: { fontSize: 12, marginTop: 2 },
+  logName: { fontSize: 15, fontWeight: '500' },
+  timing: { fontSize: 13, marginTop: 2 },
 })

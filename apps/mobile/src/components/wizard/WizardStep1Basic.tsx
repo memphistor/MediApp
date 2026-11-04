@@ -54,34 +54,26 @@ export function WizardStep1Basic({
         error={errors.name}
         autoComplete="off"
       />
-      <View style={styles.row}>
-        <View style={styles.half}>
-          <FormSelect
-            label={pl.wizard.fields.kind}
-            value={form.kind}
-            options={KIND_OPTIONS.map((k) => ({
-              value: k,
-              label: pl.wizard.kinds[k],
-            }))}
-            onChange={(kind) =>
-              patch({ kind: kind as MedicationKind })
-            }
-            error={errors.kind}
-          />
-        </View>
-        <View style={styles.half}>
-          <FormSelect
-            label={pl.wizard.fields.form}
-            value={form.form}
-            options={FORM_OPTIONS.map((f) => ({
-              value: f,
-              label: pl.wizard.forms[f],
-            }))}
-            onChange={(f) => patch({ form: f as MedicationForm })}
-            error={errors.form}
-          />
-        </View>
-      </View>
+      <FormSelect
+        label={pl.wizard.fields.kind}
+        value={form.kind}
+        options={KIND_OPTIONS.map((k) => ({
+          value: k,
+          label: pl.wizard.kinds[k],
+        }))}
+        onChange={(kind) => patch({ kind: kind as MedicationKind })}
+        error={errors.kind}
+      />
+      <FormSelect
+        label={pl.wizard.fields.form}
+        value={form.form}
+        options={FORM_OPTIONS.map((f) => ({
+          value: f,
+          label: pl.wizard.forms[f],
+        }))}
+        onChange={(f) => patch({ form: f as MedicationForm })}
+        error={errors.form}
+      />
 
       <WizardSectionTitle>{pl.wizard.sections.intake}</WizardSectionTitle>
       <FormTextField
@@ -90,35 +82,29 @@ export function WizardStep1Basic({
         onChangeText={(doseText) => patch({ doseText })}
         error={errors.doseText}
       />
-      <View style={styles.row}>
-        <View style={styles.half}>
-          <FormSelect
-            label={pl.wizard.fields.emptyStomach}
-            value={form.emptyStomach}
-            options={(['yes', 'no', 'na'] as const).map((v) => ({
-              value: v,
-              label: pl.wizard.emptyStomach[v],
-            }))}
-            onChange={(v) =>
-              patch({ emptyStomach: v as WizardFormState['emptyStomach'] })
-            }
-            error={errors.emptyStomach}
-          />
-        </View>
-        <View style={styles.half}>
-          <FormSelect
-            label={pl.wizard.fields.meal}
-            value={form.meal || 'skipped'}
-            options={(['before', 'during', 'after', 'skipped'] as const).map(
-              (v) => ({
-                value: v,
-                label: pl.wizard.meal[v],
-              }),
-            )}
-            onChange={(v) => patch({ meal: v as WizardFormState['meal'] })}
-          />
-        </View>
-      </View>
+      <FormSelect
+        label={pl.wizard.fields.emptyStomach}
+        value={form.emptyStomach}
+        options={(['yes', 'no', 'na'] as const).map((v) => ({
+          value: v,
+          label: pl.wizard.emptyStomach[v],
+        }))}
+        onChange={(v) =>
+          patch({ emptyStomach: v as WizardFormState['emptyStomach'] })
+        }
+        error={errors.emptyStomach}
+      />
+      <FormSelect
+        label={pl.wizard.fields.meal}
+        value={form.meal || 'skipped'}
+        options={(['before', 'during', 'after', 'skipped'] as const).map(
+          (v) => ({
+            value: v,
+            label: pl.wizard.meal[v],
+          }),
+        )}
+        onChange={(v) => patch({ meal: v as WizardFormState['meal'] })}
+      />
 
       <WizardSectionTitle>{pl.wizard.sections.stock}</WizardSectionTitle>
       <View style={styles.switchRow}>
@@ -181,9 +167,10 @@ const styles = StyleSheet.create({
   },
   switchLabel: {
     flex: 1,
-    fontSize: 14,
+    fontSize: 15,
   },
   hint: {
-    fontSize: 12,
+    fontSize: 13,
+    lineHeight: 18,
   },
 })

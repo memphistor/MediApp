@@ -89,7 +89,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   hint: {
-    fontSize: 12,
+    fontSize: 13,
   },
   btn: {
     minHeight: 44,

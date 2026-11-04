@@ -1,14 +1,6 @@
 import { useMemo } from 'react'
-import {
-  ActivityIndicator,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native'
-import { Link } from 'expo-router'
-import { SafeAreaView } from 'react-native-safe-area-context'
+import { ActivityIndicator, Pressable, View } from 'react-native'
+import { useRouter } from 'expo-router'
 
 import {
   periodBounds,
@@ -20,6 +12,9 @@ import {
 import { useColorScheme } from '@/components/useColorScheme'
 import { ProgressBadges } from '@/src/components/gamification/ProgressBadges'
 import { WeekProgressCard } from '@/src/components/gamification/WeekProgressCard'
+import { AppText } from '@/src/components/ui/AppText'
+import { Card } from '@/src/components/ui/Card'
+import { Screen } from '@/src/components/ui/Screen'
 import {
   useGamificationState,
   useProgressLogs,
@@ -27,14 +22,18 @@ import {
 import { DEFAULT_GAMIFICATION } from '@/src/storage/defaults'
 import { pl } from '@/src/i18n/pl'
 import { themeColors } from '@/src/theme/colors'
+import { space } from '@/src/theme/tokens'
+import { useTypeScale } from '@/src/theme/useTypeScale'
 
 function pct(rate: number): number {
   return Math.round(rate * 100)
 }
 
 export default function ProgressScreen() {
-  const scheme = useColorScheme()
+  const scheme = useColorScheme() ?? 'light'
   const c = themeColors(scheme)
+  const type = useTypeScale()
+  const router = useRouter()
   const { state, loading } = useGamificationState()
   const logs = useProgressLogs()
   const gam = state ?? DEFAULT_GAMIFICATION
@@ -43,8 +42,7 @@ export default function ProgressScreen() {
     if (!logs) return { taken: 0, due: 0, pct: 0 }
     const { from, to } = periodBounds('month')
     const counts = timingCountsForRange(logs, from, to)
-    const taken =
-      counts.onTime + counts.early + counts.late + counts.unknown
+    const taken = counts.onTime + counts.early + counts.late + counts.unknown
     return {
       taken,
       due: counts.totalScheduled,
@@ -53,96 +51,55 @@ export default function ProgressScreen() {
   }, [logs])
 
   return (
-    <SafeAreaView style={[styles.safe, { backgroundColor: c.surface }]} edges={['bottom']}>
-      <ScrollView contentContainerStyle={styles.scroll}>
-        <Text style={[styles.emoji]} aria-hidden>
-          {plantEmojiForStreak(gam.currentStreak)}
-        </Text>
-        <Text style={[styles.title, { color: c.text }]}>{pl.progress.title}</Text>
+    <Screen>
+      <AppText variant="caption" style={{ fontSize: type.metric.fontSize }}>
+        {plantEmojiForStreak(gam.currentStreak)}
+      </AppText>
+      <AppText variant="title" style={{ marginTop: space.xs }}>
+        {pl.progress.title}
+      </AppText>
 
-        {loading || logs === null ? (
-          <ActivityIndicator color={c.brand} style={{ marginTop: 24 }} />
-        ) : (
-          <>
-            <ProgressBadges gam={gam} />
-            <View style={styles.gap}>
-              <WeekProgressCard logs={logs} />
-            </View>
-            <View
-              style={[
-                styles.card,
-                styles.gap,
-                { borderColor: c.border, backgroundColor: c.surfaceElevated },
-              ]}
-            >
-              <Text style={[styles.cardTitle, { color: c.text }]}>
-                {pl.progress.streak}
-              </Text>
-              <Text style={[styles.streakValue, { color: c.brand }]}>
-                {pl.progress.streakDays.replace('{n}', String(gam.currentStreak))}
-              </Text>
-              <Text style={[styles.hint, { color: c.textMuted }]}>
-                {gam.shieldAvailable
-                  ? pl.progress.shieldActive
-                  : pl.progress.shieldRecharge}
-              </Text>
-            </View>
-            <View
-              style={[
-                styles.card,
-                { borderColor: c.border, backgroundColor: c.surfaceElevated },
-              ]}
-            >
-              <Text style={[styles.cardTitle, { color: c.text }]}>
-                {pl.progress.overviewTitle}
-              </Text>
-              {monthSummary.due > 0 ? (
-                <Text style={[styles.hint, { color: c.textMuted }]}>
-                  {pl.progress.overviewMonth
+      {loading || logs === null ? (
+        <ActivityIndicator color={c.brand} style={{ marginTop: space.xl }} />
+      ) : (
+        <View style={{ marginTop: space.lg, gap: space.lg }}>
+          <ProgressBadges gam={gam} />
+          <WeekProgressCard logs={logs} />
+          <Card>
+            <AppText variant="section">{pl.progress.streak}</AppText>
+            <AppText variant="section" tone="brand" style={{ marginTop: space.xs }}>
+              {pl.progress.streakDays.replace('{n}', String(gam.currentStreak))}
+            </AppText>
+            <AppText variant="caption" tone="muted" style={{ marginTop: space.sm }}>
+              {gam.shieldAvailable
+                ? pl.progress.shieldActive
+                : pl.progress.shieldRecharge}
+            </AppText>
+          </Card>
+          <Card>
+            <AppText variant="section">{pl.progress.overviewTitle}</AppText>
+            <AppText variant="secondary" tone="muted" style={{ marginTop: space.sm }}>
+              {monthSummary.due > 0
+                ? pl.progress.overviewMonth
                     .replace('{pct}', String(monthSummary.pct))
                     .replace('{taken}', String(monthSummary.taken))
-                    .replace('{due}', String(monthSummary.due))}
-                </Text>
-              ) : (
-                <Text style={[styles.hint, { color: c.textMuted }]}>
-                  {pl.progress.overviewEmpty}
-                </Text>
-              )}
-              <Link href="/progress/analytics" asChild>
-                <Pressable
-                  style={[styles.cta, { backgroundColor: c.brand }]}
-                >
-                  <Text style={styles.ctaText}>{pl.progress.analyticsCta}</Text>
-                </Pressable>
-              </Link>
-              <Text style={[styles.ctaHint, { color: c.textMuted }]}>
+                    .replace('{due}', String(monthSummary.due))
+                : pl.progress.overviewEmpty}
+            </AppText>
+            <Pressable
+              onPress={() => router.push('/progress/analytics')}
+              style={{ marginTop: space.md, minHeight: 44, justifyContent: 'center' }}
+            >
+              <AppText variant="section" tone="brand">
+                {pl.progress.analyticsCta}
+              </AppText>
+              <AppText variant="caption" tone="muted" style={{ marginTop: space.xs }}>
                 {pl.progress.analyticsHint}
-              </Text>
-            </View>
-          </>
-        )}
-      </ScrollView>
-    </SafeAreaView>
+              </AppText>
+            </Pressable>
+          </Card>
+        </View>
+      )}
+    </Screen>
   )
 }
-
-const styles = StyleSheet.create({
-  safe: { flex: 1 },
-  scroll: { padding: 16, paddingBottom: 32 },
-  emoji: { fontSize: 28 },
-  title: { fontSize: 22, fontWeight: '600', marginTop: 4 },
-  gap: { marginTop: 16 },
-  card: { borderWidth: 1, borderRadius: 16, padding: 16 },
-  cardTitle: { fontSize: 16, fontWeight: '600' },
-  streakValue: { fontSize: 18, fontWeight: '700', marginTop: 4 },
-  hint: { fontSize: 12, marginTop: 8, lineHeight: 18 },
-  cta: {
-    marginTop: 16,
-    minHeight: 44,
-    borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  ctaText: { color: '#fff', fontSize: 14, fontWeight: '600' },
-  ctaHint: { fontSize: 12, textAlign: 'center', marginTop: 8 },
-})

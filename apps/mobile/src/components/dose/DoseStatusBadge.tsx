@@ -12,31 +12,17 @@ import { useColorScheme } from '@/components/useColorScheme'
 import { pl } from '@/src/i18n/pl'
 import { themeColors } from '@/src/theme/colors'
 
-const takenGreen = '#16a34a'
-const missedRed = '#dc2626'
-const skippedYellow = '#ca8a04'
-const skippedRed = '#dc2626'
-
 function pillColors(
   status: DoseStatus,
-  ctx: DoseStatusDisplayContext,
   muted: string,
 ): { backgroundColor: string; color: string } {
-  const asNeeded = isAsNeededDoseContext(ctx)
-  if (status === 'taken') {
-    return { backgroundColor: `${takenGreen}33`, color: takenGreen }
-  }
-  if (asNeeded && status === 'skipped') {
-    return { backgroundColor: `${takenGreen}33`, color: takenGreen }
-  }
   switch (status) {
-    case 'missed':
-      return { backgroundColor: `${missedRed}33`, color: missedRed }
+    case 'taken':
+      return { backgroundColor: '#d1fae5', color: '#047857' }
     case 'skipped':
-      if (ctx.medicationKind === 'supplement') {
-        return { backgroundColor: `${skippedYellow}33`, color: skippedYellow }
-      }
-      return { backgroundColor: `${skippedRed}33`, color: skippedRed }
+      return { backgroundColor: '#fef3c7', color: '#b45309' }
+    case 'missed':
+      return { backgroundColor: '#fee2e2', color: '#b91c1c' }
     default:
       return { backgroundColor: `${muted}20`, color: muted }
   }
@@ -62,7 +48,7 @@ export function DoseStatusBadge({
     (log && medication
       ? doseStatusContextFromLog(log, medication)
       : ({} as DoseStatusDisplayContext))
-  const pill = pillColors(status, ctx, c.textMuted)
+  const pill = pillColors(status, c.textMuted)
 
   let label: string = pl.doseStatus[status] ?? status
   if (isAsNeededDoseContext(ctx) && status === 'skipped') {
@@ -83,5 +69,5 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     alignSelf: 'flex-start',
   },
-  text: { fontSize: 12, fontWeight: '600' },
+  text: { fontSize: 13, fontWeight: '600' },
 })

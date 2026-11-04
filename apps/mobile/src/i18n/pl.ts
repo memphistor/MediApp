@@ -23,7 +23,7 @@ export const pl = {
     body1:
       'Osobisty notatnik i przypominacz: wpisujesz pozycje i godziny, aplikacja przypomina. Nie ma logowania ani synchronizacji w chmurze.',
     body2:
-      'Wpisy zostają na tym urządzeniu. W Ustawieniach możesz wyeksportować kopię JSON, usunąć wszystkie dane albo przeczytać informacje o przechowywaniu.',
+      'Wpisy zostają na tym urządzeniu. W Ustawieniach możesz usunąć wszystkie dane albo przeczytać informacje o przechowywaniu.',
     accept: 'Zaczynam',
     disclaimerConfirm:
       'Przeczytałem/am i rozumiem informacje powyżej.',
@@ -255,6 +255,12 @@ export const pl = {
       days100: 'Ostatnie 100 dni',
       year: 'Ostatni rok',
     },
+    periodChip: {
+      day: 'Dziś',
+      month: 'Miesiąc',
+      days100: '100 dni',
+      year: 'Rok',
+    },
     perMed: {
       kicker: 'Jedna pozycja z planu',
       title: 'Postęp per pozycja',
@@ -326,13 +332,10 @@ export const pl = {
     fontNormal: 'Standardowy',
     fontLarge: 'Duży',
     data: 'Dane',
-    backupTitle: 'Kopia zapasowa',
+    backupTitle: 'Odzyskiwanie',
     backupHint:
-      'Dane są tylko na tym telefonie. Zapisz plik JSON, aby przenieść je na inne urządzenie, po reinstalacji aplikacji albo z wersji www.',
-    backupExport: 'Eksportuj kopię',
-    backupImport: 'Importuj kopię',
-    backupExportDone: 'Gotowe. Wybierz, gdzie zapisać plik.',
-    backupExportFailed: 'Nie udało się przygotować kopii.',
+      'Jeśli masz plik kopii z wcześniejszej wersji, możesz wczytać go na to urządzenie. Zastąpi obecne wpisy.',
+    backupImport: 'Wczytaj istniejącą kopię',
     backupImportConfirmTitle: 'Importować kopię?',
     backupImportConfirmBody:
       'Obecne leki, harmonogram, odhaczenia i ustawienia zostaną zastąpione zawartością pliku. Tej operacji nie można cofnąć.',

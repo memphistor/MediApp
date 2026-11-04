@@ -5,7 +5,6 @@ import {
   addDays,
   calendarWeekBounds,
   dayComplianceTone,
-  dayRingProgress,
   groupLogsByDateKey,
   logsInLocalDateRange,
   scheduledDoses,
@@ -58,12 +57,7 @@ export function WeekProgressCard({
   })}`
 
   return (
-    <View
-      style={[
-        styles.card,
-        { borderColor: c.border, backgroundColor: c.surfaceElevated },
-      ]}
-    >
+    <View style={[styles.card, { backgroundColor: c.surfaceElevated }]}>
       <View style={styles.header}>
         <Text style={[styles.title, { color: c.text }]}>
           {pl.progress.weekRing}
@@ -85,7 +79,6 @@ export function WeekProgressCard({
           const date = addDays(weekMonday, index)
           const planned = scheduledDoses(byDay.get(key) ?? [])
           const tone = dayComplianceTone(planned)
-          const ring = dayRingProgress(planned)
           const dayStyle = calendarDayStyle(tone, c)
           const isToday = key === todayKey
           return (
@@ -102,22 +95,15 @@ export function WeekProgressCard({
             >
               <Text
                 style={{
-                  fontSize: 10,
+                  fontSize: 13,
                   color: dayStyle.textColor,
                   fontWeight: dayStyle.fontWeight,
                 }}
               >
                 {WEEKDAY_LABELS[index]}
               </Text>
-              <Text style={{ fontSize: 12, color: dayStyle.textColor }}>
+              <Text style={{ fontSize: 13, color: dayStyle.textColor }}>
                 {date.getDate()}
-              </Text>
-              <Text style={{ fontSize: 9, color: dayStyle.textColor }}>
-                {planned.length === 0
-                  ? '—'
-                  : tone === 'full'
-                    ? '✓'
-                    : `${ring.taken}/${ring.total}`}
               </Text>
             </View>
           )
@@ -128,7 +114,7 @@ export function WeekProgressCard({
 }
 
 const styles = StyleSheet.create({
-  card: { borderWidth: 1, borderRadius: 16, padding: 16 },
+  card: { borderRadius: 20, padding: 16 },
   header: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -136,8 +122,8 @@ const styles = StyleSheet.create({
     gap: 8,
     marginBottom: 8,
   },
-  title: { fontSize: 14, fontWeight: '600' },
-  range: { fontSize: 12 },
+  title: { fontSize: 17, fontWeight: '600' },
+  range: { fontSize: 13 },
   weekGrid: {
     flexDirection: 'row',
     marginTop: 16,

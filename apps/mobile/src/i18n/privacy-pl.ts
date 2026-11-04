@@ -20,10 +20,10 @@ export const privacyPl = {
     },
     {
       id: 'kopia',
-      title: 'Kopia zapasowa (JSON)',
+      title: 'Plik z wcześniejszej wersji',
       paragraphs: [
-        'W Ustawieniach możesz wyeksportować plik JSON z lekami, dziennikiem dawek i ustawieniami, np. przed wymianą telefonu lub reinstalacją aplikacji.',
-        'Import z pliku zastępuje dane na tym urządzeniu. Plik trzymasz we własnym folderze (Pobrane, iCloud, dysk). MediApp go nie wysyła do chmury.',
+        'W Ustawieniach możesz wczytać plik kopii zapisany wcześniej. Import zastępuje dane na tym urządzeniu.',
+        'Plik zostaje u Ciebie. MediApp go nie wysyła do chmury.',
       ],
     },
     {
@@ -31,7 +31,7 @@ export const privacyPl = {
       title: 'Usuwanie danych',
       paragraphs: [
         'Ustawienia → „Usuń wszystkie dane” → potwierdzenie. Usuwane są pozycje, dziennik dawek, ustawienia i stan gamifikacji; anulowane są zaplanowane przypomnienia.',
-        'Odinstalowanie aplikacji usuwa plik bazy na urządzeniu. Bez kopii JSON danych nie odzyskasz.',
+        'Odinstalowanie aplikacji usuwa plik bazy na urządzeniu.',
       ],
     },
   ],

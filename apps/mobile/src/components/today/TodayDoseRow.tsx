@@ -2,40 +2,20 @@ import { Pressable, StyleSheet, Text, View } from 'react-native'
 import { useRouter } from 'expo-router'
 import {
   doseStatusContextFromLog,
-  doseStatusPillStyle,
   medicationAccentColor,
   type DoseLog,
   type MedicationEntry,
 } from '@mediapp/core'
 
 import { useColorScheme } from '@/components/useColorScheme'
+import { DoseStatusBadge } from '@/src/components/dose/DoseStatusBadge'
+import { MedicationIconBadge } from '@/src/components/medication/MedicationIconBadge'
+import { Button } from '@/src/components/ui/Button'
+import { Card } from '@/src/components/ui/Card'
 import { pl } from '@/src/i18n/pl'
 import { themeColors } from '@/src/theme/colors'
-
-function statusLabel(
-  status: DoseLog['status'],
-  med: MedicationEntry,
-  log: DoseLog,
-): string {
-  const ctx = doseStatusContextFromLog(log, med)
-  if (ctx.source === 'prn' && status === 'skipped') {
-    return pl.doseStatus.skippedAsNeededOk
-  }
-  return pl.doseStatus[status]
-}
-
-function pillColorsForRn(
-  status: DoseLog['status'],
-  med: MedicationEntry,
-  log: DoseLog,
-): { backgroundColor: string; color: string } {
-  const ctx = doseStatusContextFromLog(log, med)
-  const web = doseStatusPillStyle(status, ctx)
-  if (web.backgroundColor.includes('color-mix')) {
-    return { backgroundColor: '#e2e8f0', color: '#64748b' }
-  }
-  return web
-}
+import { space } from '@/src/theme/tokens'
+import { useTypeScale } from '@/src/theme/useTypeScale'
 
 interface TodayDoseRowProps {
   log: DoseLog
@@ -55,86 +35,68 @@ export function TodayDoseRow({
   const router = useRouter()
   const scheme = useColorScheme() ?? 'light'
   const c = themeColors(scheme)
+  const type = useTypeScale()
   const accent = medicationAccentColor(medication.color)
   const time = new Date(log.scheduledAt).toLocaleTimeString('pl-PL', {
     hour: '2-digit',
     minute: '2-digit',
   })
-  const pill = pillColorsForRn(log.status, medication, log)
   const canAct = log.status === 'planned' || log.status === 'missed'
 
   return (
-    <View
-      style={[
-        styles.card,
-        {
-          backgroundColor: c.surfaceElevated,
-          borderColor: focused ? c.brand : c.border,
-          borderLeftColor: accent,
-          borderWidth: focused ? 2 : 1,
-        },
-      ]}
+    <Card
+      style={{
+        borderLeftWidth: 3,
+        borderLeftColor: accent,
+        backgroundColor: focused ? `${c.brand}10` : c.surfaceElevated,
+      }}
     >
       <Pressable
         onPress={() => router.push(`/medication/${medication.id}`)}
         style={styles.header}
         accessibilityRole="button"
       >
-        <Text style={[styles.icon]}>{medication.icon}</Text>
+        <MedicationIconBadge icon={medication.icon} color={medication.color} size={22} />
         <View style={styles.headerText}>
           <View style={styles.titleRow}>
-            <Text style={[styles.name, { color: c.text }]} numberOfLines={1}>
+            <Text
+              style={[type.section, { color: c.text, flex: 1 }]}
+              numberOfLines={1}
+            >
               {medication.name}
             </Text>
-            <Text style={[styles.time, { color: c.textMuted }]}>{time}</Text>
+            <Text style={[type.secondary, { color: c.textMuted }]}>{time}</Text>
           </View>
-          <Text style={[styles.dose, { color: c.textMuted }]}>
+          <Text style={[type.secondary, { color: c.textMuted, marginTop: space.xs }]}>
             {medication.doseText}
           </Text>
-          <View
-            style={[styles.badge, { backgroundColor: pill.backgroundColor }]}
-          >
-            <Text style={[styles.badgeText, { color: pill.color }]}>
-              {statusLabel(log.status, medication, log)}
-            </Text>
+          <View style={styles.badge}>
+            <DoseStatusBadge status={log.status} log={log} medication={medication} />
           </View>
         </View>
       </Pressable>
-      {canAct && (
+      {canAct ? (
         <View style={styles.actions}>
-          <Pressable
-            style={[styles.takenBtn, { backgroundColor: c.brand }]}
+          <Button
+            label={pl.reminder.taken}
             onPress={() => onMarkTaken(log.id)}
-          >
-            <Text style={styles.takenBtnText}>{pl.reminder.taken}</Text>
-          </Pressable>
-          <Pressable
-            style={[styles.skipBtn, { borderColor: c.border }]}
+            style={styles.taken}
+          />
+          <Button
+            label={pl.reminder.skip}
+            variant="text"
             onPress={() => onSkip(log.id)}
-          >
-            <Text style={[styles.skipBtnText, { color: c.text }]}>
-              {pl.reminder.skip}
-            </Text>
-          </Pressable>
+          />
         </View>
-      )}
-    </View>
+      ) : null}
+    </Card>
   )
 }
 
 const styles = StyleSheet.create({
-  card: {
-    borderWidth: 1,
-    borderLeftWidth: 6,
-    borderRadius: 16,
-    padding: 16,
-  },
   header: {
     flexDirection: 'row',
-    gap: 12,
-  },
-  icon: {
-    fontSize: 28,
+    gap: space.md,
   },
   headerText: {
     flex: 1,
@@ -143,58 +105,21 @@ const styles = StyleSheet.create({
   titleRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    gap: 8,
-  },
-  name: {
-    flex: 1,
-    fontSize: 17,
-    fontWeight: '600',
-  },
-  time: {
-    fontSize: 14,
-  },
-  dose: {
-    marginTop: 4,
-    fontSize: 14,
+    alignItems: 'center',
+    gap: space.sm,
   },
   badge: {
-    alignSelf: 'flex-start',
-    marginTop: 8,
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 999,
-  },
-  badgeText: {
-    fontSize: 12,
-    fontWeight: '600',
+    marginTop: space.sm,
   },
   actions: {
+    marginTop: space.md,
     flexDirection: 'row',
-    gap: 8,
-    marginTop: 12,
-  },
-  takenBtn: {
-    flex: 1,
-    minHeight: 44,
     alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 12,
+    justifyContent: 'space-between',
+    gap: space.sm,
   },
-  takenBtnText: {
-    color: '#fff',
-    fontWeight: '600',
-    fontSize: 15,
-  },
-  skipBtn: {
-    flex: 1,
-    minHeight: 44,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 12,
-    borderWidth: 1,
-  },
-  skipBtnText: {
-    fontSize: 15,
-    fontWeight: '500',
+  taken: {
+    alignSelf: 'flex-start',
+    minWidth: 128,
   },
 })

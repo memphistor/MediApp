@@ -20,12 +20,7 @@ export function CollapsibleSection({
   const [open, setOpen] = useState(defaultOpen)
 
   return (
-    <View
-      style={[
-        styles.root,
-        { borderColor: c.border, backgroundColor: c.surfaceElevated },
-      ]}
-    >
+    <View style={[styles.root, { backgroundColor: c.surfaceElevated }]}>
       <Pressable
         onPress={() => setOpen((v) => !v)}
         style={styles.header}
@@ -41,7 +36,7 @@ export function CollapsibleSection({
 }
 
 const styles = StyleSheet.create({
-  root: { borderWidth: 1, borderRadius: 16, overflow: 'hidden' },
+  root: { borderRadius: 20, overflow: 'hidden' },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -50,6 +45,6 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     minHeight: 44,
   },
-  title: { fontSize: 14, fontWeight: '600', flex: 1 },
+  title: { fontSize: 17, fontWeight: '600', flex: 1 },
   body: { paddingHorizontal: 16, paddingBottom: 12 },
 })

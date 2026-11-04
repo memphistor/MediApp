@@ -65,7 +65,7 @@ export function HistoryLogList({
 }
 
 const styles = StyleSheet.create({
-  empty: { padding: 16, fontSize: 14 },
+  empty: { padding: 16, fontSize: 15 },
   row: {
     paddingHorizontal: 16,
     paddingVertical: 12,
@@ -77,7 +77,7 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     gap: 8,
   },
-  name: { fontSize: 14, fontWeight: '600', flex: 1 },
-  time: { marginTop: 4, fontSize: 12 },
-  skip: { marginTop: 4, fontSize: 12 },
+  name: { fontSize: 17, fontWeight: '600', flex: 1 },
+  time: { marginTop: 4, fontSize: 13 },
+  skip: { marginTop: 4, fontSize: 13 },
 })

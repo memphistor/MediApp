@@ -32,7 +32,7 @@ export function WeekdayToggleRow({ selected, onToggle }: WeekdayToggleRowProps) 
           >
             <Text
               style={{
-                fontSize: 12,
+                fontSize: 13,
                 fontWeight: '600',
                 color: active ? c.brand : c.text,
               }}

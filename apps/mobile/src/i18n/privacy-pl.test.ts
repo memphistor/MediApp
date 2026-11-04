@@ -12,10 +12,11 @@ describe('privacyPl (mobile store compliance)', () => {
     expect(text).not.toMatch(/przeglądar/i)
   })
 
-  it('mentions backup JSON and deletion', () => {
+  it('mentions local deletion without promising a JSON export', () => {
     const text = privacyPl.sections.flatMap((s) => s.paragraphs).join(' ')
-    expect(text).toMatch(/JSON/i)
     expect(text).toMatch(/Usuń wszystkie dane|Usuń/i)
+    expect(text).not.toMatch(/wyeksportować/i)
+    expect(text).not.toMatch(/JSON/i)
   })
 })
 
