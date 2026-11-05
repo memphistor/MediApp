@@ -3,6 +3,12 @@
     "name": "MediApp",
     "slug": "mediapp",
     "version": "1.0.0",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/e6240fd1-1ad9-4b3f-ad9a-6be8762d538b"
+    },
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "mediapp",
