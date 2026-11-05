@@ -13,29 +13,33 @@ import {
   REMINDER_CHANNEL_ID,
 } from './setup'
 
+function reminderContent(
+  group: ReminderGroup,
+  persistent: boolean,
+): Notifications.NotificationContentInput {
+  const isGroup = group.logIds.length > 1
+  return {
+    title: group.title,
+    body: group.body,
+    sound: true,
+    data: {
+      logIds: group.logIds,
+      groupKey: group.groupKey,
+    },
+    categoryIdentifier: isGroup
+      ? REMINDER_CATEGORY_GROUP
+      : REMINDER_CATEGORY_SINGLE,
+    ...(Platform.OS === 'android' ? { channelId: REMINDER_CHANNEL_ID } : {}),
+    ...(persistent ? { sticky: true } : {}),
+  }
+}
+
 export async function presentReminderNotification(
   group: ReminderGroup,
   persistent: boolean,
 ): Promise<void> {
-  const isGroup = group.logIds.length > 1
-  const categoryIdentifier = isGroup
-    ? REMINDER_CATEGORY_GROUP
-    : REMINDER_CATEGORY_SINGLE
-
   await Notifications.scheduleNotificationAsync({
-    content: {
-      title: group.title,
-      body: group.body,
-      data: {
-        logIds: group.logIds,
-        groupKey: group.groupKey,
-      },
-      categoryIdentifier,
-      ...(Platform.OS === 'android'
-        ? { channelId: REMINDER_CHANNEL_ID }
-        : {}),
-      ...(persistent ? { sticky: true } : {}),
-    },
+    content: reminderContent(group, persistent),
     trigger: null,
   })
 }
@@ -45,29 +49,15 @@ export async function scheduleReminderAtTime(
   identifier: string,
   date: Date,
 ): Promise<void> {
-  const isGroup = group.logIds.length > 1
-  const categoryIdentifier = isGroup
-    ? REMINDER_CATEGORY_GROUP
-    : REMINDER_CATEGORY_SINGLE
-
+  const seconds = Math.max(1, Math.round((date.getTime() - Date.now()) / 1000))
   await Notifications.scheduleNotificationAsync({
     identifier,
-    content: {
-      title: group.title,
-      body: group.body,
-      data: {
-        logIds: group.logIds,
-        groupKey: group.groupKey,
-      },
-      categoryIdentifier,
-      ...(Platform.OS === 'android'
-        ? { channelId: REMINDER_CHANNEL_ID }
-        : {}),
-    },
+    content: reminderContent(group, false),
     trigger: {
-      type: Notifications.SchedulableTriggerInputTypes.DATE,
-      date,
-      channelId: REMINDER_CHANNEL_ID,
+      type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
+      seconds,
+      repeats: false,
+      ...(Platform.OS === 'android' ? { channelId: REMINDER_CHANNEL_ID } : {}),
     },
   })
 }

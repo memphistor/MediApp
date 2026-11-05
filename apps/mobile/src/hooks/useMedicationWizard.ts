@@ -9,7 +9,7 @@ import {
   type WizardErrors,
   type WizardFormState,
 } from '@mediapp/core'
-import { useRouter } from 'expo-router'
+import { useFocusEffect, useRouter } from 'expo-router'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
 import { useStorage } from '@/src/context/StorageContext'
@@ -96,6 +96,23 @@ export function useMedicationWizard({ medicationId }: UseMedicationWizardOptions
       cancelled = true
     }
   }, [medicationId])
+
+  const resetCreateForm = useCallback(() => {
+    formRef.current = { ...wizardInitialForm }
+    setForm({ ...wizardInitialForm })
+    setErrors({})
+    setSaveError(null)
+    setStep(1)
+  }, [])
+
+  useFocusEffect(
+    useCallback(() => {
+      if (medicationId) return
+      return () => {
+        resetCreateForm()
+      }
+    }, [medicationId, resetCreateForm]),
+  )
 
   const toggleWeekday = useCallback((day: number) => {
     const current = formRef.current

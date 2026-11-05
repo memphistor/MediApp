@@ -17,6 +17,9 @@
     "test:core": "npm run test -w @mediapp/core",
     "test:mobile": "vitest run --config apps/mobile/vitest.config.ts",
     "mobile": "npm run start -w mediapp-mobile",
+    "mobile:dev": "npm run start -w mediapp-mobile",
+    "mobile:dev:tunnel": "npm run start:tunnel -w mediapp-mobile",
+    "mobile:dev-client": "npm run start:dev-client -w mediapp-mobile",
     "lint:mobile": "npm run lint -w mediapp-mobile"
   },
   "dependencies": {

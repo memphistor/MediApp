@@ -23,7 +23,9 @@ docs/mobile/       decyzje, checklisty, synchronizacja z main
 
 ```bash
 npm install
-npm run mobile
+npm run mobile:dev
 ```
+
+**iPhone bez kabla:** [dev-on-iphone.md](./dev-on-iphone.md) — Expo Go / development build vs TestFlight.
 
 Szczegóły: [tech-decisions.md](./tech-decisions.md), synchronizacja z web: [sync-from-main.md](./sync-from-main.md).

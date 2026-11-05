@@ -15,6 +15,7 @@ import {
   upsertPlanned,
 } from '../repositories/doseLogRepository'
 import { getMedicationById, listMedications } from '../repositories/medicationRepository'
+
 import { recalculateAndSave } from '../repositories/gamificationRepository'
 
 const PAST_DAYS = 1
@@ -47,9 +48,17 @@ export async function syncDoseLogsForMedication(
   if (!entry) return
   const { start, end } = getSyncWindow(reference)
   const occurrences = buildOccurrencesForMedication(entry, start, end)
+  const nowMs = reference.getTime()
+  const existingBefore = await getDoseLogsForMedication(medicationId)
+  const existingIds = new Set(existingBefore.map((log) => log.id))
   const keep = new Set<string>()
   for (const occ of occurrences) {
     const id = doseLogId(occ.medicationId, occ.scheduledAt)
+    // Godzina już minęła w momencie zapisu — nie tworzymy nowej dawki,
+    // żeby nie odpalać od razu powiadomienia. Następny termin zostaje.
+    if (new Date(occ.scheduledAt).getTime() <= nowMs && !existingIds.has(id)) {
+      continue
+    }
     keep.add(id)
     const log: DoseLog = {
       id,
@@ -77,6 +86,7 @@ export async function syncAllDoseLogs(reference = new Date()): Promise<void> {
   for (const entry of meds) {
     const occurrences = buildOccurrencesForMedication(entry, start, end)
     for (const occ of occurrences) {
+      if (new Date(occ.scheduledAt).getTime() <= reference.getTime()) continue
       const id = doseLogId(occ.medicationId, occ.scheduledAt)
       await upsertPlanned({
         id,
