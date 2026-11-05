@@ -49,16 +49,30 @@ export async function scheduleReminderAtTime(
   identifier: string,
   date: Date,
 ): Promise<void> {
-  const seconds = Math.max(1, Math.round((date.getTime() - Date.now()) / 1000))
+  const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone
   await Notifications.scheduleNotificationAsync({
     identifier,
     content: reminderContent(group, false),
-    trigger: {
-      type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
-      seconds,
-      repeats: false,
-      ...(Platform.OS === 'android' ? { channelId: REMINDER_CHANNEL_ID } : {}),
-    },
+    trigger:
+      Platform.OS === 'ios'
+        ? {
+            type: Notifications.SchedulableTriggerInputTypes.CALENDAR,
+            year: date.getFullYear(),
+            // Apple DateComponents months are 1–12. expo-notifications
+            // passes this value through without adding 1.
+            month: date.getMonth() + 1,
+            day: date.getDate(),
+            hour: date.getHours(),
+            minute: date.getMinutes(),
+            second: 0,
+            repeats: false,
+            ...(timezone ? { timezone } : {}),
+          }
+        : {
+            type: Notifications.SchedulableTriggerInputTypes.DATE,
+            date,
+            channelId: REMINDER_CHANNEL_ID,
+          },
   })
 }
 

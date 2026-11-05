@@ -15,18 +15,42 @@ export const ACTION_TAKEN_ALL = 'taken-all'
 
 let setupDone = false
 
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: false,
+    shouldShowBanner: true,
+    shouldShowList: true,
+  }),
+})
+
+function alertsAllowed(
+  response: Notifications.NotificationPermissionsStatus,
+): boolean {
+  if (!response.granted && response.status !== 'granted') return false
+  if (Platform.OS !== 'ios') return true
+  const ios = response.ios
+  if (!ios) return true
+  if (ios.status === Notifications.IosAuthorizationStatus.PROVISIONAL) return false
+  return ios.allowsAlert !== false
+}
+
+export async function ensureNotificationPermission(): Promise<boolean> {
+  const current = await Notifications.getPermissionsAsync()
+  if (alertsAllowed(current)) return true
+  const next = await Notifications.requestPermissionsAsync({
+    ios: {
+      allowAlert: true,
+      allowBadge: true,
+      allowSound: true,
+    },
+  })
+  return alertsAllowed(next)
+}
+
 export async function ensureNotificationsSetup(): Promise<void> {
   if (setupDone) return
-
-  Notifications.setNotificationHandler({
-    handleNotification: async () => ({
-      shouldShowAlert: true,
-      shouldPlaySound: true,
-      shouldSetBadge: false,
-      shouldShowBanner: true,
-      shouldShowList: true,
-    }),
-  })
 
   if (Platform.OS === 'android') {
     await Notifications.setNotificationChannelAsync(REMINDER_CHANNEL_ID, {

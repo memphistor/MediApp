@@ -12,9 +12,12 @@ import { listMedications } from '@/src/storage/repositories/medicationRepository
 import { getSyncWindow } from '@/src/storage/services/syncDoseLogs'
 
 import { cancelAllMediAppScheduledNotifications } from './cancelNotifications'
-import { groupNotificationId } from './notificationIds'
+import { groupNotificationId, isMediAppNotificationId } from './notificationIds'
 import { scheduleReminderAtTime } from './presentReminderNotification'
-import { ensureNotificationsSetup } from './setup'
+import {
+  ensureNotificationPermission,
+  ensureNotificationsSetup,
+} from './setup'
 
 export { cancelGroupNotification } from './cancelNotifications'
 
@@ -22,12 +25,14 @@ export async function rescheduleAllNotifications(
   settings: UserSettings,
 ): Promise<void> {
   await ensureNotificationsSetup()
-  await cancelAllMediAppScheduledNotifications()
 
-  if (!settings.notificationsEnabled) return
+  if (!settings.notificationsEnabled) {
+    await cancelAllMediAppScheduledNotifications()
+    return
+  }
 
-  const { status } = await Notifications.getPermissionsAsync()
-  if (status !== 'granted') return
+  const allowed = await ensureNotificationPermission()
+  if (!allowed) return
 
   const now = new Date()
   const nowMs = now.getTime()
@@ -59,23 +64,49 @@ export async function rescheduleAllNotifications(
     byTime.set(log.scheduledAt, list)
   }
 
-  for (const [scheduledAt, groupLogs] of byTime) {
+  const planned = [...byTime.entries()]
+    .map(([scheduledAt, groupLogs]) => ({
+      scheduledAt,
+      groupLogs,
+      triggerDate: new Date(scheduledAt),
+    }))
+    .filter((item) => item.triggerDate.getTime() > nowMs)
+    .sort((a, b) => a.triggerDate.getTime() - b.triggerDate.getTime())
+    .slice(0, 60)
+
+  const keep = new Set<string>()
+  for (const { scheduledAt, groupLogs, triggerDate } of planned) {
     const groups = buildReminderGroups(
       groupLogs,
       medications,
-      new Date(new Date(scheduledAt).getTime() + 1000),
+      new Date(triggerDate.getTime() + 60_000),
       {},
-      false,
-      PERSISTENT_REMINDER_MS,
+      true,
+      0,
     )
     const group = groups[0]
     if (!group) continue
-    const triggerDate = new Date(scheduledAt)
-    if (triggerDate.getTime() <= nowMs) continue
-    await scheduleReminderAtTime(
-      group,
-      groupNotificationId(scheduledAt),
-      triggerDate,
-    )
+    const identifier = groupNotificationId(scheduledAt)
+    try {
+      await scheduleReminderAtTime(group, identifier, triggerDate)
+      keep.add(identifier)
+    } catch (err) {
+      console.warn('Nie udało się zaplanować przypomnienia', identifier, err)
+    }
   }
+
+  const existing = await Notifications.getAllScheduledNotificationsAsync()
+  await Promise.all(
+    existing
+      .filter(
+        (notification) =>
+          isMediAppNotificationId(notification.identifier) &&
+          !keep.has(notification.identifier),
+      )
+      .map((notification) =>
+        Notifications.cancelScheduledNotificationAsync(
+          notification.identifier,
+        ).catch(() => undefined),
+      ),
+  )
 }

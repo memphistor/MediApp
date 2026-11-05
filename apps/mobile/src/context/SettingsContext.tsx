@@ -7,7 +7,6 @@ import {
   useState,
   type ReactNode,
 } from 'react'
-import * as Notifications from 'expo-notifications'
 
 import { clearAllUserData, DEFAULT_SETTINGS } from '@/src/storage/database'
 import {
@@ -16,6 +15,7 @@ import {
 } from '@/src/storage/repositories/settingsRepository'
 import { cancelAllMediAppScheduledNotifications } from '@/src/notifications/cancelNotifications'
 import { requestReminderRescheduleImmediate } from '@/src/notifications/reminderReschedule'
+import { ensureNotificationPermission } from '@/src/notifications/setup'
 import type { FontScale, ThemePreference, UserSettings } from '@mediapp/core'
 
 interface SettingsContextValue {
@@ -90,13 +90,8 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
   const setNotificationsEnabled = useCallback(
     async (enabled: boolean): Promise<boolean> => {
       if (enabled) {
-        const { status: existing } = await Notifications.getPermissionsAsync()
-        let status = existing
-        if (status !== 'granted') {
-          const req = await Notifications.requestPermissionsAsync()
-          status = req.status
-        }
-        if (status !== 'granted') {
+        const allowed = await ensureNotificationPermission()
+        if (!allowed) {
           const next = { ...settings, notificationsEnabled: false }
           await persist(next)
           return false
