@@ -158,7 +158,7 @@ export function useMedicationWizard({ medicationId }: UseMedicationWizardOptions
   const goNextOrSave = useCallback(() => {
     setSaveError(null)
     const current = formRef.current
-    if (step < 3) {
+    if (step < 7) {
       const stepErrors = validateWizardStep(step, current)
       if (Object.keys(stepErrors).length > 0) {
         setErrors(stepErrors)
@@ -185,6 +185,37 @@ export function useMedicationWizard({ medicationId }: UseMedicationWizardOptions
     setStep((s) => Math.max(1, s - 1))
   }, [])
 
+  const skipCurrent = useCallback(
+    (fallbackDose: string) => {
+      if (step === 4) {
+        const current = formRef.current
+        const next = { ...current }
+        if (!next.doseText.trim()) next.doseText = fallbackDose
+        if (!next.emptyStomach) next.emptyStomach = 'na'
+        if (!next.meal) next.meal = 'skipped'
+        formRef.current = next
+        setForm(next)
+        setErrors({})
+        setStep(5)
+        return
+      }
+      if (step !== 7) return
+      const next = { ...formRef.current, trackStock: false }
+      formRef.current = next
+      setForm(next)
+      setErrors({})
+      const validation = validateWizard(next)
+      if (Object.keys(validation).length > 0) {
+        setErrors(validation)
+        const errorStep = firstWizardStepWithErrors(validation)
+        if (errorStep) setStep(errorStep)
+        return
+      }
+      void persistMedication(next)
+    },
+    [step, persistMedication],
+  )
+
   return {
     form,
     patch,
@@ -197,6 +228,7 @@ export function useMedicationWizard({ medicationId }: UseMedicationWizardOptions
     toggleWeekday,
     goNextOrSave,
     goBack,
+    skipCurrent,
     isEdit: Boolean(medicationId),
   }
 }

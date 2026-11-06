@@ -14,39 +14,36 @@ export function calendarDayStyle(
   tone: DayComplianceTone,
   c: ThemePalette,
 ): CalendarDayStyle {
-  const stone = c.scheme === 'dark' ? '#1e293b' : '#f1f5f9'
-  const stoneText = c.scheme === 'dark' ? '#cbd5e1' : '#475569'
-
   switch (tone) {
     case 'full':
       return {
-        backgroundColor: `${c.brand}24`,
+        backgroundColor: c.brand,
         borderColor: 'transparent',
         borderWidth: 0,
-        textColor: c.brand,
-        fontWeight: '600',
+        textColor: '#ffffff',
+        fontWeight: '500',
       }
     case 'partial':
       return {
-        backgroundColor: `${c.brand}14`,
+        backgroundColor: c.partialFill,
         borderColor: 'transparent',
         borderWidth: 0,
-        textColor: c.brand,
+        textColor: c.partialText,
         fontWeight: '500',
       }
     case 'missed':
       return {
-        backgroundColor: stone,
+        backgroundColor: c.missedDayFill,
         borderColor: 'transparent',
         borderWidth: 0,
-        textColor: stoneText,
+        textColor: c.missedDayText,
         fontWeight: '500',
       }
     case 'planned':
       return {
-        backgroundColor: c.surfaceElevated,
-        borderColor: c.border,
-        borderWidth: 1,
+        backgroundColor: 'transparent',
+        borderColor: 'transparent',
+        borderWidth: 0,
         textColor: c.text,
         fontWeight: '400',
       }

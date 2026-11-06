@@ -1,11 +1,11 @@
 /** Preset accent colors for medications (hex, lowercase). Kept visually distinct. */
 export const MEDICATION_COLOR_OPTIONS = [
-  '#dc2626', // czerwony
-  '#ea580c', // pomarańczowy
-  '#eab308', // żółty
-  '#16a34a', // zielony
-  '#2563eb', // niebieski
-  '#9333ea', // fioletowy
+  '#f07a6a',
+  '#f2a33a',
+  '#e5c24a',
+  '#2fa66b',
+  '#4c8df6',
+  '#8b7cf6',
 ] as const
 
 export const DEFAULT_MEDICATION_COLOR = MEDICATION_COLOR_OPTIONS[3]
@@ -22,9 +22,6 @@ export function isMedicationColorOption(color: string): boolean {
 }
 
 export function medicationColorChoices(current: string): string[] {
-  const normalized = normalizeMedicationColor(current)
-  if (isMedicationColorOption(normalized)) {
-    return [...MEDICATION_COLOR_OPTIONS]
-  }
-  return [normalized, ...MEDICATION_COLOR_OPTIONS]
+  void current
+  return [...MEDICATION_COLOR_OPTIONS]
 }

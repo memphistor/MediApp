@@ -4,13 +4,25 @@ import { typeBase, typeLine } from '@/src/theme/tokens'
 
 type TypeRole = keyof typeof typeBase
 
+const weightFor: Record<TypeRole, '300' | '400' | '500'> = {
+  title: '300',
+  section: '500',
+  body: '400',
+  secondary: '400',
+  caption: '500',
+  button: '500',
+  metric: '300',
+}
+
 function roleStyle(role: TypeRole, size: number) {
-  const weight =
-    role === 'title' || role === 'section' || role === 'button' || role === 'metric'
-      ? ('600' as const)
-      : ('400' as const)
   const line = Math.round(size * (typeLine[role] / typeBase[role]))
-  return { fontSize: size, lineHeight: line, fontWeight: weight }
+  const letterSpacing = role === 'title' || role === 'metric' ? -0.8 : role === 'section' ? -0.3 : 0
+  return {
+    fontSize: size,
+    lineHeight: line,
+    fontWeight: weightFor[role],
+    letterSpacing,
+  }
 }
 
 export function useTypeScale() {

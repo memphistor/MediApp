@@ -1,20 +1,9 @@
 import { useEffect, useMemo, useState } from 'react'
-import {
-  ActivityIndicator,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native'
-import { SafeAreaView } from 'react-native-safe-area-context'
+import { ActivityIndicator, Pressable, Text, View } from 'react-native'
 
 import {
   dayComplianceTone,
-  formatTimingDeltaMinutes,
-  groupLogsByDateKey,
   scheduledDoses,
-  timingLabelForLog,
   toDateKey,
   type DoseLog,
   type MedicationEntry,
@@ -27,31 +16,40 @@ import {
   CALENDAR_WEEKDAYS,
 } from '@/src/components/calendar/monthGrid'
 import { DoseStatusBadge } from '@/src/components/dose/DoseStatusBadge'
-import { TakenAtEditor } from '@/src/components/history/TakenAtEditor'
-import { CollapsibleSection } from '@/src/components/layout/CollapsibleSection'
+import { MedicationIconBadge } from '@/src/components/medication/MedicationIconBadge'
 import { AppText } from '@/src/components/ui/AppText'
+import { Card } from '@/src/components/ui/Card'
+import { CircleButton } from '@/src/components/ui/CircleButton'
+import { BackIcon, ChevronRightIcon } from '@/src/components/ui/icons'
+import { Screen } from '@/src/components/ui/Screen'
+import { SettingsButton } from '@/src/components/ui/SettingsIcon'
 import { useCalendarMonthLogs } from '@/src/hooks/useProgressData'
 import { useStorage } from '@/src/context/StorageContext'
+import { capitalizePl, formatHm } from '@/src/format/dayLabel'
 import { listMedications } from '@/src/storage/repositories/medicationRepository'
 import { pl } from '@/src/i18n/pl'
 import { themeColors } from '@/src/theme/colors'
+import type { ThemePalette } from '@/src/theme/colors'
 
-function formatTime(iso: string): string {
-  return new Date(iso).toLocaleTimeString('pl-PL', {
-    hour: '2-digit',
-    minute: '2-digit',
-  })
+function legendSwatch(
+  kind: 'full' | 'partial' | 'missed' | 'selected',
+  c: ThemePalette,
+) {
+  if (kind === 'full') return { backgroundColor: c.brand, borderWidth: 0, borderColor: 'transparent' }
+  if (kind === 'partial') return { backgroundColor: c.partialFill, borderWidth: 0, borderColor: 'transparent' }
+  if (kind === 'missed') return { backgroundColor: c.missedDayFill, borderWidth: 0, borderColor: 'transparent' }
+  return { backgroundColor: c.surfaceElevated, borderWidth: 2, borderColor: c.brand }
 }
 
 export default function CalendarScreen() {
-  const scheme = useColorScheme()
+  const scheme = useColorScheme() ?? 'light'
   const c = themeColors(scheme)
-  const now = new Date()
+  const now = useMemo(() => new Date(), [])
   const [cursor, setCursor] = useState({
     year: now.getFullYear(),
     month: now.getMonth(),
   })
-  const [selectedKey, setSelectedKey] = useState<string | null>(null)
+  const [selectedKey, setSelectedKey] = useState<string | null>(toDateKey(now))
   const { year, month } = cursor
   const logs = useCalendarMonthLogs(year, month)
   const { refreshKey } = useStorage()
@@ -68,18 +66,36 @@ export default function CalendarScreen() {
   }, [medications])
 
   const byDay = useMemo(() => {
-    return groupLogsByDateKey(logs ?? [])
+    const map = new Map<string, DoseLog[]>()
+    for (const log of logs ?? []) {
+      const key = toDateKey(new Date(log.scheduledAt))
+      const list = map.get(key) ?? []
+      list.push(log)
+      map.set(key, list)
+    }
+    return map
   }, [logs])
 
   const cells = buildMonthGrid(year, month)
-  const monthLabel = new Date(year, month, 1).toLocaleDateString('pl-PL', {
-    month: 'long',
-    year: 'numeric',
-  })
+  const monthLabel = capitalizePl(
+    new Date(year, month, 1).toLocaleDateString('pl-PL', {
+      month: 'long',
+      year: 'numeric',
+    }),
+  )
 
   const selectedLogs = selectedKey ? (byDay.get(selectedKey) ?? []) : []
   const selectedPlan = scheduledDoses(selectedLogs)
-  const selectedPrn = selectedLogs.filter((l) => l.source === 'prn')
+  const selectedPrn = selectedLogs.filter((log) => log.source === 'prn')
+  const selectedTitle = selectedKey
+    ? capitalizePl(
+        new Date(`${selectedKey}T12:00:00`).toLocaleDateString('pl-PL', {
+          weekday: 'long',
+          day: 'numeric',
+          month: 'long',
+        }),
+      )
+    : ''
 
   const shiftMonth = (delta: number) => {
     setCursor((cur) => {
@@ -89,247 +105,191 @@ export default function CalendarScreen() {
     setSelectedKey(null)
   }
 
-  const renderLog = (log: DoseLog) => {
-    const med = medMap.get(log.medicationId)
-    const timingLabels = pl.progress.timing
-    const showTiming = log.status === 'taken' && log.source !== 'prn'
-    const timingText = showTiming
-      ? timingLabelForLog(log, {
-          onTime: timingLabels.onTime,
-          early: timingLabels.early,
-          late: timingLabels.late,
-          unknown: timingLabels.unknown,
-          missed: timingLabels.missed,
-          planned: pl.doseStatus.planned,
-        })
-      : null
-    const delta = formatTimingDeltaMinutes(log)
-
-    return (
-      <View
-        key={log.id}
-        style={[styles.logRow, { backgroundColor: c.surfaceElevated }]}
-      >
-        <View style={styles.logMain}>
-          <Text style={[styles.logName, { color: c.text }]}>
-            {med?.name ?? '—'}{' '}
-            <Text style={{ color: c.textMuted }}>· {formatTime(log.scheduledAt)}</Text>
-          </Text>
-          {timingText ? (
-            <Text style={[styles.timing, { color: c.textMuted }]}>
-              {timingText}
-              {delta && timingText !== timingLabels.missed ? ` (${delta})` : ''}
-            </Text>
-          ) : null}
-          {log.status === 'taken' && log.takenAt ? (
-            <TakenAtEditor logId={log.id} takenAt={log.takenAt} />
-          ) : null}
-        </View>
-        <DoseStatusBadge status={log.status} log={log} medication={med} />
-      </View>
-    )
-  }
+  const legend = [
+    ['full', pl.calendar.legendFull],
+    ['partial', pl.calendar.legendPartial],
+    ['missed', pl.calendar.legendMissed],
+    ['selected', pl.calendar.legendSelected],
+  ] as const
 
   return (
-    <SafeAreaView style={[styles.safe, { backgroundColor: c.surface }]} edges={['top']}>
-      <ScrollView contentContainerStyle={styles.scroll}>
-        <View style={styles.header}>
-          <AppText variant="title">{pl.calendar.title}</AppText>
-          <View style={styles.nav}>
-            <Pressable
-              onPress={() => shiftMonth(-1)}
-              style={styles.navBtn}
-              accessibilityLabel={pl.calendar.prevMonth}
-            >
-              <Text style={{ color: c.text, fontSize: 20 }}>‹</Text>
-            </Pressable>
-            <Pressable
-              onPress={() => shiftMonth(1)}
-              style={styles.navBtn}
-              accessibilityLabel={pl.calendar.nextMonth}
-            >
-              <Text style={{ color: c.text, fontSize: 20 }}>›</Text>
-            </Pressable>
-          </View>
+    <Screen>
+      <View style={{ flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+        <AppText variant="title" style={{ flex: 1 }}>{pl.calendar.title}</AppText>
+        <SettingsButton />
+      </View>
+      <View
+        style={{
+          marginTop: 18,
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+        }}
+      >
+        <Text style={{ fontSize: 22, fontWeight: '400', color: c.text }}>{monthLabel}</Text>
+        <View style={{ flexDirection: 'row', gap: 10 }}>
+          <CircleButton
+            size={40}
+            onPress={() => shiftMonth(-1)}
+            accessibilityLabel={pl.calendar.prevMonth}
+          >
+            <BackIcon color={c.text} size={20} />
+          </CircleButton>
+          <CircleButton
+            size={40}
+            onPress={() => shiftMonth(1)}
+            accessibilityLabel={pl.calendar.nextMonth}
+          >
+            <ChevronRightIcon color={c.text} />
+          </CircleButton>
         </View>
-        <Text style={[styles.monthLabel, { color: c.textMuted }]}>{monthLabel}</Text>
+      </View>
 
-        {logs === null ? (
-          <ActivityIndicator color={c.brand} style={{ marginTop: 24 }} />
-        ) : (
-          <>
-            <View style={styles.weekRow}>
-              {CALENDAR_WEEKDAYS.map((w) => (
-                <Text key={w} style={[styles.weekday, { color: c.textMuted }]}>
-                  {w}
+      {logs === null ? (
+        <ActivityIndicator color={c.brand} style={{ marginTop: 24 }} />
+      ) : (
+        <>
+          <Card padded={false} style={{ marginTop: 14, paddingTop: 16, paddingBottom: 8 }}>
+            <View style={{ flexDirection: 'row' }}>
+              {CALENDAR_WEEKDAYS.map((label) => (
+                <Text
+                  key={label}
+                  style={{
+                    flex: 1,
+                    textAlign: 'center',
+                    color: c.textMuted,
+                    fontSize: 13,
+                    fontWeight: '500',
+                  }}
+                >
+                  {label}
                 </Text>
               ))}
             </View>
-            <View style={styles.grid}>
-              {cells.map((cell, i) => {
+            <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginTop: 8 }}>
+              {cells.map((cell, index) => {
                 if (!cell.date) {
-                  return <View key={`empty-${i}`} style={styles.cellEmpty} />
+                  return <View key={`empty-${index}`} style={{ width: `${100 / 7}%`, height: 44 }} />
                 }
                 const key = toDateKey(cell.date)
-                const dayLogs = byDay.get(key) ?? []
-                const tone = dayComplianceTone(dayLogs)
-                const dayStyle = calendarDayStyle(tone, c)
-                const hasPrn = dayLogs.some((l) => l.source === 'prn')
+                const tone = dayComplianceTone(byDay.get(key) ?? [])
+                const look = calendarDayStyle(tone, c)
                 const selected = selectedKey === key
+                const backgroundColor = selected && (tone === 'planned' || tone === 'empty')
+                  ? c.surfaceElevated
+                  : look.backgroundColor
+                const textColor = selected && tone !== 'full' && tone !== 'missed' && tone !== 'partial'
+                  ? c.brand
+                  : look.textColor
                 return (
                   <Pressable
                     key={key}
                     onPress={() => setSelectedKey(key)}
-                    style={[
-                      styles.cell,
-                      {
-                        backgroundColor: dayStyle.backgroundColor,
-                        borderColor: selected ? c.brand : dayStyle.borderColor,
-                        borderWidth: selected ? 2 : dayStyle.borderWidth,
-                      },
-                    ]}
+                    style={{ width: `${100 / 7}%`, height: 44, alignItems: 'center', justifyContent: 'center' }}
                   >
-                    <Text style={{ color: dayStyle.textColor, fontWeight: dayStyle.fontWeight }}>
-                      {cell.day}
-                    </Text>
-                    {hasPrn ? (
-                      <View style={[styles.prnDot, { backgroundColor: c.brand }]} />
-                    ) : null}
+                    <View
+                      style={{
+                        width: 36,
+                        height: 36,
+                        borderRadius: 18,
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        backgroundColor,
+                        borderWidth: selected ? 2 : look.borderWidth,
+                        borderColor: selected ? c.brand : look.borderColor,
+                      }}
+                    >
+                      <Text style={{ color: textColor, fontSize: 16, fontWeight: selected ? '500' : look.fontWeight }}>
+                        {cell.day}
+                      </Text>
+                    </View>
                   </Pressable>
                 )
               })}
             </View>
-
-            <CollapsibleSection title={pl.calendar.legendToggle}>
-              {(
-                [
-                  ['full', pl.calendar.legendFull],
-                  ['partial', pl.calendar.legendPartial],
-                  ['missed', pl.calendar.legendMissed],
-                  ['planned', pl.calendar.legendPlanned],
-                ] as const
-              ).map(([tone, label]) => {
-                const sample = calendarDayStyle(tone, c)
+            <View
+              style={{
+                marginTop: 8,
+                borderTopWidth: 1,
+                borderTopColor: c.line,
+                flexDirection: 'row',
+                flexWrap: 'wrap',
+                paddingHorizontal: 18,
+                paddingVertical: 16,
+                gap: 12,
+              }}
+            >
+              {legend.map(([kind, label]) => {
+                const swatch = legendSwatch(kind, c)
                 return (
-                  <View key={tone} style={styles.legendRow}>
+                  <View key={kind} style={{ width: '47%', flexDirection: 'row', alignItems: 'center', gap: 9 }}>
                     <View
                       style={{
-                        width: 16,
-                        height: 16,
-                        borderRadius: 4,
-                        backgroundColor: sample.backgroundColor,
-                        borderColor: sample.borderColor,
-                        borderWidth: sample.borderWidth || 0,
+                        width: 14,
+                        height: 14,
+                        borderRadius: 7,
+                        backgroundColor: swatch.backgroundColor,
+                        borderWidth: swatch.borderWidth,
+                        borderColor: swatch.borderColor,
                       }}
                     />
-                    <Text style={[styles.legendLine, { color: c.text, flex: 1 }]}>
+                    <Text style={{ flex: 1, fontSize: 13, lineHeight: 17, color: c.missedText }}>
                       {label}
                     </Text>
                   </View>
                 )
               })}
-              <View style={styles.legendRow}>
-                <View style={[styles.prnDot, { backgroundColor: c.brand, position: 'relative', bottom: 0 }]} />
-                <Text style={[styles.legendLine, { color: c.text, flex: 1 }]}>
-                  {pl.calendar.legendPrn}
-                </Text>
-              </View>
-            </CollapsibleSection>
+            </View>
+          </Card>
 
-            {selectedKey ? (
-              <View style={styles.dayDetail}>
-                <Text style={[styles.dayTitle, { color: c.text }]}>
-                  {new Date(`${selectedKey}T12:00:00`).toLocaleDateString('pl-PL', {
-                    weekday: 'long',
-                    day: 'numeric',
-                    month: 'long',
-                    year: 'numeric',
+          {selectedKey ? (
+            <View style={{ marginTop: 24 }}>
+              <AppText variant="section" style={{ marginBottom: 12 }}>
+                {selectedTitle}
+              </AppText>
+              {selectedPlan.length === 0 && selectedPrn.length === 0 ? (
+                <AppText variant="secondary" tone="muted">{pl.calendar.dayEmpty}</AppText>
+              ) : (
+                <Card padded={false}>
+                  {[...selectedPlan, ...selectedPrn].map((log, index) => {
+                    const med = medMap.get(log.medicationId)
+                    return (
+                      <View
+                        key={log.id}
+                        style={{
+                          flexDirection: 'row',
+                          alignItems: 'center',
+                          gap: 14,
+                          paddingHorizontal: 22,
+                          paddingVertical: 12,
+                          borderTopWidth: index === 0 ? 0 : 1,
+                          borderTopColor: c.line,
+                        }}
+                      >
+                        <MedicationIconBadge
+                          icon={med?.icon ?? '💊'}
+                          color={med?.color}
+                          boxSize={44}
+                        />
+                        <View style={{ flex: 1, minWidth: 0 }}>
+                          <Text style={{ fontSize: 17, fontWeight: '500', color: c.text }} numberOfLines={1}>
+                            {med?.name ?? '—'}
+                          </Text>
+                          <Text style={{ marginTop: 3, fontSize: 15, color: c.textMuted }}>
+                            {formatHm(log.scheduledAt)}
+                            {med?.doseText ? ` · ${med.doseText}` : ''}
+                          </Text>
+                        </View>
+                        <DoseStatusBadge status={log.status} log={log} medication={med} />
+                      </View>
+                    )
                   })}
-                </Text>
-                {selectedPlan.length === 0 && selectedPrn.length === 0 ? (
-                  <Text style={{ color: c.textMuted }}>{pl.calendar.dayEmpty}</Text>
-                ) : (
-                  <>
-                    {selectedPlan.length > 0 ? (
-                      <View>
-                        <Text style={[styles.sectionLabel, { color: c.textMuted }]}>
-                          {pl.calendar.planSection}
-                        </Text>
-                        {selectedPlan.map(renderLog)}
-                      </View>
-                    ) : null}
-                    {selectedPrn.length > 0 ? (
-                      <View style={{ marginTop: 12 }}>
-                        <Text style={[styles.sectionLabel, { color: c.textMuted }]}>
-                          {pl.calendar.prnSection}
-                        </Text>
-                        {selectedPrn.map(renderLog)}
-                      </View>
-                    ) : null}
-                  </>
-                )}
-              </View>
-            ) : null}
-          </>
-        )}
-      </ScrollView>
-    </SafeAreaView>
+                </Card>
+              )}
+            </View>
+          ) : null}
+        </>
+      )}
+    </Screen>
   )
 }
-
-const styles = StyleSheet.create({
-  safe: { flex: 1 },
-  scroll: { paddingHorizontal: 20, paddingTop: 8, paddingBottom: 32 },
-  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  title: { fontSize: 28, fontWeight: '600', lineHeight: 34 },
-  nav: { flexDirection: 'row', gap: 8 },
-  navBtn: {
-    minWidth: 44,
-    minHeight: 44,
-    borderRadius: 14,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'transparent',
-  },
-  monthLabel: { marginTop: 8, fontSize: 15, textTransform: 'capitalize' },
-  weekRow: { flexDirection: 'row', marginTop: 16 },
-  weekday: { flex: 1, textAlign: 'center', fontSize: 13, fontWeight: '500' },
-  grid: { flexDirection: 'row', flexWrap: 'wrap', marginTop: 8 },
-  cellEmpty: { width: `${100 / 7}%`, aspectRatio: 1 },
-  cell: {
-    width: `${100 / 7}%`,
-    aspectRatio: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 8,
-    marginBottom: 4,
-  },
-  prnDot: {
-    position: 'absolute',
-    bottom: 4,
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-  },
-  legendLine: { fontSize: 13, lineHeight: 18 },
-  legendRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
-    marginBottom: 8,
-  },
-  dayDetail: { marginTop: 20, gap: 8 },
-  dayTitle: { fontSize: 17, fontWeight: '600' },
-  sectionLabel: { fontSize: 13, fontWeight: '600', marginBottom: 8 },
-  logRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    gap: 8,
-    borderRadius: 20,
-    padding: 16,
-    marginBottom: 8,
-  },
-  logMain: { flex: 1 },
-  logName: { fontSize: 15, fontWeight: '500' },
-  timing: { fontSize: 13, marginTop: 2 },
-})

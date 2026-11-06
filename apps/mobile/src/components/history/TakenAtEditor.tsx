@@ -17,12 +17,14 @@ type TakenAtEditorProps = {
   logId: string
   takenAt: string
   showDate?: boolean
+  linkOnly?: boolean
 }
 
 export function TakenAtEditor({
   logId,
   takenAt,
   showDate = false,
+  linkOnly = false,
 }: TakenAtEditorProps) {
   const scheme = useColorScheme()
   const c = themeColors(scheme)
@@ -50,16 +52,24 @@ export function TakenAtEditor({
   return (
     <View style={styles.wrap}>
       {!editing ? (
-        <View style={styles.row}>
-          <Text style={[styles.text, { color: c.text }]}>
-            {pl.history.takenAt}: {display}
-          </Text>
+        linkOnly ? (
           <Pressable onPress={() => setEditing(true)} hitSlop={8}>
             <Text style={[styles.link, { color: c.brand }]}>
               {pl.history.editTakenAt}
             </Text>
           </Pressable>
-        </View>
+        ) : (
+          <View style={styles.row}>
+            <Text style={[styles.text, { color: c.text }]}>
+              {pl.history.takenAt}: {display}
+            </Text>
+            <Pressable onPress={() => setEditing(true)} hitSlop={8}>
+              <Text style={[styles.link, { color: c.brand }]}>
+                {pl.history.editTakenAt}
+              </Text>
+            </Pressable>
+          </View>
+        )
       ) : (
         <>
           {Platform.OS === 'ios' ? (
@@ -111,7 +121,7 @@ const styles = StyleSheet.create({
   wrap: { marginTop: 4 },
   row: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: 8 },
   text: { fontSize: 13 },
-  link: { fontSize: 13, fontWeight: '600' },
+  link: { fontSize: 13, fontWeight: '500' },
   actions: {
     flexDirection: 'row',
     justifyContent: 'flex-end',

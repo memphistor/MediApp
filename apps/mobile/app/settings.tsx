@@ -7,7 +7,6 @@ import type { FontScale, ThemePreference } from '@mediapp/core'
 
 import { useColorScheme } from '@/components/useColorScheme'
 import { useSettings } from '@/src/context/SettingsContext'
-import { BackupControls } from '@/src/components/settings/BackupControls'
 import { AppText } from '@/src/components/ui/AppText'
 import { Button } from '@/src/components/ui/Button'
 import { ChoiceGroup } from '@/src/components/ui/ChoiceGroup'
@@ -168,8 +167,6 @@ export default function SettingsScreen() {
           {pl.settings.notificationLimits}
         </AppText>
       </Pressable>
-
-      <BackupControls onMessage={setMessage} />
 
       <AppText variant="section" style={{ marginTop: space.xxl }}>
         {pl.settings.data}

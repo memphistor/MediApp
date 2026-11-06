@@ -19,24 +19,33 @@ export function MedicationColorPicker({
   const selected = value.trim().toLowerCase()
 
   return (
-    <View style={styles.grid}>
+    <View style={styles.row}>
       {choices.map((color) => {
         const isSelected = selected === color
         return (
           <Pressable
             key={color}
             onPress={() => onChange(color)}
-            style={[
-              styles.swatch,
-              { backgroundColor: color },
-              isSelected && {
-                borderColor: c.text,
-                borderWidth: 2,
-              },
-            ]}
             accessibilityRole="button"
             accessibilityState={{ selected: isSelected }}
-          />
+            style={[
+              styles.ring,
+              {
+                borderColor: isSelected ? color : 'transparent',
+              },
+            ]}
+          >
+            <View
+              style={[
+                styles.swatch,
+                {
+                  backgroundColor: color,
+                  borderWidth: isSelected ? 3 : 0,
+                  borderColor: c.surfaceElevated,
+                },
+              ]}
+            />
+          </Pressable>
         )
       })}
     </View>
@@ -44,17 +53,23 @@ export function MedicationColorPicker({
 }
 
 const styles = StyleSheet.create({
-  grid: {
+  row: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 12,
-    marginTop: 8,
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 4,
+  },
+  ring: {
+    width: 52,
+    height: 52,
+    borderRadius: 26,
+    borderWidth: 2,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   swatch: {
     width: 44,
     height: 44,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: 'transparent',
+    borderRadius: 22,
   },
 })

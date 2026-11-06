@@ -4,7 +4,6 @@ import { useRouter } from 'expo-router'
 
 import {
   periodBounds,
-  plantEmojiForStreak,
   takenAdherenceRate,
   timingCountsForRange,
 } from '@mediapp/core'
@@ -14,7 +13,9 @@ import { ProgressBadges } from '@/src/components/gamification/ProgressBadges'
 import { WeekProgressCard } from '@/src/components/gamification/WeekProgressCard'
 import { AppText } from '@/src/components/ui/AppText'
 import { Card } from '@/src/components/ui/Card'
+import { ChevronRightIcon, TrendIcon } from '@/src/components/ui/icons'
 import { Screen } from '@/src/components/ui/Screen'
+import { SettingsButton } from '@/src/components/ui/SettingsIcon'
 import {
   useGamificationState,
   useProgressLogs,
@@ -22,17 +23,20 @@ import {
 import { DEFAULT_GAMIFICATION } from '@/src/storage/defaults'
 import { pl } from '@/src/i18n/pl'
 import { themeColors } from '@/src/theme/colors'
-import { space } from '@/src/theme/tokens'
-import { useTypeScale } from '@/src/theme/useTypeScale'
 
 function pct(rate: number): number {
   return Math.round(rate * 100)
 }
 
+function streakCaption(streak: number, shieldAvailable: boolean): string {
+  if (!shieldAvailable) return pl.progress.shieldRecharge
+  if (streak > 0) return pl.progress.shieldActive
+  return pl.progress.streakIdle
+}
+
 export default function ProgressScreen() {
   const scheme = useColorScheme() ?? 'light'
   const c = themeColors(scheme)
-  const type = useTypeScale()
   const router = useRouter()
   const { state, loading } = useGamificationState()
   const logs = useProgressLogs()
@@ -52,52 +56,68 @@ export default function ProgressScreen() {
 
   return (
     <Screen>
-      <AppText variant="caption" style={{ fontSize: type.metric.fontSize }}>
-        {plantEmojiForStreak(gam.currentStreak)}
-      </AppText>
-      <AppText variant="title" style={{ marginTop: space.xs }}>
-        {pl.progress.title}
-      </AppText>
+      <View style={{ flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+        <AppText variant="title" style={{ flex: 1 }}>{pl.progress.title}</AppText>
+        <SettingsButton />
+      </View>
 
       {loading || logs === null ? (
-        <ActivityIndicator color={c.brand} style={{ marginTop: space.xl }} />
+        <ActivityIndicator color={c.brand} style={{ marginTop: 24 }} />
       ) : (
-        <View style={{ marginTop: space.lg, gap: space.lg }}>
-          <ProgressBadges gam={gam} />
+        <View style={{ marginTop: 26, gap: 16 }}>
           <WeekProgressCard logs={logs} />
-          <Card>
-            <AppText variant="section">{pl.progress.streak}</AppText>
-            <AppText variant="section" tone="brand" style={{ marginTop: space.xs }}>
-              {pl.progress.streakDays.replace('{n}', String(gam.currentStreak))}
-            </AppText>
-            <AppText variant="caption" tone="muted" style={{ marginTop: space.sm }}>
-              {gam.shieldAvailable
-                ? pl.progress.shieldActive
-                : pl.progress.shieldRecharge}
-            </AppText>
-          </Card>
-          <Card>
-            <AppText variant="section">{pl.progress.overviewTitle}</AppText>
-            <AppText variant="secondary" tone="muted" style={{ marginTop: space.sm }}>
-              {monthSummary.due > 0
-                ? pl.progress.overviewMonth
-                    .replace('{pct}', String(monthSummary.pct))
-                    .replace('{taken}', String(monthSummary.taken))
-                    .replace('{due}', String(monthSummary.due))
-                : pl.progress.overviewEmpty}
-            </AppText>
-            <Pressable
-              onPress={() => router.push('/progress/analytics')}
-              style={{ marginTop: space.md, minHeight: 44, justifyContent: 'center' }}
-            >
-              <AppText variant="section" tone="brand">
-                {pl.progress.analyticsCta}
+          <View style={{ flexDirection: 'row', gap: 14 }}>
+            <Card style={{ flex: 1 }}>
+              <AppText variant="secondary" tone="muted">{pl.progress.streak}</AppText>
+              <AppText variant="metric" style={{ marginTop: 8 }}>
+                {String(gam.currentStreak)}
               </AppText>
-              <AppText variant="caption" tone="muted" style={{ marginTop: space.xs }}>
-                {pl.progress.analyticsHint}
+              <AppText variant="caption" tone="muted" style={{ marginTop: 6 }}>
+                {streakCaption(gam.currentStreak, gam.shieldAvailable)}
               </AppText>
-            </Pressable>
-          </Card>
+            </Card>
+            <Card style={{ flex: 1 }}>
+              <AppText variant="secondary" tone="muted">{pl.progress.monthShort}</AppText>
+              <AppText variant="metric" style={{ marginTop: 8 }}>
+                {monthSummary.due > 0 ? `${monthSummary.pct}%` : '—'}
+              </AppText>
+              <AppText variant="caption" tone="muted" style={{ marginTop: 6 }}>
+                {monthSummary.due > 0
+                  ? pl.progress.monthLine
+                      .replace('{taken}', String(monthSummary.taken))
+                      .replace('{due}', String(monthSummary.due))
+                  : pl.progress.overviewEmpty}
+              </AppText>
+            </Card>
+          </View>
+          <View style={{ marginTop: 12 }}>
+            <AppText variant="caption" tone="muted" style={{ marginBottom: 12, marginLeft: 4 }}>
+              {pl.progress.badges}
+            </AppText>
+            <ProgressBadges gam={gam} />
+          </View>
+          <Pressable onPress={() => router.push('/progress/analytics')} style={{ marginTop: 10 }}>
+            <Card style={{ backgroundColor: scheme === 'dark' ? '#1C3D38' : '#D5EFEA' }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 14 }}>
+                <View
+                  style={{
+                    width: 40,
+                    height: 40,
+                    borderRadius: 20,
+                    backgroundColor: c.tint,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  <TrendIcon color={c.brand} />
+                </View>
+                <AppText variant="body" style={{ flex: 1, fontWeight: '500' }}>
+                  {pl.progress.analyticsCta}
+                </AppText>
+                <ChevronRightIcon color={c.faint} />
+              </View>
+            </Card>
+          </Pressable>
         </View>
       )}
     </Screen>

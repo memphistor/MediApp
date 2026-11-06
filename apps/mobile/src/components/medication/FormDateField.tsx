@@ -25,9 +25,17 @@ type FormDateFieldProps = {
   label: string
   value: string
   onChange: (value: string) => void
+  emptyLabel?: string
+  bare?: boolean
 }
 
-export function FormDateField({ label, value, onChange }: FormDateFieldProps) {
+export function FormDateField({
+  label,
+  value,
+  onChange,
+  emptyLabel = '—',
+  bare = false,
+}: FormDateFieldProps) {
   const scheme = useColorScheme() ?? 'light'
   const c = themeColors(scheme)
   const [open, setOpen] = useState(false)
@@ -43,16 +51,23 @@ export function FormDateField({ label, value, onChange }: FormDateFieldProps) {
 
   return (
     <View style={styles.wrap}>
-      <Text style={[styles.label, { color: c.text }]}>{label}</Text>
+      <Text style={[styles.label, { color: bare ? c.textMuted : c.text }]}>{label}</Text>
       <Pressable
         onPress={() => setOpen(true)}
         style={[
           styles.field,
-          { borderColor: c.border, backgroundColor: c.surfaceElevated },
+          bare
+            ? { borderWidth: 0, backgroundColor: 'transparent', paddingHorizontal: 0, minHeight: 28 }
+            : { borderColor: c.border, backgroundColor: c.surfaceElevated },
         ]}
       >
-        <Text style={{ color: value ? c.text : c.textMuted }}>
-          {value || '—'}
+        <Text style={{ color: value ? c.text : c.textMuted, fontSize: bare ? 18 : 16 }}>
+          {value
+            ? new Date(`${value}T12:00:00`).toLocaleDateString('pl-PL', {
+                day: 'numeric',
+                month: 'long',
+              })
+            : emptyLabel}
         </Text>
       </Pressable>
       {open ? (

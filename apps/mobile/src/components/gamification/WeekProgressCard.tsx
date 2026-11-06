@@ -4,7 +4,6 @@ import { StyleSheet, Text, View } from 'react-native'
 import {
   addDays,
   calendarWeekBounds,
-  dayComplianceTone,
   groupLogsByDateKey,
   logsInLocalDateRange,
   scheduledDoses,
@@ -16,8 +15,8 @@ import {
 } from '@mediapp/core'
 
 import { useColorScheme } from '@/components/useColorScheme'
-import { calendarDayStyle } from '@/src/components/calendar/calendarDayStyle'
 import { DayRing } from '@/src/components/gamification/DayRing'
+import { Card } from '@/src/components/ui/Card'
 import { pl } from '@/src/i18n/pl'
 import { themeColors } from '@/src/theme/colors'
 
@@ -28,11 +27,21 @@ type WeekProgressCardProps = {
   referenceDate?: Date
 }
 
+function shortRange(monday: Date): string {
+  const end = addDays(monday, 6)
+  const month = (date: Date) =>
+    date.toLocaleDateString('pl-PL', { month: 'short' }).replace('.', '')
+  if (monday.getMonth() === end.getMonth()) {
+    return `${monday.getDate()}–${end.getDate()} ${month(end)}`
+  }
+  return `${monday.getDate()} ${month(monday)} – ${end.getDate()} ${month(end)}`
+}
+
 export function WeekProgressCard({
   logs,
   referenceDate = new Date(),
 }: WeekProgressCardProps) {
-  const scheme = useColorScheme()
+  const scheme = useColorScheme() ?? 'light'
   const c = themeColors(scheme)
   const weekMonday = startOfWeekMonday(referenceDate)
   const dayKeys = weekDayKeys(weekMonday)
@@ -47,93 +56,71 @@ export function WeekProgressCard({
     () => weekPlanProgress(logs, referenceDate),
     [logs, referenceDate],
   )
-
-  const weekRangeLabel = `${weekMonday.toLocaleDateString('pl-PL', {
-    day: 'numeric',
-    month: 'short',
-  })} – ${addDays(weekMonday, 6).toLocaleDateString('pl-PL', {
-    day: 'numeric',
-    month: 'short',
-  })}`
+  const percent = Math.round(progress * 100)
 
   return (
-    <View style={[styles.card, { backgroundColor: c.surfaceElevated }]}>
-      <View style={styles.header}>
-        <Text style={[styles.title, { color: c.text }]}>
-          {pl.progress.weekRing}
+    <Card>
+      <View style={styles.center}>
+        <DayRing
+          progress={progress}
+          taken={taken}
+          total={total}
+          centerLabel={`${percent}%`}
+        />
+        <Text style={[styles.cap, { color: c.text }]}>{pl.progress.thisWeek}</Text>
+        <Text style={[styles.sub, { color: c.textMuted }]}>
+          {pl.progress.weekLine
+            .replace('{taken}', String(taken))
+            .replace('{total}', String(total))}
+          {' · '}
+          {shortRange(weekMonday)}
         </Text>
-        <Text style={[styles.range, { color: c.textMuted }]}>
-          {weekRangeLabel}
-        </Text>
+        <View style={styles.bars}>
+          {dayKeys.map((key, index) => {
+            const planned = scheduledDoses(byDay.get(key) ?? [])
+            const dayTaken = planned.filter((log) => log.status === 'taken').length
+            const ratio = planned.length > 0 ? dayTaken / planned.length : 0
+            const isToday = key === todayKey
+            return (
+              <View key={key} style={styles.barCol}>
+                <View style={[styles.track, { backgroundColor: c.ringTrack }]}>
+                  <View
+                    style={{
+                      height: `${Math.round(ratio * 100)}%`,
+                      backgroundColor: c.brand,
+                      borderRadius: 5,
+                      width: '100%',
+                    }}
+                  />
+                </View>
+                <Text style={{ fontSize: 12, fontWeight: '500', color: isToday ? c.brand : c.textMuted }}>
+                  {WEEKDAY_LABELS[index]}
+                </Text>
+              </View>
+            )
+          })}
+        </View>
       </View>
-      <DayRing
-        progress={progress}
-        taken={taken}
-        total={total}
-        sublabel={pl.progress.weekCount
-          .replace('{taken}', String(taken))
-          .replace('{total}', String(total))}
-      />
-      <View style={styles.weekGrid}>
-        {dayKeys.map((key, index) => {
-          const date = addDays(weekMonday, index)
-          const planned = scheduledDoses(byDay.get(key) ?? [])
-          const tone = dayComplianceTone(planned)
-          const dayStyle = calendarDayStyle(tone, c)
-          const isToday = key === todayKey
-          return (
-            <View
-              key={key}
-              style={[
-                styles.dayCell,
-                {
-                  backgroundColor: dayStyle.backgroundColor,
-                  borderColor: isToday ? c.brand : dayStyle.borderColor,
-                  borderWidth: isToday ? 2 : dayStyle.borderWidth,
-                },
-              ]}
-            >
-              <Text
-                style={{
-                  fontSize: 13,
-                  color: dayStyle.textColor,
-                  fontWeight: dayStyle.fontWeight,
-                }}
-              >
-                {WEEKDAY_LABELS[index]}
-              </Text>
-              <Text style={{ fontSize: 13, color: dayStyle.textColor }}>
-                {date.getDate()}
-              </Text>
-            </View>
-          )
-        })}
-      </View>
-    </View>
+    </Card>
   )
 }
 
 const styles = StyleSheet.create({
-  card: { borderRadius: 20, padding: 16 },
-  header: {
+  center: { alignItems: 'center' },
+  cap: { marginTop: 16, fontSize: 17, fontWeight: '500' },
+  sub: { marginTop: 4, fontSize: 15, textAlign: 'center' },
+  bars: {
+    width: '100%',
+    marginTop: 22,
     flexDirection: 'row',
-    flexWrap: 'wrap',
     justifyContent: 'space-between',
-    gap: 8,
-    marginBottom: 8,
   },
-  title: { fontSize: 17, fontWeight: '600' },
-  range: { fontSize: 13 },
-  weekGrid: {
-    flexDirection: 'row',
-    marginTop: 16,
-    gap: 4,
-  },
-  dayCell: {
-    flex: 1,
-    alignItems: 'center',
-    borderRadius: 8,
-    paddingVertical: 6,
-    gap: 2,
+  barCol: { alignItems: 'center', gap: 8 },
+  track: {
+    width: 10,
+    height: 52,
+    borderRadius: 5,
+    justifyContent: 'flex-end',
+    overflow: 'hidden',
   },
 })

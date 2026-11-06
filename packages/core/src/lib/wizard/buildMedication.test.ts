@@ -35,19 +35,30 @@ const validBase: WizardFormState = {
 }
 
 describe('validateWizardStep', () => {
-  it('wymaga nazwy i dawki na kroku 1', () => {
+  it('wymaga nazwy na kroku 1', () => {
     const errors = validateWizardStep(1, {
       ...validBase,
       name: '',
       doseText: '',
     })
     expect(errors.name).toBeTruthy()
-    expect(errors.doseText).toBeTruthy()
+    expect(errors.doseText).toBeUndefined()
     expect(errors.times).toBeUndefined()
   })
 
-  it('wymaga godzin na kroku 2', () => {
-    const errors = validateWizardStep(2, {
+  it('wymaga dawki na kroku 4', () => {
+    const errors = validateWizardStep(4, {
+      ...validBase,
+      doseText: '',
+      emptyStomach: '',
+    })
+    expect(errors.doseText).toBeTruthy()
+    expect(errors.emptyStomach).toBeTruthy()
+    expect(errors.name).toBeUndefined()
+  })
+
+  it('wymaga godzin na kroku 5', () => {
+    const errors = validateWizardStep(5, {
       ...validBase,
       scheduleType: '',
       timesRaw: '',
@@ -57,12 +68,16 @@ describe('validateWizardStep', () => {
   })
 
   it('pomija godziny dla asNeeded', () => {
-    const errors = validateWizardStep(2, {
+    const errors = validateWizardStep(5, {
       ...validBase,
       scheduleType: 'asNeeded',
       timesRaw: '',
     })
     expect(errors.times).toBeUndefined()
+  })
+
+  it('nie wymaga wyglądu', () => {
+    expect(validateWizardStep(6, validBase)).toEqual({})
   })
 })
 
@@ -70,6 +85,11 @@ describe('firstWizardStepWithErrors', () => {
   it('wskazuje najwcześniejszy krok z błędem', () => {
     const errors = validateWizard({ ...validBase, name: '', timesRaw: '' })
     expect(firstWizardStepWithErrors(errors)).toBe(1)
+  })
+
+  it('wskazuje harmonogram, gdy nazwa jest uzupełniona', () => {
+    const errors = validateWizard({ ...validBase, timesRaw: '' })
+    expect(firstWizardStepWithErrors(errors)).toBe(5)
   })
 
   it('zwraca null gdy brak błędów', () => {

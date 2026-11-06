@@ -2,7 +2,7 @@ import { Pressable, Text, View } from 'react-native'
 
 import { useColorScheme } from '@/components/useColorScheme'
 import { themeColors } from '@/src/theme/colors'
-import { radius, space } from '@/src/theme/tokens'
+import { radius, softShadow, space } from '@/src/theme/tokens'
 import { useTypeScale } from '@/src/theme/useTypeScale'
 
 export type ChoiceOption = { value: string; label: string }
@@ -44,25 +44,29 @@ export function ChoiceGroup({
               accessibilityRole="button"
               accessibilityState={{ selected }}
               onPress={() => onChange(opt.value)}
-              style={{
-                flexGrow: layout === 'equal' ? 1 : 0,
-                flexBasis: layout === 'equal' ? 0 : undefined,
-                maxWidth: '100%',
-                minHeight: 44,
-                paddingHorizontal: space.md,
-                paddingVertical: space.sm,
-                borderRadius: radius.chip,
-                alignItems: 'center',
-                justifyContent: 'center',
-                backgroundColor: selected ? `${c.brand}1A` : `${c.text}0C`,
-              }}
+              style={[
+                {
+                  flexGrow: layout === 'equal' ? 1 : 0,
+                  flexBasis: layout === 'equal' ? 0 : undefined,
+                  maxWidth: '100%',
+                  minHeight: 46,
+                  paddingHorizontal: 17,
+                  borderRadius: radius.chip,
+                  borderWidth: 1.5,
+                  borderColor: selected ? c.brand : 'transparent',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  backgroundColor: selected ? c.tint : c.surfaceElevated,
+                },
+                softShadow(c.scheme),
+              ]}
             >
               <Text
                 style={[
                   type.secondary,
                   {
-                    color: selected ? c.brand : c.text,
-                    fontWeight: selected ? '600' : '400',
+                    color: selected ? c.brandDark : c.text,
+                    fontWeight: selected ? '500' : '400',
                     textAlign: 'center',
                     flexShrink: 1,
                   },

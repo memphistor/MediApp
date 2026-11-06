@@ -1,8 +1,18 @@
 import { useEffect, useMemo, useState } from 'react'
-import type { DoseLog, MedicationEntry } from '@mediapp/core'
+import {
+  addDays,
+  endOfLocalDay,
+  startOfWeekMonday,
+  toDateKey,
+  type DoseLog,
+  type MedicationEntry,
+} from '@mediapp/core'
 
 import { useStorage } from '@/src/context/StorageContext'
-import { getDoseLogsForDay } from '@/src/storage/repositories/doseLogRepository'
+import {
+  getDoseLogsBetween,
+  getDoseLogsForDay,
+} from '@/src/storage/repositories/doseLogRepository'
 import { listMedications } from '@/src/storage/repositories/medicationRepository'
 
 export function useTodayData(today: Date = new Date()) {
@@ -50,4 +60,24 @@ export function useTodayData(today: Date = new Date()) {
   )
 
   return { entries, medMap, medications, loading }
+}
+
+export function useWeekDoseLogs(today: Date) {
+  const { refreshKey } = useStorage()
+  const [logs, setLogs] = useState<DoseLog[]>([])
+  const weekKey = toDateKey(startOfWeekMonday(today))
+
+  useEffect(() => {
+    const monday = startOfWeekMonday(today)
+    const end = endOfLocalDay(addDays(monday, 6))
+    let cancelled = false
+    void getDoseLogsBetween(monday.toISOString(), end.toISOString()).then((rows) => {
+      if (!cancelled) setLogs(rows)
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [refreshKey, weekKey, today])
+
+  return logs
 }

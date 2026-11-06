@@ -1,125 +1,80 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native'
-import { useRouter } from 'expo-router'
-import {
-  doseStatusContextFromLog,
-  medicationAccentColor,
-  type DoseLog,
-  type MedicationEntry,
-} from '@mediapp/core'
+import { medicationAccentColor, type DoseLog, type MedicationEntry } from '@mediapp/core'
 
-import { useColorScheme } from '@/components/useColorScheme'
 import { DoseStatusBadge } from '@/src/components/dose/DoseStatusBadge'
 import { MedicationIconBadge } from '@/src/components/medication/MedicationIconBadge'
-import { Button } from '@/src/components/ui/Button'
-import { Card } from '@/src/components/ui/Card'
-import { pl } from '@/src/i18n/pl'
 import { themeColors } from '@/src/theme/colors'
-import { space } from '@/src/theme/tokens'
-import { useTypeScale } from '@/src/theme/useTypeScale'
+import { useColorScheme } from '@/components/useColorScheme'
 
 interface TodayDoseRowProps {
   log: DoseLog
   medication: MedicationEntry
-  onMarkTaken: (id: string) => void
-  onSkip: (id: string) => void
-  focused?: boolean
+  onOpen: () => void
+  divider?: boolean
 }
 
 export function TodayDoseRow({
   log,
   medication,
-  onMarkTaken,
-  onSkip,
-  focused = false,
+  onOpen,
+  divider = false,
 }: TodayDoseRowProps) {
-  const router = useRouter()
   const scheme = useColorScheme() ?? 'light'
   const c = themeColors(scheme)
-  const type = useTypeScale()
   const accent = medicationAccentColor(medication.color)
-  const time = new Date(log.scheduledAt).toLocaleTimeString('pl-PL', {
-    hour: '2-digit',
-    minute: '2-digit',
-  })
-  const canAct = log.status === 'planned' || log.status === 'missed'
 
   return (
-    <Card
-      style={{
-        borderLeftWidth: 3,
-        borderLeftColor: accent,
-        backgroundColor: focused ? `${c.brand}10` : c.surfaceElevated,
-      }}
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={`${medication.name}, ${medication.doseText}`}
+      onPress={onOpen}
+      style={[styles.row, divider && { borderTopWidth: 1, borderTopColor: c.line }]}
     >
-      <Pressable
-        onPress={() => router.push(`/medication/${medication.id}`)}
-        style={styles.header}
-        accessibilityRole="button"
-      >
-        <MedicationIconBadge icon={medication.icon} color={medication.color} size={22} />
-        <View style={styles.headerText}>
-          <View style={styles.titleRow}>
-            <Text
-              style={[type.section, { color: c.text, flex: 1 }]}
-              numberOfLines={1}
-            >
-              {medication.name}
-            </Text>
-            <Text style={[type.secondary, { color: c.textMuted }]}>{time}</Text>
-          </View>
-          <Text style={[type.secondary, { color: c.textMuted, marginTop: space.xs }]}>
-            {medication.doseText}
-          </Text>
-          <View style={styles.badge}>
-            <DoseStatusBadge status={log.status} log={log} medication={medication} />
-          </View>
-        </View>
-      </Pressable>
-      {canAct ? (
-        <View style={styles.actions}>
-          <Button
-            label={pl.reminder.taken}
-            onPress={() => onMarkTaken(log.id)}
-            style={styles.taken}
-          />
-          <Button
-            label={pl.reminder.skip}
-            variant="text"
-            onPress={() => onSkip(log.id)}
-          />
-        </View>
-      ) : null}
-    </Card>
+      <View style={[styles.accent, { backgroundColor: accent }]} />
+      <MedicationIconBadge icon={medication.icon} color={medication.color} boxSize={52} />
+      <View style={styles.text}>
+        <Text style={[styles.name, { color: c.text }]} numberOfLines={1}>
+          {medication.name}
+        </Text>
+        <Text style={[styles.dose, { color: c.textMuted }]} numberOfLines={1}>
+          {medication.doseText}
+        </Text>
+      </View>
+      <DoseStatusBadge status={log.status} log={log} medication={medication} />
+    </Pressable>
   )
 }
 
 const styles = StyleSheet.create({
-  header: {
+  row: {
     flexDirection: 'row',
-    gap: space.md,
+    alignItems: 'center',
+    gap: 16,
+    paddingVertical: 18,
+    paddingRight: 22,
+    paddingLeft: 34,
   },
-  headerText: {
+  accent: {
+    position: 'absolute',
+    left: 14,
+    top: 22,
+    bottom: 22,
+    width: 3,
+    borderRadius: 2,
+  },
+  text: {
     flex: 1,
     minWidth: 0,
   },
-  titleRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    gap: space.sm,
+  name: {
+    fontSize: 17,
+    lineHeight: 22,
+    fontWeight: '500',
+    letterSpacing: -0.2,
   },
-  badge: {
-    marginTop: space.sm,
-  },
-  actions: {
-    marginTop: space.md,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: space.sm,
-  },
-  taken: {
-    alignSelf: 'flex-start',
-    minWidth: 128,
+  dose: {
+    marginTop: 3,
+    fontSize: 15,
+    lineHeight: 20,
   },
 })

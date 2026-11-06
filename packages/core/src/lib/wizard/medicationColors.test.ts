@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import {
   DEFAULT_MEDICATION_COLOR,
+  MEDICATION_COLOR_OPTIONS,
   medicationColorChoices,
   normalizeMedicationColor,
 } from './medicationColors'
@@ -10,10 +11,10 @@ describe('medicationColors', () => {
     expect(medicationColorChoices(DEFAULT_MEDICATION_COLOR)).toHaveLength(6)
   })
 
-  it('prepends legacy custom color', () => {
+  it('keeps six presets when the saved color is outside the palette', () => {
     const choices = medicationColorChoices('#112233')
-    expect(choices[0]).toBe('#112233')
-    expect(choices).toHaveLength(7)
+    expect(choices).toEqual([...MEDICATION_COLOR_OPTIONS])
+    expect(choices).not.toContain('#112233')
   })
 
   it('falls back to default for invalid hex', () => {

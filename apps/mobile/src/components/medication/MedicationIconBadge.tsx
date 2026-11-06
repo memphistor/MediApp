@@ -1,23 +1,41 @@
-import {
-  medicationAccentColor,
-  medicationAccentSurface,
-  resolveMedicationIconDisplay,
-} from '@mediapp/core'
+import { medicationAccentColor, resolveMedicationIconDisplay } from '@mediapp/core'
 import { StyleSheet, Text, View } from 'react-native'
+
+import {
+  hasMedicationLineIcon,
+  MedicationLineIcon,
+} from '@/src/components/medication/MedicationLineIcon'
 
 type MedicationIconBadgeProps = {
   icon: string
   color: string | undefined
   size?: number
+  boxSize?: number
+}
+
+function withAlpha(hex: string, alpha: number): string {
+  const raw = hex.replace('#', '')
+  const full = raw.length === 3 ? raw.split('').map((ch) => ch + ch).join('') : raw
+  const value = Number.parseInt(full, 16)
+  if (!Number.isFinite(value) || full.length !== 6) {
+    return `rgba(11,135,123,${alpha})`
+  }
+  const r = (value >> 16) & 255
+  const g = (value >> 8) & 255
+  const b = value & 255
+  return `rgba(${r},${g},${b},${alpha})`
 }
 
 export function MedicationIconBadge({
   icon,
   color,
-  size = 28,
+  size = 22,
+  boxSize,
 }: MedicationIconBadgeProps) {
   const accent = medicationAccentColor(color)
-  const box = size + 14
+  const box = boxSize ?? size + 26
+  const font = boxSize ? Math.round(boxSize * 0.44) : size
+  const radius = Math.round(box * 0.38)
   const display = resolveMedicationIconDisplay(icon)
 
   return (
@@ -27,14 +45,17 @@ export function MedicationIconBadge({
         {
           width: box,
           height: box,
-          borderRadius: box / 2,
-          borderWidth: 1.5,
-          borderColor: accent,
-          backgroundColor: medicationAccentSurface(color ?? accent),
+          borderRadius: radius,
+          backgroundColor: withAlpha(accent, 0.13),
+          borderColor: withAlpha(accent, 0.22),
         },
       ]}
     >
-      <Text style={{ fontSize: size * 0.85 }}>{display}</Text>
+      {hasMedicationLineIcon(display) ? (
+        <MedicationLineIcon icon={display} color={accent} size={Math.round(box * 0.46)} />
+      ) : (
+        <Text style={{ fontSize: font }}>{display}</Text>
+      )}
     </View>
   )
 }
@@ -43,6 +64,6 @@ const styles = StyleSheet.create({
   badge: {
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 999,
+    borderWidth: 1,
   },
 })

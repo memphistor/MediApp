@@ -72,20 +72,21 @@ function RootStack() {
         <Stack.Screen name="settings" options={{ title: pl.settings.title }} />
         <Stack.Screen
           name="help/notifications"
-          options={{ title: pl.settings.notifications }}
+          options={{ title: pl.notificationHelp.title }}
         />
-        <Stack.Screen name="as-needed" options={{ title: pl.asNeeded.title }} />
+        <Stack.Screen name="as-needed" options={{ headerShown: false }} />
+        <Stack.Screen name="medications" options={{ headerShown: false }} />
         <Stack.Screen
           name="progress/analytics"
-          options={{ title: pl.progress.analyticsTitle }}
+          options={{ headerShown: false }}
         />
         <Stack.Screen
           name="medication/[id]"
-          options={{ title: pl.detail.title }}
+          options={{ headerShown: false }}
         />
         <Stack.Screen
           name="medication/[id]/edit"
-          options={{ title: pl.wizard.editTitle }}
+          options={{ headerShown: false }}
         />
       </Stack>
     </>

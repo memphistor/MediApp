@@ -4,6 +4,7 @@ import { useColorScheme } from '@/components/useColorScheme'
 import { themeColors } from '@/src/theme/colors'
 
 const DAY_LABELS = ['Nd', 'Pn', 'Wt', 'Śr', 'Cz', 'Pt', 'So']
+const DAY_ORDER = [1, 2, 3, 4, 5, 6, 0]
 
 type WeekdayToggleRowProps = {
   selected: number[]
@@ -16,7 +17,7 @@ export function WeekdayToggleRow({ selected, onToggle }: WeekdayToggleRowProps) 
 
   return (
     <View style={styles.row}>
-      {DAY_LABELS.map((label, day) => {
+      {DAY_ORDER.map((day) => {
         const active = selected.includes(day)
         return (
           <Pressable
@@ -37,7 +38,7 @@ export function WeekdayToggleRow({ selected, onToggle }: WeekdayToggleRowProps) 
                 color: active ? c.brand : c.text,
               }}
             >
-              {label}
+              {DAY_LABELS[day]}
             </Text>
           </Pressable>
         )

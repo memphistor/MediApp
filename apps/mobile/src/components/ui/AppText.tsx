@@ -4,7 +4,7 @@ import { useColorScheme } from '@/components/useColorScheme'
 import { themeColors } from '@/src/theme/colors'
 import { useTypeScale } from '@/src/theme/useTypeScale'
 
-type Variant = 'title' | 'section' | 'body' | 'secondary' | 'caption'
+type Variant = 'title' | 'section' | 'body' | 'secondary' | 'caption' | 'metric'
 
 type AppTextProps = TextProps & {
   variant?: Variant

@@ -1,11 +1,11 @@
 import { useState } from 'react'
 import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native'
 
-import { MedicationStockLine } from '@/src/components/medication/detail/MedicationStockLine'
 import { useMedication } from '@/src/hooks/useMedication'
 import { pl } from '@/src/i18n/pl'
 import { useColorScheme } from '@/components/useColorScheme'
 import { themeColors } from '@/src/theme/colors'
+import { cardShadow, radius } from '@/src/theme/tokens'
 import { addMedicationStock } from '@/src/storage/services/medicationStock'
 import { useStorage } from '@/src/context/StorageContext'
 import { FormTextField } from '@/src/components/medication/FormTextField'
@@ -33,13 +33,14 @@ export function MedicationStockPanel({
     <View
       style={[
         styles.panel,
-        { borderColor: c.border, backgroundColor: c.surfaceElevated },
+        { marginTop: 14 },
+        cardShadow(scheme),
+        { backgroundColor: c.surfaceElevated, borderRadius: radius.card },
       ]}
     >
       <Text style={[styles.title, { color: c.text }]}>
         {pl.stock.replenishTitle}
       </Text>
-      <MedicationStockLine medication={medication} />
       <Text style={[styles.hint, { color: c.textMuted }]}>
         {pl.stock.replenishHint}
       </Text>
@@ -79,9 +80,7 @@ export function MedicationStockPanel({
 
 const styles = StyleSheet.create({
   panel: {
-    borderWidth: 1,
-    borderRadius: 16,
-    padding: 16,
+    padding: 18,
     gap: 8,
   },
   title: {

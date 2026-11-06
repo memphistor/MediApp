@@ -19,14 +19,6 @@ export const privacyPl = {
       ],
     },
     {
-      id: 'kopia',
-      title: 'Plik z wcześniejszej wersji',
-      paragraphs: [
-        'W Ustawieniach możesz wczytać plik kopii zapisany wcześniej. Import zastępuje dane na tym urządzeniu.',
-        'Plik zostaje u Ciebie. MediApp go nie wysyła do chmury.',
-      ],
-    },
-    {
       id: 'usuniecie',
       title: 'Usuwanie danych',
       paragraphs: [
