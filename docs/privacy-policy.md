@@ -1,6 +1,6 @@
 # Informacje o danych — MediApp
 
-**Wersja:** 2026-11 (mobile v1.0)
+**Wersja:** 7 listopada 2026 (mobile v1.0, bez eksportu pliku)
 
 Treść in-app:
 
@@ -25,11 +25,11 @@ Przed publikacją w App Store / Google Play ustaw **dedykowany adres e-mail** w 
 
 ## Aplikacja mobilna (iOS / Android)
 
-- Wpisy (pozycje, harmonogram, odhaczenia) zapisujesz sam; przechowywane **lokalnie** w SQLite (`MediApp.db`) na urządzeniu.
+- Wpisy (pozycje, harmonogram, odhaczenia, ustawienia, postęp) zapisujesz sam; przechowywane **lokalnie** w SQLite (`MediApp.db`) na urządzeniu oraz w technicznej kopii w pamięci tej samej aplikacji.
 - **Brak** serwera MediApp zbierającego treść wpisów, **brak** kont i synchronizacji w chmurze.
-- **Przypomnienia** są lokalne; treść pochodzi z danych, które wpiszesz.
-- **Kopia zapasowa:** eksport/import pliku JSON w Ustawieniach (przenoszenie między urządzeniami / po reinstalacji).
-- **Usunięcie:** Ustawienia → Usuń wszystkie dane (w tym anulowanie zaplanowanych przypomnień). Odinstalowanie aplikacji usuwa bazę na urządzeniu.
+- **Brak** eksportu i importu pliku w tej wersji. Użytkownik nie przeniesie wpisów na inny telefon z poziomu aplikacji.
+- **Przypomnienia** są lokalne i tylko po zgodzie systemowej; treść pochodzi z danych, które wpiszesz.
+- **Usunięcie:** Ustawienia → Usuń wszystkie dane (baza, techniczna kopia, anulowanie przypomnień). Odinstalowanie usuwa dane aplikacji. Kopia całego telefonu (np. iCloud) zależy od ustawień systemu, nie od MediApp.
 - Aplikacja **nie weryfikuje** leków medycznie — notatnik i przypominacz ([`intended-purpose.md`](intended-purpose.md)).
 
 Szczegóły: [`docs/mobile/data-deletion.md`](mobile/data-deletion.md).
@@ -50,7 +50,7 @@ Szczegóły: [`docs/data-deletion.md`](data-deletion.md).
 
 Nazwy produktów i wpisy mogą stanowić dane o zdrowiu (art. 9). Przetwarzasz je **u siebie** na urządzeniu; operator nie otrzymuje tych treści z aplikacji mobilnej ani z lokalnej bazy PWA.
 
-**Prawa użytkownika:** dostęp (widoczność w aplikacji), przenoszenie (eksport JSON na mobile / www), usunięcie (jak wyżej).
+**Prawa użytkownika:** dostęp (widoczność w aplikacji), usunięcie (jak wyżej). Na telefonie nie ma przenoszenia plikiem. Wersja www może udostępniać pobranie kopii JSON z przeglądarki — to nie dotyczy aplikacji ze sklepu.
 
 **Podstawa (mobile/web v1):** korzystanie z aplikacji po zapoznaniu się z informacjami i disclaimerem medycznym na onboardingu — bez osobnego konta.
 

@@ -1,6 +1,8 @@
 # Migracja danych z wersji www (PWA) do aplikacji mobilnej
 
-Wersja **www** (gałąź `main`, GitHub Pages) i **aplikacja ze sklepu** (gałąź `mobile`) **nie synchronizują się** automatycznie. Przeniesienie danych odbywa się przez **plik JSON** (format `AppSnapshot` v1).
+Wersja **www** i **aplikacja ze sklepu** **nie synchronizują się** automatycznie.
+
+**Wersja 1.0 na telefonie nie ma przycisku eksportu ani importu.** Poniższe kroki opisują mechanizm, który jest w kodzie, ale nie jest dostępny w Ustawieniach. Użytkownik sklepowy zaczyna od pustej aplikacji.
 
 ## Krok 1 — Eksport z przeglądarki
 

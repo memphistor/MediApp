@@ -9,21 +9,21 @@
 Efekt:
 
 - Usunięte tabele SQLite: `medications`, `dose_logs`, `settings`, `gamification`.
+- Usunięta techniczna kopia w pamięci aplikacji (AsyncStorage).
 - Anulowane zaplanowane **lokalne przypomnienia**.
 - Ponowny ekran powitalny (onboarding).
 
-## Kopia przed usunięciem
+## Eksport pliku
 
-W **Ustawieniach → Kopia zapasowa** możesz **wyeksportować plik JSON** i przechować go poza aplikacją (Pliki, iCloud, dysk).
+W tej wersji aplikacji **nie ma** przycisku eksportu ani importu. Przed usunięciem nie da się zapisać kopii z poziomu MediApp.
 
 ## Czego aplikacja nie usuwa
 
-- Plik JSON kopii, który sam zapiszesz w folderze systemowym.
-- Kopie zapasowe całego telefonu (iCloud Backup / Google Backup) — zależą od ustawień systemu; baza `MediApp.db` może trafić do kopii systemowej.
+- Kopie zapasowe całego telefonu (iCloud Backup) — zależą od ustawień systemu; baza `MediApp.db` może trafić do kopii systemowej.
 
 ## Odinstalowanie
 
-Usunięcie aplikacji z urządzenia usuwa lokalną bazę **MediApp.db**. Bez wcześniejszego eksportu JSON danych nie odzyskasz.
+Usunięcie aplikacji z urządzenia usuwa lokalną bazę **MediApp.db** i pamięć aplikacji. Bez kopii zrobionej poza MediApp danych nie odzyskasz.
 
 ## Wersja web
 

@@ -19,7 +19,7 @@ MediApp to **osobisty notatnik i przypominacz**: sam wpisujesz pozycje, dawki i 
 - Harmonogram codzienny / wybrane dni, dawki „w razie potrzeby”
 - Kalendarz, historia, postęp (motywacja bez oceny zdrowia)
 - **Dane tylko na telefonie** — bez konta i chmury MediApp
-- Kopia zapasowa JSON i usuwanie wszystkich danych w Ustawieniach
+- Usuwanie wszystkich danych w Ustawieniach (w tej wersji nie ma eksportu pliku)
 
 ---
 

@@ -9,6 +9,7 @@ import {
 } from 'react'
 
 import { clearAllUserData, DEFAULT_SETTINGS } from '@/src/storage/database'
+import { clearLocalBackup } from '@/src/storage/services/profilBackup'
 import {
   getSettings,
   upsertSettings,
@@ -81,6 +82,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
   )
 
   const deleteAllData = useCallback(async () => {
+    await clearLocalBackup()
     await clearAllUserData()
     await cancelAllMediAppScheduledNotifications()
     setSettings(DEFAULT_SETTINGS)

@@ -1,6 +1,6 @@
 # App Store / Google Play — deklaracje prywatności (MediApp mobile)
 
-Wypełnij formularze w konsolach zgodnie z poniższymi odpowiedziami. Model: **dane tylko lokalnie**, eksport JSON **przez użytkownika** (Share / Pliki), **brak** serwera MediApp.
+Wypełnij formularze w konsolach zgodnie z poniższymi odpowiedziami. Model: **dane tylko lokalnie na telefonie**, **brak** eksportu pliku w aplikacji, **brak** serwera MediApp.
 
 **Polityka (URL):** https://memphistor.github.io/MediApp/privacy-mobile.html  
 (wymaga wdrożenia Pages z `public/privacy-mobile.html` na `main`)
@@ -40,7 +40,7 @@ Wypełnij formularze w konsolach zgodnie z poniższymi odpowiedziami. Model: **d
 
 **Exact alarms:** w repo **brak** `SCHEDULE_EXACT_ALARM`. Jeśli review zgłosi problem z persistent/snooze — opisz lokalny charakter przypomnień; ewentualnie dodaj uzasadnienie w formularzu bez zmiany manifestu, dopóki QA nie wymusi inaczej.
 
-**Eksport danych:** użytkownik może **sam** wyeksportować JSON (Ustawienia) — **nie** jest to zbieranie przez dewelopera.
+**Eksport danych:** w tej wersji **nie ma** eksportu ani importu pliku. Nie deklaruj przenoszenia danych przez dewelopera.
 
 ---
 

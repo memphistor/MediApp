@@ -6,21 +6,38 @@ import { countMedications } from '../repositories/medicationRepository'
 const LOCAL_BACKUP_KEY = 'mediapp-local-backup-v1'
 
 let backupTimer: ReturnType<typeof setTimeout> | null = null
+let backupGeneration = 0
 
 export function scheduleProfilBackup(): void {
   if (backupTimer) clearTimeout(backupTimer)
+  const generation = backupGeneration
   backupTimer = setTimeout(() => {
     backupTimer = null
-    void writeLocalBackup()
+    void writeLocalBackup(generation)
   }, 1500)
 }
 
-export async function writeLocalBackup(): Promise<void> {
+export async function writeLocalBackup(generation = backupGeneration): Promise<void> {
   try {
     const snapshot = await exportAppSnapshot()
+    if (generation !== backupGeneration) return
     await AsyncStorage.setItem(LOCAL_BACKUP_KEY, JSON.stringify(snapshot))
   } catch {
     /* quota / unavailable */
+  }
+}
+
+/** Drops the on-device recovery copy. Called when the user deletes all data. */
+export async function clearLocalBackup(): Promise<void> {
+  backupGeneration += 1
+  if (backupTimer) {
+    clearTimeout(backupTimer)
+    backupTimer = null
+  }
+  try {
+    await AsyncStorage.removeItem(LOCAL_BACKUP_KEY)
+  } catch {
+    /* unavailable */
   }
 }
 
