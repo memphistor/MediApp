@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>MediApp — informacje o danych (mobile)</title>
+    <title>MediApp — informacje o danych</title>
     <style>
       :root {
         color-scheme: light dark;
@@ -36,8 +36,12 @@
         font-size: 1.1rem;
         margin-top: 1.75rem;
       }
-      p {
+      p,
+      li {
         margin: 0.75rem 0;
+      }
+      ul {
+        padding-left: 1.2rem;
       }
       .meta {
         color: var(--muted);
@@ -49,61 +53,102 @@
     </style>
   </head>
   <body>
-    <h1>Informacje o danych — MediApp (iOS / Android)</h1>
-    <p class="meta">Wersja: 2026-11 · Treść zgodna z ekranem in-app „Informacje o danych”</p>
-
-    <h2>Gdzie są Twoje wpisy</h2>
-    <p>
-      Wszystko, co dodasz (pozycje, harmonogram, odhaczenia), zapisuje się tylko na tym
-      telefonie, w lokalnej bazie SQLite (plik MediApp.db).
-    </p>
-    <p>
-      MediApp nie wysyła wpisów o lekach na serwer operatora. Nie ma logowania ani
-      synchronizacji w chmurze między urządzeniami.
+    <h1>Informacje o danych — MediApp</h1>
+    <p class="meta">Wersja: 7 listopada 2026 · Aplikacja na telefon (iOS)</p>
+    <p class="meta">
+      Operator: MediApp, projekt osobisty (TheMemphistor). Aplikacja nie ma konta operatora,
+      na które trafiają Twoje wpisy.
     </p>
 
-    <h2>Czego aplikacja nie robi</h2>
-    <p>Nie ma kont użytkowników ani analityki z treścią Twoich wpisów.</p>
+    <h2>Do czego służy aplikacja</h2>
     <p>
-      MediApp nie weryfikuje leków, nie sprawdza interakcji i nie podpowiada dawkowania.
-      To Twój notatnik i przypominacz.
+      MediApp to osobisty notatnik i przypominacz. Sam wpisujesz pozycje, dawki i godziny.
+      Aplikacja przypomina o nich na telefonie.
     </p>
     <p>
-      Lokalne przypomnienia pokazują treść wyłącznie z danych, które sam wpiszesz (np. nazwa
-      pozycji i godzina).
-    </p>
-
-    <h2>Kopia zapasowa (JSON)</h2>
-    <p>
-      W Ustawieniach możesz wyeksportować plik JSON z lekami, dziennikiem dawek i ustawieniami,
-      np. przed wymianą telefonu lub reinstalacją aplikacji.
-    </p>
-    <p>
-      Import z pliku zastępuje dane na tym urządzeniu. Plik trzymasz we własnym folderze
-      (Pobrane, iCloud, dysk). MediApp go nie wysyła do chmury.
+      To nie jest porada medyczna. MediApp nie weryfikuje leków, nie sprawdza interakcji
+      i nie podpowiada dawkowania.
     </p>
 
-    <h2>Usuwanie danych</h2>
+    <h2>Jakie dane są w aplikacji</h2>
+    <p>Tylko to, co sam dodasz lub ustawisz:</p>
+    <ul>
+      <li>nazwy pozycji, dawki, godziny, harmonogram, notatki i zapas,</li>
+      <li>odhaczania (wzięte, pominięte, „w razie potrzeby”),</li>
+      <li>ustawienia wyglądu i powiadomień,</li>
+      <li>postęp w aplikacji (serie i odznaki liczone z Twoich odhaczeń).</li>
+    </ul>
     <p>
-      Ustawienia → „Usuń wszystkie dane” → potwierdzenie. Usuwane są pozycje, dziennik dawek,
-      ustawienia i stan gamifikacji; anulowane są zaplanowane przypomnienia.
+      Nie prosimy o imię, e-mail, numer telefonu ani o konto. Nie zbieramy lokalizacji,
+      kontaktów, zdjęć ani identyfikatora reklamowego.
+    </p>
+
+    <h2>Gdzie te dane są</h2>
+    <p>
+      Zostają na tym telefonie, w lokalnej bazie aplikacji (SQLite, plik MediApp.db).
+      Aplikacja trzyma też techniczną kopię tych samych wpisów w pamięci na tym samym
+      telefonie, żeby móc je odtworzyć, gdy baza jest pusta.
     </p>
     <p>
-      Odinstalowanie aplikacji usuwa plik bazy na urządzeniu. Bez kopii JSON danych nie
-      odzyskasz.
+      MediApp nie wysyła tych wpisów na swój serwer. Nie ma logowania i nie ma
+      synchronizacji między telefonami.
+    </p>
+    <p>
+      W tej wersji nie ma eksportu ani importu pliku z danymi. Nie przeniesiesz wpisów
+      na inny telefon z poziomu aplikacji.
+    </p>
+
+    <h2>Po co są używane</h2>
+    <p>
+      Wyłącznie po to, żeby pokazać Twój harmonogram, historię, postęp i lokalne
+      przypomnienia. Przypomnienie zawiera tylko to, co sam wpiszesz (na przykład nazwę
+      pozycji i godzinę) i pojawia się tylko wtedy, gdy zezwolisz na powiadomienia
+      w systemie.
+    </p>
+
+    <h2>Czego nie robimy</h2>
+    <p>
+      Nie sprzedajemy tych danych, nie używamy ich do reklam i nie przekazujemy ich
+      innym firmom. Nie ma analityki, która czytałaby treść Twoich wpisów.
+    </p>
+    <p>
+      Budowanie aplikacji (Expo) nie służy do odbierania treści leków. W aplikacji nie
+      ma narzędzi reklamowych ani analityki treści.
+    </p>
+
+    <h2>Jak długo dane zostają</h2>
+    <p>
+      Tak długo, jak aplikacja jest zainstalowana i sam ich nie usuniesz.
+    </p>
+    <p>
+      Ustawienia → „Usuń wszystkie dane” → potwierdzenie. Znika wtedy lista pozycji,
+      dziennik, ustawienia, postęp i techniczna kopia na tym telefonie. Zaplanowane
+      przypomnienia są anulowane.
+    </p>
+    <p>
+      Odinstalowanie MediApp usuwa dane aplikacji z telefonu. Bez kopii, którą sam
+      zrobisz poza aplikacją, wpisów nie da się odzyskać — aplikacja takiej kopii nie
+      tworzy w postaci pliku.
+    </p>
+    <p>
+      Jeśli masz włączoną kopię całego iPhone’a (na przykład iCloud), system Apple może
+      objąć nią dane aplikacji. Tym sterujesz w ustawieniach telefonu, nie w MediApp.
+    </p>
+
+    <h2>Dzieci</h2>
+    <p>Aplikacja nie jest skierowana do dzieci.</p>
+
+    <h2>Zmiany tej informacji</h2>
+    <p>
+      Gdy zmieni się sposób przechowywania danych, zaktualizujemy datę na górze tej
+      strony i tekst w aplikacji (Ustawienia → informacje o danych).
     </p>
 
     <h2>Kontakt</h2>
     <p>
       Zgłoszenia dotyczące prywatności:
-      <a href="https://github.com/memphistor/MediApp/issues/new">GitHub Issues</a>
-      (bez publicznego umieszczania danych zdrowotnych).
-    </p>
-    <p class="meta">
-      Pełny dokument:
-      <a href="https://github.com/memphistor/MediApp/blob/main/docs/privacy-policy.md"
-        >docs/privacy-policy.md</a
-      >
+      <a href="https://github.com/memphistor/MediApp/issues/new">GitHub Issues</a>.
+      Nie wklejaj tam treści swoich wpisów o lekach.
     </p>
   </body>
 </html>
