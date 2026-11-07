@@ -1,0 +1,25 @@
+import type { DoseLog } from '@/types/dose'
+
+export function isPlannedUpcoming(log: DoseLog): boolean {
+  return log.status === 'planned'
+}
+
+export function splitHistoryLogs(
+  logs: DoseLog[],
+): { past: DoseLog[]; planned: DoseLog[] } {
+  const past: DoseLog[] = []
+  const planned: DoseLog[] = []
+  for (const log of logs) {
+    if (isPlannedUpcoming(log)) planned.push(log)
+    else past.push(log)
+  }
+  past.sort(
+    (a, b) =>
+      new Date(b.scheduledAt).getTime() - new Date(a.scheduledAt).getTime(),
+  )
+  planned.sort(
+    (a, b) =>
+      new Date(a.scheduledAt).getTime() - new Date(b.scheduledAt).getTime(),
+  )
+  return { past, planned }
+}

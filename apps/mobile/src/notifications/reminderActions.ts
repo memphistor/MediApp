@@ -1,0 +1,47 @@
+import type { UserSettings } from '@mediapp/core'
+
+import { upsertSettings } from '@/src/storage/repositories/settingsRepository'
+import {
+  markLogsNotified,
+  updateDoseStatus,
+} from '@/src/storage/repositories/doseLogRepository'
+
+export type ReminderAction = 'taken' | 'skip' | 'snooze' | 'taken-all' | 'open'
+
+export async function applyReminderAction(
+  action: ReminderAction,
+  logIds: string[],
+  settings: UserSettings,
+): Promise<UserSettings> {
+  const now = new Date().toISOString()
+
+  if (action === 'taken' || action === 'taken-all') {
+    for (const id of logIds) {
+      await updateDoseStatus(id, 'taken', { takenAt: now })
+    }
+    return settings
+  }
+
+  if (action === 'skip') {
+    for (const id of logIds) {
+      await updateDoseStatus(id, 'skipped')
+    }
+    return settings
+  }
+
+  if (action === 'snooze') {
+    const minutes = settings.snoozeMinutesDefault || 10
+    const until = new Date(Date.now() + minutes * 60_000).toISOString()
+    const snoozeUntilByLogId = { ...settings.snoozeUntilByLogId }
+    for (const id of logIds) {
+      snoozeUntilByLogId[id] = until
+    }
+    const next = { ...settings, snoozeUntilByLogId }
+    await upsertSettings(next)
+    return next
+  }
+
+  return settings
+}
+
+export { markLogsNotified }

@@ -1,0 +1,63 @@
+import AsyncStorage from '@react-native-async-storage/async-storage'
+
+import { exportAppSnapshot, importAppSnapshot } from './appSnapshot'
+import { countMedications } from '../repositories/medicationRepository'
+
+const LOCAL_BACKUP_KEY = 'mediapp-local-backup-v1'
+
+let backupTimer: ReturnType<typeof setTimeout> | null = null
+let backupGeneration = 0
+
+export function scheduleProfilBackup(): void {
+  if (backupTimer) clearTimeout(backupTimer)
+  const generation = backupGeneration
+  backupTimer = setTimeout(() => {
+    backupTimer = null
+    void writeLocalBackup(generation)
+  }, 1500)
+}
+
+export async function writeLocalBackup(generation = backupGeneration): Promise<void> {
+  try {
+    const snapshot = await exportAppSnapshot()
+    if (generation !== backupGeneration) return
+    await AsyncStorage.setItem(LOCAL_BACKUP_KEY, JSON.stringify(snapshot))
+  } catch {
+    /* quota / unavailable */
+  }
+}
+
+/** Drops the on-device recovery copy. Called when the user deletes all data. */
+export async function clearLocalBackup(): Promise<void> {
+  backupGeneration += 1
+  if (backupTimer) {
+    clearTimeout(backupTimer)
+    backupTimer = null
+  }
+  try {
+    await AsyncStorage.removeItem(LOCAL_BACKUP_KEY)
+  } catch {
+    /* unavailable */
+  }
+}
+
+export async function restoreLocalBackupIfEmpty(): Promise<boolean> {
+  const medCount = await countMedications()
+  if (medCount > 0) return false
+
+  let raw: string | null = null
+  try {
+    raw = await AsyncStorage.getItem(LOCAL_BACKUP_KEY)
+  } catch {
+    return false
+  }
+  if (!raw) return false
+
+  try {
+    const snapshot = JSON.parse(raw) as unknown
+    await importAppSnapshot(snapshot)
+    return true
+  } catch {
+    return false
+  }
+}

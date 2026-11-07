@@ -1,0 +1,51 @@
+{
+  "version": 1,
+  "exportedAt": "2026-11-02T12:00:00.000Z",
+  "medications": [
+    {
+      "id": "med-fixture-1",
+      "name": "Fixture lek",
+      "kind": "otc",
+      "form": "tablet",
+      "doseText": "1",
+      "onEmptyStomach": "na",
+      "times": ["08:00"],
+      "schedule": { "type": "daily" },
+      "color": "#2563eb",
+      "icon": "💊",
+      "remindersEnabled": true,
+      "createdAt": "2026-11-01T08:00:00.000Z",
+      "updatedAt": "2026-11-01T08:00:00.000Z"
+    }
+  ],
+  "doseLogs": [],
+  "medicationNotes": [],
+  "settings": [
+    {
+      "id": "default",
+      "theme": "system",
+      "fontScale": "normal",
+      "onboardingCompleted": true,
+      "privacyPolicyVersionAccepted": null,
+      "privacyConsentAt": null,
+      "specialCategoryConsentAt": null,
+      "notificationsEnabled": false,
+      "snoozeMinutesDefault": 10,
+      "persistentAlarmEnabled": false,
+      "snoozeUntilByLogId": {}
+    }
+  ],
+  "gamification": [
+    {
+      "id": "default",
+      "currentStreak": 0,
+      "shieldAvailable": true,
+      "badges": [],
+      "dayRingProgress": 0,
+      "monthRate": 0,
+      "takenTotal": 0,
+      "todayTaken": 0,
+      "todayTotal": 0
+    }
+  ]
+}

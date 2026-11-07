@@ -3,19 +3,30 @@
   "private": true,
   "version": "0.1.0",
   "type": "module",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
     "deploy:pages": "VITE_BASE_PATH=/MediApp/ npm run build && cp dist/index.html dist/404.html && gh-pages -d dist",
-    "test": "vitest run"
+    "test": "vitest run",
+    "test:core": "npm run test -w @mediapp/core",
+    "test:mobile": "vitest run --config apps/mobile/vitest.config.ts",
+    "mobile": "npm run start -w mediapp-mobile",
+    "mobile:dev": "npm run start -w mediapp-mobile",
+    "mobile:dev:tunnel": "npm run start:tunnel -w mediapp-mobile",
+    "mobile:dev-client": "npm run start:dev-client -w mediapp-mobile",
+    "lint:mobile": "npm run lint -w mediapp-mobile"
   },
   "dependencies": {
     "dexie": "^4.0.11",
     "dexie-react-hooks": "^4.4.0",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
     "react-router-dom": "^7.6.2"
   },
   "devDependencies": {

@@ -337,6 +337,12 @@ export const pl = {
     fontNormal: 'Standardowy',
     fontLarge: 'Duży',
     data: 'Dane',
+    backupTitle: 'Kopia zapasowa',
+    backupHintWeb:
+      'Pobierz plik JSON z lekami i historią, aby przenieść dane do aplikacji mobilnej MediApp (Ustawienia → Importuj kopię).',
+    backupExport: 'Pobierz kopię (JSON)',
+    backupExportDone: 'Plik kopii został pobrany.',
+    backupExportFailed: 'Nie udało się przygotować kopii.',
     deleteAll: 'Usuń wszystkie dane',
     deleteConfirm: 'Na pewno usunąć wszystkie dane z tego urządzenia? Tej operacji nie można cofnąć.',
     deleted: 'Dane zostały usunięte.',
